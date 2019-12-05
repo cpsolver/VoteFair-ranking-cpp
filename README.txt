@@ -16,11 +16,10 @@
 //
 //  (c) Copyright 1991 through 2019 by Richard Fobes at www.VoteFair.org.
 //  You can redistribute and/or modify this VoteFairRanking software
-//  under the MIT software license terms that appear in the source code file.
-//  (Also a copy of the license is included in the "license" file.)
-//
+//  under the MIT software license terms that appear in the source-code file.
+//  Also a copy of the license is included in the LICENSE file.
 //  Conversion of this code into another programming language
-//  is also covered by the above license terms.
+//  is also covered by these license terms.
 //
 //
 // -----------------------------------------------
@@ -100,7 +99,7 @@
 //  Wikipedia.
 //
 //  Additional details about the calculations appear within comments
-//  within some of the function code below.
+//  in the source-code file.
 //
 // -----------------------------------------------
 //
