@@ -1,0 +1,4 @@
+request-text-output
+request-rep  request-party  request-pairwise-counts
+case 123
+q 1 choices 6  x 1 q 1 1 2 tie 3 tie 4 tie 5 tie 6  x 1 q 1 2 6 1 4 tie 3  x 1 q 1 6 1 2  x 1 q 1 4 2 3 1  x 1 q 1  2 3 4 5 6 1  x 1 q 1 2 1 5 6 4 3

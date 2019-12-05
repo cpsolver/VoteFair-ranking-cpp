@@ -1,0 +1,1 @@
+case 108 votes 6 q 1 plurality ch 1 plur 1 ch 2 plur 2 ch 3 plur 3 end-plurality endallcases 0

@@ -1,0 +1,2 @@
+request-text-output
+request-no-rep  request-no-party   case 102  q 1  choices 4   startcase   q 1 x 1 1 2 3 4 b   bal x 1 q 1 2 4 1 3 b   x 2 q 1 4 2 1 3   endcase

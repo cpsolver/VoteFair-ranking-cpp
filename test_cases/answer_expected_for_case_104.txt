@@ -1,0 +1,1 @@
+case 2 votes 2 q 1 plurality ch 1 plur 1 ch 2 plur 0 end-plurality popularity-levels ch 1 level 1 ch 2 level 2 end-pop-levels popularity-sequence ch 1 next-level ch 2 end-pop-seq endallcases 0

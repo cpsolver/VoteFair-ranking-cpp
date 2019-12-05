@@ -1,0 +1,2 @@
+request-text-output
+request-rep  request-party  case 106 q 1 choices 2  x 1 q 1 1 2  x 1 q 1 2
