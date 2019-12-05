@@ -16,7 +16,7 @@
 //
 //  (c) Copyright 1991 through 2019 by Richard Fobes at www.VoteFair.org.
 //  You can redistribute and/or modify this VoteFairRanking software
-//  under the MIT software license terms that appear below.
+//  under the MIT software license terms that appear in the source code file.
 //  (Also a copy of the license is included in the "license" file.)
 //
 //  Conversion of this code into another programming language
