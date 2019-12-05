@@ -9,6 +9,10 @@
 //
 //  * VoteFair party ranking  
 //
+//  For detailed descriptions of VoteFair Ranking, see
+//  www.VoteFair.org or the book "Ending The Hidden Unfairness In
+//  U.S. Elections" by Richard Fobes.
+//
 //
 // -----------------------------------------------
 //
@@ -80,10 +84,6 @@
 //  elections, and because those results can be calculated using a
 //  simple spreadsheet.
 //
-//  For detailed descriptions of VoteFair Ranking, see
-//  www.VoteFair.org or the book "Ending The Hidden Unfairness In
-//  U.S. Elections" by Richard Fobes.
-//
 //  In addition to being useful for elections, VoteFair Ranking also
 //  is useful for calculating results for surveys and polls, ranking
 //  the popularity of songs and movies, and much more.
@@ -102,5 +102,3 @@
 //  in the source-code file.
 //
 // -----------------------------------------------
-//
-//  Additional information is included in the source-code file.
