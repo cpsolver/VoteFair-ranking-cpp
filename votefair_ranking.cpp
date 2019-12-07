@@ -212,7 +212,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
-#include <unordered_map>
+#include <map>
 #include <algorithm>
 #include <cstdio>
 #include <vector>
@@ -336,59 +336,7 @@ const int global_voteinfo_code_for_number_of_representation_levels_to_compute = 
 const int global_voteinfo_code_for_request_text_output = -49 ;
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
-std::unordered_map< std::string , int > global_voteinfo_code_for_alias_word =
-    {
-        { "startallcases" , -1 } ,
-        { "endallcases" , -2 } ,
-        { "case" , -3 } ,
-        { "q" , -4 } ,
-        { "votes" , -5 } ,
-        { "choices" , -6 } ,
-        { "startcase" , -7 } ,
-        { "endcase" , -8 } ,
-        { "bal" , -9 } ,
-        { "b" , -10 } ,
-        { "x" , -11 } ,
-        { "pref" , -12 } ,
-        { "ch" , -13 } ,
-        { "tie" , -14 } ,
-        { "popularity-sequence" , -15 } ,
-        { "end-pop-seq" , -16 } ,
-        { "popularity-levels" , -17 } ,
-        { "end-pop-levels" , -18 } ,
-        { "rep-seq" , -19 } ,
-        { "end-rep-seq" , -20 } ,
-        { "rep-levels" , -21 } ,
-        { "end-rep-levels" , -22 } ,
-        { "party-seq" , -23 } ,
-        { "end-party-seq" , -24 } ,
-        { "party-levels" , -25 } ,
-        { "end-party-levels" , -26 } ,
-        { "level" , -27 } ,
-        { "next-level" , -28 } ,
-        { "end-seq-early" , -29 } ,
-        { "tallies" , -30 } ,
-        { "end-tallies" , -31 } ,
-        { "ch1" , -32 } ,
-        { "ch2" , -33 } ,
-        { "1over2" , -34 } ,
-        { "2over1" , -35 } ,
-        { "plurality" , -36 } ,
-        { "end-plurality" , -37 } ,
-        { "plur" , -38 } ,
-        { "case-skipped" , -39 } ,
-        { "question-skipped" , -40 } ,
-        { "request-rep" , -41 } ,
-        { "request-no-rep" , -42 } ,
-        { "request-party" , -43 } ,
-        { "request-no-party" , -44 } ,
-        { "request-plurality-only" , -45 } ,
-        { "request-pairwise-counts" , -46 } ,
-        { "request-no-pairwise-counts" , -47 } ,
-        { "number-rep-levels-to-compute" , -48 } ,
-        { "request-text-output" , -49 } ,
-        { "invalid-input-word" , -200 }
-    } ;
+std::map< std::string , int > global_voteinfo_code_for_alias_word ;
 
 std::string global_text_for_voteinfo_code[ 400 ] ;
 
@@ -509,8 +457,7 @@ void do_initialization( )
 // -----------------------------------------------
 //  Initialize lists to zeros.
 
-    int pointer ;
-    for ( pointer = 0 ; pointer <= 2001 ; pointer ++ )
+    for ( int pointer = 0 ; pointer <= 2001 ; pointer ++ )
     {
         global_vote_info_list[ pointer ] = 0 ;
         global_output_results[ pointer ] = 0 ;
@@ -518,14 +465,12 @@ void do_initialization( )
 
     global_log_info_choice_at_position[ 0 ] = 0 ;
 
-    int question_number ;
-    for ( question_number = 0 ; question_number <= global_maximum_question_number ; question_number ++ )
+    for ( int question_number = 0 ; question_number <= global_maximum_question_number ; question_number ++ )
     {
         global_choice_count_for_question[ question_number ] = 0 ;
     }
 
-    int choice_number ;
-    for ( choice_number = 0 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
+    for ( int choice_number = 0 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
     {
         global_plurality_count_for_actual_choice[ choice_number ] = 0 ;
         global_popularity_ranking_for_actual_choice[ choice_number ] = 0 ;
@@ -546,7 +491,7 @@ void do_initialization( )
         global_insertion_sort_popularity_rank_for_actual_choice[ choice_number ] = 0 ;
     }
 
-    for ( pointer = 0 ; pointer <= 200 ; pointer ++ )
+    for ( int pointer = 0 ; pointer <= 200 ; pointer ++ )
     {
         global_output_results[ pointer ] = 0 ;
         global_tally_first_over_second_in_pair[ pointer ] = 0 ;
@@ -569,6 +514,62 @@ void do_initialization( )
 //  Reset logging flag.
 
     global_logging_info = global_true ;
+
+
+// -----------------------------------------------
+//  Associate text "words" with the code numbers,
+//  which are negative numbers.
+
+    global_voteinfo_code_for_alias_word[ "startallcases" ] = -1 ;
+    global_voteinfo_code_for_alias_word[ "endallcases" ] = -2 ;
+    global_voteinfo_code_for_alias_word[ "case" ] = -3 ;
+    global_voteinfo_code_for_alias_word[ "q" ] = -4 ;
+    global_voteinfo_code_for_alias_word[ "votes" ] = -5 ;
+    global_voteinfo_code_for_alias_word[ "choices" ] = -6 ;
+    global_voteinfo_code_for_alias_word[ "startcase" ] = -7 ;
+    global_voteinfo_code_for_alias_word[ "endcase" ] = -8 ;
+    global_voteinfo_code_for_alias_word[ "bal" ] = -9 ;
+    global_voteinfo_code_for_alias_word[ "b" ] = -10 ;
+    global_voteinfo_code_for_alias_word[ "x" ] = -11 ;
+    global_voteinfo_code_for_alias_word[ "pref" ] = -12 ;
+    global_voteinfo_code_for_alias_word[ "ch" ] = -13 ;
+    global_voteinfo_code_for_alias_word[ "tie" ] = -14 ;
+    global_voteinfo_code_for_alias_word[ "popularity-sequence" ] = -15 ;
+    global_voteinfo_code_for_alias_word[ "end-pop-seq" ] = -16 ;
+    global_voteinfo_code_for_alias_word[ "popularity-levels" ] = -17 ;
+    global_voteinfo_code_for_alias_word[ "end-pop-levels" ] = -18 ;
+    global_voteinfo_code_for_alias_word[ "rep-seq" ] = -19 ;
+    global_voteinfo_code_for_alias_word[ "end-rep-seq" ] = -20 ;
+    global_voteinfo_code_for_alias_word[ "rep-levels" ] = -21 ;
+    global_voteinfo_code_for_alias_word[ "end-rep-levels" ] = -22 ;
+    global_voteinfo_code_for_alias_word[ "party-seq" ] = -23 ;
+    global_voteinfo_code_for_alias_word[ "end-party-seq" ] = -24 ;
+    global_voteinfo_code_for_alias_word[ "party-levels" ] = -25 ;
+    global_voteinfo_code_for_alias_word[ "end-party-levels" ] = -26 ;
+    global_voteinfo_code_for_alias_word[ "level" ] = -27 ;
+    global_voteinfo_code_for_alias_word[ "next-level" ] = -28 ;
+    global_voteinfo_code_for_alias_word[ "end-seq-early" ] = -29 ;
+    global_voteinfo_code_for_alias_word[ "tallies" ] = -30 ;
+    global_voteinfo_code_for_alias_word[ "end-tallies" ] = -31 ;
+    global_voteinfo_code_for_alias_word[ "ch1" ] = -32 ;
+    global_voteinfo_code_for_alias_word[ "ch2" ] = -33 ;
+    global_voteinfo_code_for_alias_word[ "1over2" ] = -34 ;
+    global_voteinfo_code_for_alias_word[ "2over1" ] = -35 ;
+    global_voteinfo_code_for_alias_word[ "plurality" ] = -36 ;
+    global_voteinfo_code_for_alias_word[ "end-plurality" ] = -37 ;
+    global_voteinfo_code_for_alias_word[ "plur" ] = -38 ;
+    global_voteinfo_code_for_alias_word[ "case-skipped" ] = -39 ;
+    global_voteinfo_code_for_alias_word[ "question-skipped" ] = -40 ;
+    global_voteinfo_code_for_alias_word[ "request-rep" ] = -41 ;
+    global_voteinfo_code_for_alias_word[ "request-no-rep" ] = -42 ;
+    global_voteinfo_code_for_alias_word[ "request-party" ] = -43 ;
+    global_voteinfo_code_for_alias_word[ "request-no-party" ] = -44 ;
+    global_voteinfo_code_for_alias_word[ "request-plurality-only" ] = -45 ;
+    global_voteinfo_code_for_alias_word[ "request-pairwise-counts" ] = -46 ;
+    global_voteinfo_code_for_alias_word[ "request-no-pairwise-counts" ] = -47 ;
+    global_voteinfo_code_for_alias_word[ "number-rep-levels-to-compute" ] = -48 ;
+    global_voteinfo_code_for_alias_word[ "request-text-output" ] = -49 ;
+    global_voteinfo_code_for_alias_word[ "invalid-input-word" ] = -200 ;
 
 
 // -----------------------------------------------
@@ -860,7 +861,7 @@ void read_data( )
 //  line (if it is not too long), for clarity
 //  each ballot can be on a separate line.
 
-    for ( std::string input_line ; std::getline(std::cin, input_line) ; )
+    for ( std::string input_line ; std::getline( std::cin , input_line ) ; )
     {
         if ( global_logging_info == global_true ) { log_out << "[input line: " << input_line << "]" << std::endl ; } ;
         char input_line_c_version[ 2000 ] = "" ;
@@ -1228,11 +1229,11 @@ void check_vote_info_numbers( )
 //  Initialization.
 
     if ( global_logging_info == global_true ) { log_out << "\n[about to start checking vote-info numbers]\n" ; } ;
-    for ( question_number = 0 ; question_number <= global_maximum_question_number ; question_number ++ )
+    for ( int question_number = 0 ; question_number <= global_maximum_question_number ; question_number ++ )
     {
         tally_uses_of_question_number[ question_number ] = 0 ;
     }
-    for ( choice_number = 0 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
+    for ( int choice_number = 0 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
     {
         tally_uses_of_choice_number[ choice_number ] = 0 ;
     }
@@ -1262,7 +1263,7 @@ void check_vote_info_numbers( )
     global_current_total_vote_count = 0 ;
     if ( global_logging_info == global_true ) { log_out << "\n[input voteinfo list length = " << global_length_of_vote_info_list << "]" << std::endl ; } ;
     if ( global_logging_info == global_true ) { log_out << "\n[begin checking vote info numbers]\n" ; } ;
-    for ( pointer_to_vote_info = 1 ; pointer_to_vote_info <= global_length_of_vote_info_list ; pointer_to_vote_info ++ )
+    for ( int pointer_to_vote_info = 1 ; pointer_to_vote_info <= global_length_of_vote_info_list ; pointer_to_vote_info ++ )
     {
 
 
@@ -1668,7 +1669,7 @@ void check_vote_info_numbers( )
                     if ( global_logging_info == global_true ) { log_out << "[no ballots found]" ; } ;
                 } else
                 {
-                    for ( global_question_number = 1 ; global_question_number <= global_question_count ; global_question_number ++ )
+                    for ( int global_question_number = 1 ; global_question_number <= global_question_count ; global_question_number ++ )
                     {
                         if ( global_logging_info == global_true ) { log_out << "[question " << global_question_number << " has " << global_choice_count_for_question[ global_question_number ] << " choices]" ; } ;
                         if ( global_choice_count_for_question[ global_question_number ] == 1 )
@@ -1772,8 +1773,7 @@ void check_vote_info_numbers( )
 
 void set_all_choices_as_used( )
 {
-    int actual_choice ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         global_using_choice[ actual_choice ] = global_true ;
     }
@@ -1829,7 +1829,7 @@ void reset_ballot_info_and_tally_table( )
 // -----------------------------------------------
 //  Log which choices are not being used.
 
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_using_choice[ actual_choice ] == global_false )
         {
@@ -1843,7 +1843,7 @@ void reset_ballot_info_and_tally_table( )
 //  adjusted choice count.
 
     global_adjusted_choice_count = 0 ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_using_choice[ actual_choice ] == global_true )
         {
@@ -1865,10 +1865,10 @@ void reset_ballot_info_and_tally_table( )
 
     pair_counter = 0 ;
     global_pair_counter_maximum = 0 ;
-    for ( adjusted_first_choice = 1 ; adjusted_first_choice < global_adjusted_choice_count ; adjusted_first_choice ++ )
+    for ( int adjusted_first_choice = 1 ; adjusted_first_choice < global_adjusted_choice_count ; adjusted_first_choice ++ )
     {
         global_pair_counter_offset_for_first_adjusted_choice[ adjusted_first_choice ] = pair_counter - adjusted_first_choice ;
-        for ( adjusted_second_choice = adjusted_first_choice + 1 ; adjusted_second_choice <= global_adjusted_choice_count ; adjusted_second_choice ++ )
+        for ( int adjusted_second_choice = adjusted_first_choice + 1 ; adjusted_second_choice <= global_adjusted_choice_count ; adjusted_second_choice ++ )
         {
             pair_counter ++ ;
             global_pair_counter_maximum ++ ;
@@ -1881,7 +1881,7 @@ void reset_ballot_info_and_tally_table( )
 // -----------------------------------------------
 //  Create, and clear, the tally table.
 
-    for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+    for ( int pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
     {
         global_tally_first_over_second_in_pair[ pair_counter ] = 0 ;
         global_tally_second_over_first_in_pair[ pair_counter ] = 0 ;
@@ -1892,7 +1892,7 @@ void reset_ballot_info_and_tally_table( )
 // -----------------------------------------------
 //  Initialize the plurality counts.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         global_plurality_count_for_actual_choice[ actual_choice ] = 0 ;
@@ -1970,7 +1970,7 @@ void internal_view_matrix( )
         {
             global_scale_for_logged_pairwise_counts = 1.0 ;
         }
-        for ( matrix_row_number = 1 ; matrix_row_number <= global_adjusted_choice_count ; matrix_row_number ++ )
+        for ( int matrix_row_number = 1 ; matrix_row_number <= global_adjusted_choice_count ; matrix_row_number ++ )
         {
             actual_first_choice = global_log_info_choice_at_position[ matrix_row_number ] ;
             adjusted_first_choice = global_adjusted_choice_for_actual_choice[ actual_first_choice ] ;
@@ -1980,7 +1980,7 @@ void internal_view_matrix( )
             }
             sequence_string += std::to_string( actual_first_choice ) ;
             global_pairwise_matrix_text += "[" ;
-            for ( matrix_column_number = 1 ; matrix_column_number <= global_adjusted_choice_count ; matrix_column_number ++ )
+            for ( int matrix_column_number = 1 ; matrix_column_number <= global_adjusted_choice_count ; matrix_column_number ++ )
             {
                 actual_second_choice = global_log_info_choice_at_position[ matrix_column_number ] ;
                 adjusted_second_choice = global_adjusted_choice_for_actual_choice[ actual_second_choice ] ;
@@ -2107,7 +2107,7 @@ void normalize_ranking( )
 //  Create a sequence of adjusted choice numbers that
 //  will be rearranged during sorting.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         global_sortable_sequence_used_during_normalization[ adjusted_choice ] = adjusted_choice ;
     }
@@ -2139,7 +2139,7 @@ void normalize_ranking( )
     sequence_position = 1 ;
     new_ranking_level = 0 ;
     if ( true_or_false_log_details == global_true ) { log_out << "[normalizing rank levels]" << std::endl ; } ;
-    for ( sorted_position = 1 ; sorted_position <= global_adjusted_choice_count ; sorted_position ++ )
+    for ( int sorted_position = 1 ; sorted_position <= global_adjusted_choice_count ; sorted_position ++ )
     {
         current_adjusted_choice = global_sortable_sequence_used_during_normalization[ sorted_position ] ;
         if ( global_rank_to_normalize_for_adjusted_choice[ current_adjusted_choice ] != global_rank_to_normalize_for_adjusted_choice[ previous_adjusted_choice ] )
@@ -2161,7 +2161,7 @@ global_rank_to_normalize_for_adjusted_choice[ current_adjusted_choice ] << ")]" 
 //  Copy the results to overwrite the un-normalized
 //  ranking levels.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         global_rank_to_normalize_for_adjusted_choice[ adjusted_choice ] = global_normalized_ranking_level_for_adjusted_choice[ adjusted_choice ] ;
     }
@@ -2215,9 +2215,9 @@ void compare_popularity_results( )
 //  choice number.
 
     sequence_position = 1 ;
-    for ( ranking_level = 0 ; ranking_level <= global_adjusted_choice_count ; ranking_level ++ )
+    for ( int ranking_level = 0 ; ranking_level <= global_adjusted_choice_count ; ranking_level ++ )
     {
-        for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+        for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
         {
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
             if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == ranking_level )
@@ -2266,7 +2266,7 @@ void compare_popularity_results( )
     possible_text_choice_specific_pairwise_score_not_the_same = "CSPS same" ;
     comparison_of_methods_table = "[compare pop results, case " + std::to_string( global_case_number ) + " , question " + std::to_string( global_question_number ) + " , rank type = " + global_ranking_type_being_calculated + "]\n" ;
     comparison_of_methods_table += "[compare pop results, columns: official, insertion, estimated]\n" ;
-    for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+    for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
     {
         actual_choice = actual_choice_at_popularity_list_sequence_position[ sequence_position ] ;
         adjusted_choice = global_adjusted_choice_for_actual_choice[ actual_choice ] ;
@@ -2333,7 +2333,7 @@ void output_plurality_counts( )
 
     put_next_result_info_number( global_voteinfo_code_for_start_of_plurality_results ) ;
     if ( global_logging_info == global_true ) { log_out << "[output, plurality counts:]\n" ; } ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         put_next_result_info_number( global_voteinfo_code_for_choice ) ;
         put_next_result_info_number( actual_choice ) ;
@@ -2390,7 +2390,7 @@ void output_tally_table_numbers( )
 //  Output the pairwise counts from the tally table.
 
     put_next_result_info_number( global_voteinfo_code_for_start_of_tally_table_results ) ;
-    for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+    for ( int pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
     {
         adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
         adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
@@ -2499,7 +2499,7 @@ void output_ranking_results( )
 //  Begin a loop that handles each of the three
 //  different ranking types.
 
-    for ( ranking_type_number = 1 ; ranking_type_number <= 3 ; ranking_type_number ++ )
+    for ( int ranking_type_number = 1 ; ranking_type_number <= 3 ; ranking_type_number ++ )
     {
         ranking_type_name = ranking_type_name_for_number[ ranking_type_number ] ;
 
@@ -2510,7 +2510,7 @@ void output_ranking_results( )
 //  output list.
 
         sum_of_rankings = 0 ;
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( ranking_type_number == ranking_type_number_for_popularity )
             {
@@ -2546,7 +2546,7 @@ void output_ranking_results( )
         if ( global_logging_info == global_true ) { log_out << "[output, ranking results for " << ranking_type_name << " ranking:]\n" ; } ;
         start_code = levels_start_code_for_ranking_type[ ranking_type_number ] ;
         put_next_result_info_number( start_code ) ;
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             ranking_level = ranking_level_result_for_actual_choice[ actual_choice ] ;
             put_next_result_info_number( global_voteinfo_code_for_choice ) ;
@@ -2568,10 +2568,10 @@ void output_ranking_results( )
         start_code = sequence_start_code_for_ranking_type[ ranking_type_number ] ;
         put_next_result_info_number( start_code ) ;
         count_of_ranked_choices = 0 ;
-        for ( ranking_level = 1 ; ranking_level <= global_full_choice_count ; ranking_level ++ )
+        for ( int ranking_level = 1 ; ranking_level <= global_full_choice_count ; ranking_level ++ )
         {
             count_of_choices_found_at_this_ranking_level = 0 ;
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( ranking_level_result_for_actual_choice[ actual_choice ] == ranking_level )
                 {
@@ -2658,7 +2658,7 @@ int get_numbers_based_on_one_ballot( )
 //  encountered, initialize all the preference
 //  levels to the last level.
 
-    for ( choice_number = 1 ; choice_number <= global_full_choice_count ; choice_number ++ )
+    for ( int choice_number = 1 ; choice_number <= global_full_choice_count ; choice_number ++ )
     {
         global_ballot_preference_for_choice[ choice_number ] = global_full_choice_count ;
     }
@@ -2898,7 +2898,7 @@ void add_preferences_to_tally_table( )
 
     tally_amount = ( int ) ( ( ( ( float ) global_ballot_info_repeat_count ) * global_ballot_influence_amount ) + 0.5 ) ;
     if ( global_logging_info == global_true ) { log_out << "[tally preference amount: " << std::to_string( tally_amount ) << "]\n" ; } ;
-    for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+    for ( int pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
     {
         adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
         adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
@@ -3025,7 +3025,7 @@ void calc_all_sequence_scores( )
 //  In case of an early error, initialize the
 //  ranking of each choice -- to zero.
 
-    for ( adjusted_choice = 1; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         global_popularity_ranking_for_actual_choice[ actual_choice ] = 0 ;
@@ -3078,7 +3078,7 @@ void calc_all_sequence_scores( )
 //  lowest rankings.
 
     if ( true_or_false_log_details == global_true ) { log_out << "[all scores, beginning to calculate VoteFair popularity results]\n" ; } ;
-    for ( adjusted_choice = 1; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         count_of_rankings_at_highest_score_for_adjusted_choice[ adjusted_choice ] = 0 ;
         sum_of_rankings_at_highest_score_for_adjusted_choice[ adjusted_choice ] = 0 ;
@@ -3096,7 +3096,7 @@ void calc_all_sequence_scores( )
     if ( true_or_false_log_details == global_true )
     {
         sequence_count = 1 ;
-        for ( counter = 2 ; counter <= global_adjusted_choice_count ; counter ++ )
+        for ( int counter = 2 ; counter <= global_adjusted_choice_count ; counter ++ )
         {
             sequence_count = sequence_count * counter ;
         }
@@ -3110,7 +3110,7 @@ void calc_all_sequence_scores( )
 //  sequences.  Also specify the maximum count
 //  value that is allowed for each position in that list.
 
-    for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+    for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
     {
         sequence_count_at_position[ sequence_position ] = 1 ;
         maximum_sequence_count_at_position[ sequence_position ] = global_adjusted_choice_count - sequence_position + 1 ;
@@ -3152,7 +3152,7 @@ void calc_all_sequence_scores( )
 //  number-ordered list named
 //  "choice_in_remainder_position".
 
-        for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+        for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
         {
             adjusted_choice = sequence_position ;
             choice_in_remainder_position[ sequence_position ] = adjusted_choice ;
@@ -3170,7 +3170,7 @@ void calc_all_sequence_scores( )
 //  to keep track of which choice numbers have
 //  not yet been used in the sequence.
 
-        for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+        for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
         {
             removal_position = sequence_count_at_position[ sequence_position ] ;
             adjusted_choice = choice_in_remainder_position[ removal_position ] ;
@@ -3178,7 +3178,7 @@ void calc_all_sequence_scores( )
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
             global_log_info_choice_at_position[ sequence_position ] = actual_choice ;
             sequence_position_for_adjusted_choice[ adjusted_choice ] = sequence_position ;
-            for ( position_to_shift = removal_position ; position_to_shift <= global_adjusted_choice_count - sequence_position ; position_to_shift ++ )
+            for ( int position_to_shift = removal_position ; position_to_shift <= global_adjusted_choice_count - sequence_position ; position_to_shift ++ )
             {
                 choice_in_remainder_position[ position_to_shift ] = choice_in_remainder_position[ position_to_shift + 1 ] ;
             }
@@ -3192,7 +3192,7 @@ void calc_all_sequence_scores( )
 //  sequence.
 
         score = 0 ;
-        for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+        for ( int pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
         {
             first_choice_number = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
             second_choice_number = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
@@ -3220,7 +3220,7 @@ void calc_all_sequence_scores( )
             {
                 highest_score = score ;
                 count_of_same_highest_score = 1 ;
-                for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     sequence_position = sequence_position_for_adjusted_choice[ adjusted_choice ] ;
                     count_of_rankings_at_highest_score_for_adjusted_choice[ adjusted_choice ] = 1 ;
@@ -3245,7 +3245,7 @@ void calc_all_sequence_scores( )
             } else
             {
                 count_of_same_highest_score ++ ;
-                for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     sequence_position = sequence_position_for_adjusted_choice[ adjusted_choice ] ;
                     ranking_info += global_adjusted_ranking_for_adjusted_choice_top_down_version[ adjusted_choice ] + " , " ;
@@ -3270,7 +3270,7 @@ void calc_all_sequence_scores( )
 //  If the current score equals or exceeds the
 //  previously highest score, log this information.
 
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 sequence_position = sequence_position_for_adjusted_choice[ adjusted_choice ] ;
@@ -3279,7 +3279,7 @@ void calc_all_sequence_scores( )
             if ( ( true_or_false_log_details == global_true ) && ( global_adjusted_choice_count <= 8 ) )
             {
                 log_out << "[all scores, sequence  " ;
-                for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+                for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
                 {
                     actual_choice = global_log_info_choice_at_position[ sequence_position ] ;
                     log_out << actual_choice << " , " ;
@@ -3358,7 +3358,7 @@ void calc_all_sequence_scores( )
 
     if ( true_or_false_log_details == global_true ) { log_out << "[all scores, count of same highest score is " << count_of_same_highest_score << "]" << std::endl ; } ;
     if ( true_or_false_log_details == global_true ) { log_out << "[all scores, top-down and bottom-up and scaled-average values:]\n" ; } ;
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         top_down_rank = global_adjusted_ranking_for_adjusted_choice_top_down_version[ adjusted_choice ] ;
@@ -3369,7 +3369,7 @@ void calc_all_sequence_scores( )
     }
     normalize_ranking( ) ;
     if ( true_or_false_log_details == global_true ) { log_out << "[all scores, final normalized results:]\n" ; } ;
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         ranking_level = global_rank_to_normalize_for_adjusted_choice[ adjusted_choice ] ;
@@ -3758,7 +3758,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  Initialize the results in case of an early
 //  exit.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] = 0 ;
@@ -3781,7 +3781,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  numerical order.  Also initialize other
 //  values.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         sequence_position = adjusted_choice ;
         adjusted_choice_in_rank_sequence_position[ sequence_position ] = adjusted_choice ;
@@ -3808,7 +3808,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 
     if ( true_or_false_log_details == global_true )
     {
-        for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+        for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
         {
             adjusted_choice = adjusted_choice_in_rank_sequence_position[ sequence_position ] ;
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
@@ -3838,12 +3838,12 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  global_tally_second_over_first_in_pair
 //  lists (not necessarily respectively).
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         row_score_for_adjusted_choice[ adjusted_choice ] = 0 ;
         column_score_for_adjusted_choice[ adjusted_choice ] = 0 ;
     }
-    for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+    for ( int pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
     {
         adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
         adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
@@ -3864,7 +3864,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 
     largest_column_score = 0 ;
     if ( true_or_false_log_details == global_true ) { log_out << "[choice-score, current column and row scores:]\n" ; } ;
-    for ( sequence_position = count_of_choices_sorted + 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+    for ( int sequence_position = count_of_choices_sorted + 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
     {
         adjusted_choice = adjusted_choice_in_rank_sequence_position[ sequence_position ] ;
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
@@ -3895,7 +3895,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
         if ( main_loop_count > 10000 )
         {
             if ( true_or_false_log_details == global_true ) { log_out << "[choice-score, loop counter has exceeded limit, probably because the choice count (" << global_full_choice_count << ") is so large, so exiting choice-score rank]" ; } ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] = 0 ;
@@ -3942,7 +3942,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
         smallest_column_score = largest_column_score ;
         adjusted_choice_with_largest_score = 0 ;
         count_of_tied_scores = 0 ;
-        for ( sequence_position = count_of_choices_sorted + 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+        for ( int sequence_position = count_of_choices_sorted + 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
         {
             adjusted_choice = adjusted_choice_in_rank_sequence_position[ sequence_position ] ;
             row_score = row_score_for_adjusted_choice[ adjusted_choice ] ;
@@ -4042,12 +4042,12 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  largest positive difference.
 
             largest_positive_difference = 0 ;
-            for ( first_pointer = 1 ; first_pointer < count_of_tied_scores ; first_pointer ++ )
+            for ( int first_pointer = 1 ; first_pointer < count_of_tied_scores ; first_pointer ++ )
             {
                 adjusted_first_choice = adjusted_choice_at_tie_count[ first_pointer ] ;
                 actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
                 if ( true_or_false_log_details == global_true ) { log_out << "[choice-score, first choice is " << actual_first_choice << "]" << std::endl ; } ;
-                for ( second_pointer = first_pointer + 1 ; second_pointer <= count_of_tied_scores ; second_pointer ++ )
+                for ( int second_pointer = first_pointer + 1 ; second_pointer <= count_of_tied_scores ; second_pointer ++ )
                 {
                     adjusted_second_choice = adjusted_choice_at_tie_count[ second_pointer ] ;
                     actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
@@ -4135,7 +4135,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  repeats for each such choice.  Otherwise this
 //  loop is executed only once.
 
-        for ( list_pointer = 1 ; list_pointer <= count_of_tied_scores ; list_pointer ++ )
+        for ( int list_pointer = 1 ; list_pointer <= count_of_tied_scores ; list_pointer ++ )
         {
             adjusted_choice_with_largest_score = adjusted_choice_at_tie_count[ list_pointer ] ;
             actual_choice_with_largest_score = global_actual_choice_for_adjusted_choice[ adjusted_choice_with_largest_score ] ;
@@ -4190,7 +4190,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 
             if ( true_or_false_log_details == global_true )
             {
-                for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+                for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
                 {
                     adjusted_choice = adjusted_choice_in_rank_sequence_position[ sequence_position ] ;
                     actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
@@ -4221,7 +4221,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  extra array that converts from choice-number
 //  combinations into pair numbers).
 
-                for ( sequence_position_of_choice_not_yet_sorted = count_of_choices_sorted + 1 ; sequence_position_of_choice_not_yet_sorted <= global_adjusted_choice_count ; sequence_position_of_choice_not_yet_sorted ++ )
+                for ( int sequence_position_of_choice_not_yet_sorted = count_of_choices_sorted + 1 ; sequence_position_of_choice_not_yet_sorted <= global_adjusted_choice_count ; sequence_position_of_choice_not_yet_sorted ++ )
                 {
                     adjusted_choice_not_yet_sorted = adjusted_choice_in_rank_sequence_position[ sequence_position_of_choice_not_yet_sorted ] ;
                     if ( adjusted_choice_with_largest_score < adjusted_choice_not_yet_sorted )
@@ -4249,7 +4249,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
                 if ( true_or_false_log_details == global_true )
                 {
                     log_out << "[choice-score, current row and column scores:]\n" ;
-                    for ( sequence_position = count_of_choices_sorted + 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+                    for ( int sequence_position = count_of_choices_sorted + 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
                     {
                         adjusted_choice = adjusted_choice_in_rank_sequence_position[ sequence_position ] ;
                         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
@@ -4283,14 +4283,14 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 // -----------------------------------------------
 //  Normalize the results.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         global_rank_to_normalize_for_adjusted_choice[ adjusted_choice ] = global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] ;
     }
     normalize_ranking( ) ;
     if ( true_or_false_log_details == global_true ) { log_out << "[choice-score, final normalized ranking levels]\n" ; } ;
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         ranking_level = global_rank_to_normalize_for_adjusted_choice[ adjusted_choice ] ;
@@ -4303,7 +4303,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
 //  Log the calculated ranking levels.
 
     if ( true_or_false_log_details == global_true ) { log_out << "[choice-score, final results:]\n" ; } ;
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         if ( true_or_false_log_details == global_true ) { log_out << "[  choice " << actual_choice << " is at ranking level " << global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] << "]" << std::endl ; } ;
@@ -4990,7 +4990,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  Set the results to zero in case an error is
 //  encountered.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         global_insertion_sort_popularity_rank_for_actual_choice[ actual_choice ] = 0 ;
@@ -5031,7 +5031,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  However, in complex cases, numeric order
 //  may produce the wrong results!
 
-    for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+    for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
     {
         adjusted_choice = sequence_position ;
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
@@ -5042,9 +5042,9 @@ void calc_votefair_insertion_sort_popularity_rank( )
     if ( global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] > 0 )
     {
         sequence_position = 1 ;
-        for ( ranking_level = 1 ; ranking_level <= global_adjusted_choice_count ; ranking_level ++ )
+        for ( int ranking_level = 1 ; ranking_level <= global_adjusted_choice_count ; ranking_level ++ )
         {
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 if ( global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] == ranking_level )
@@ -5071,7 +5071,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 
     if ( true_or_false_log_details == global_true )
     {
-        for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
+        for ( int sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
         {
             actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
             global_log_info_choice_at_position[ sequence_position ] = actual_choice ;
@@ -5095,7 +5095,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  instead of the global values because these
 //  adjusted choice numbers will change.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         local_actual_choice_for_adjusted_choice[ adjusted_choice ] = actual_choice ;
@@ -5118,7 +5118,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
     count_of_sequences_with_same_highest_score = 0 ;
     final_stage_reached_at_main_loop_count = 0 ;
     main_loop_maximum_count = 10 ;
-    for ( main_loop_count = 1 ; main_loop_count <= main_loop_maximum_count ; main_loop_count ++ )
+    for ( int main_loop_count = 1 ; main_loop_count <= main_loop_maximum_count ; main_loop_count ++ )
     {
         if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, main-loop number is " << main_loop_count << "]" << std::endl ; } ;
 
@@ -5182,15 +5182,15 @@ void calc_votefair_insertion_sort_popularity_rank( )
         {
             new_adjusted_choice_count = int( ( local_adjusted_choice_count / 2 ) + 1 ) ;
             if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, finding " << new_adjusted_choice_count << " choices at highest rankings]\n" ; } ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = local_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 actual_choice_at_new_adjusted_choice[ adjusted_choice ] = 0 ;
             }
             count_of_choices_in_top_half = 0 ;
-            for ( highest_rank_threshold = 1 ; highest_rank_threshold <= local_adjusted_choice_count ; highest_rank_threshold ++ )
+            for ( int highest_rank_threshold = 1 ; highest_rank_threshold <= local_adjusted_choice_count ; highest_rank_threshold ++ )
             {
-                for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     actual_choice = local_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                     highest_rank = highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice ] ;
@@ -5240,7 +5240,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                 local_adjusted_choice_count = count_of_choices_in_top_half ;
                 adjusted_choice_count_at_stage[ main_loop_count ] = local_adjusted_choice_count ;
                 if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, now adjusted choice count is " << local_adjusted_choice_count << "]" << std::endl ; } ;
-                for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     actual_choice = actual_choice_at_new_adjusted_choice[ adjusted_choice ] ;
                     local_adjusted_choice_for_actual_choice[ actual_choice ] = adjusted_choice ;
@@ -5265,7 +5265,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
             if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, starting final stage]\n" ; } ;
             count_of_highest_ranked_choices = 0 ;
             count_of_lower_ranked_choices = 0 ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = local_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 if ( highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice ] == 1 )
@@ -5292,7 +5292,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
             if ( count_of_highest_ranked_choices == global_adjusted_choice_count )
             {
                 if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, all the choices are tied at the highest level]\n" ; } ;
-                for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                     highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice ] = 1 ;
@@ -5316,7 +5316,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
             if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, preparing to sub-sort the choices that are not highest ranked]\n" ; } ;
             local_adjusted_choice_count = global_adjusted_choice_count - count_of_highest_ranked_choices ;
             new_adjusted_choice = 1 ;
-            for ( adjusted_choice_overall = 1 ; adjusted_choice_overall <= global_adjusted_choice_count ; adjusted_choice_overall ++ )
+            for ( int adjusted_choice_overall = 1 ; adjusted_choice_overall <= global_adjusted_choice_count ; adjusted_choice_overall ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice_overall ] ;
                 if ( highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice ] > 1 )
@@ -5327,9 +5327,9 @@ void calc_votefair_insertion_sort_popularity_rank( )
                 }
             }
             sequence_position = 1 ;
-            for ( possible_ranking_level = 1 ; possible_ranking_level <= global_adjusted_choice_count ; possible_ranking_level ++ )
+            for ( int possible_ranking_level = 1 ; possible_ranking_level <= global_adjusted_choice_count ; possible_ranking_level ++ )
             {
-                for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     actual_choice = local_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                     if ( possible_ranking_level == global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] )
@@ -5348,7 +5348,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  Initialize the values that keep track of
 //  each choice's highest and lowest positions.
 
-        for ( sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
+        for ( int sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
         {
             actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
             adjusted_choice = local_adjusted_choice_for_actual_choice[ actual_choice ] ;
@@ -5364,7 +5364,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
         if ( true_or_false_log_details == global_true )
         {
             log_out << "\n[insertion sort, in sort-pass loop, starting sequence is: " ;
-            for ( sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
+            for ( int sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
             {
                 actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
                 log_out << actual_choice << " , " ;
@@ -5393,7 +5393,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  choices.  Normally the loop does not reach
 //  the maximum loop count used here.
 
-        for ( sort_pass_counter = 1 ; sort_pass_counter <= sort_pass_counter_maximum ; sort_pass_counter ++ )
+        for ( int sort_pass_counter = 1 ; sort_pass_counter <= sort_pass_counter_maximum ; sort_pass_counter ++ )
         {
             if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in sort-pass loop, sort pass counter = " << sort_pass_counter << ", last left sort count is " << recent_sort_pass_count_in_direction_left << ", last right sort count = " << recent_sort_pass_count_in_direction_right << "]" << std::endl ; } ;
 
@@ -5568,7 +5568,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  list on the left and an unsorted list on
 //  the right.
 
-            for ( number_of_positions_sorted = 1 ; number_of_positions_sorted < local_adjusted_choice_count ; number_of_positions_sorted ++ )
+            for ( int number_of_positions_sorted = 1 ; number_of_positions_sorted < local_adjusted_choice_count ; number_of_positions_sorted ++ )
             {
                 if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in sort-pass loop, number of positions sorted is " <<  number_of_positions_sorted << "]" << std::endl ; } ;
 
@@ -5622,7 +5622,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                 actual_destination = position_of_choice_to_move ;
                 score_increase = 0 ;
                 largest_subset_sum = -99999 ;
-                for ( distance_to_possible_destination = 1 ; distance_to_possible_destination <= maximum_move_distance_allowed ; distance_to_possible_destination ++ )
+                for ( int distance_to_possible_destination = 1 ; distance_to_possible_destination <= maximum_move_distance_allowed ; distance_to_possible_destination ++ )
                 {
                     if ( direction_increment == 1 )
                     {
@@ -5768,7 +5768,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                     {
                         number_of_choices_to_shift = actual_destination - position_of_choice_to_move ;
                     }
-                    for ( position_number = 1 ; position_number <= number_of_choices_to_shift ; position_number ++ )
+                    for ( int position_number = 1 ; position_number <= number_of_choices_to_shift ; position_number ++ )
                     {
                         if ( direction_increment == 1 )
                         {
@@ -5827,7 +5827,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                     {
                         if ( local_adjusted_choice_count == global_adjusted_choice_count )
                         {
-                            for ( sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
+                            for ( int sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
                             {
                                 actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
                                 global_log_info_choice_at_position[ sequence_position ] = actual_choice ;
@@ -5841,7 +5841,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                         } else
                         {
                             log_out << "\n[insertion sort, current sub-sort sequence is: " ;
-                            for ( sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
+                            for ( int sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
                             {
                                 actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
                                 log_out << actual_choice << " , " ;
@@ -5875,7 +5875,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                 if ( sort_pass_counter != pass_count_at_last_score_increase )
                 {
                     log_out << std::endl ;
-                    for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+                    for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
                     {
                         actual_choice = local_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                         highest_rank = highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice ] ;
@@ -5898,7 +5898,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                 if ( true_or_false_log_details == global_true ) { log_out << "\n[insertion sort, in sort-pass loop, score increased during this pass, so initializing highest and lowest positions for all choices]\n" ; } ;
                 reached_stable_condition_at_pass_count = 0 ;
                 count_of_sequences_with_same_highest_score = 0 ;
-                for ( sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
+                for ( int sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
                 {
                     actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
                     adjusted_choice = local_adjusted_choice_for_actual_choice[ actual_choice ] ;
@@ -5922,7 +5922,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                     log_out << "\n[insertion sort, in sort-pass loop, no choices moved during this sorting pass]\n" ;
                 }
 
-                for ( adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= local_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     pass_number = pass_number_at_last_rerank_for_adjusted_choice[ adjusted_choice ] ;
                     if ( pass_number == sort_pass_counter )
@@ -5948,7 +5948,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
         if ( true_or_false_log_details == global_true )
         {
             log_out << "\n[insertion sort, in main loop, ending sequence is: " ;
-            for ( sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
+            for ( int sequence_position = 1 ; sequence_position <= local_adjusted_choice_count ; sequence_position ++ )
             {
                 actual_choice = actual_choice_in_insertion_rank_sequence_position[ sequence_position ] ;
                 log_out << actual_choice << " , " ;
@@ -5980,7 +5980,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
         {
             if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, in main loop, wrapping up final stage]\n" ; } ;
             source_sequence_position = local_adjusted_choice_count ;
-            for ( destination_sequence_position = global_adjusted_choice_count ; destination_sequence_position >= global_adjusted_choice_count - local_adjusted_choice_count + 1 ; destination_sequence_position -- )
+            for ( int destination_sequence_position = global_adjusted_choice_count ; destination_sequence_position >= global_adjusted_choice_count - local_adjusted_choice_count + 1 ; destination_sequence_position -- )
             {
                 actual_choice_to_move = actual_choice_in_insertion_rank_sequence_position[ source_sequence_position ] ;
                 if ( true_or_false_log_details == global_true ) { log_out << "[lower choice " << actual_choice_to_move << " is restored to adjusted choice " << adjusted_choice_to_move << "]" << std::endl ; } ;
@@ -5991,7 +5991,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
                 if ( true_or_false_log_details == global_true ) { log_out << "[choice " << actual_choice_to_move << " has highest sequence position " << highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice_to_move ] << " and lowest sequence position " << lowest_insertion_sort_sequence_position_for_actual_choice[ actual_choice_to_move ] << "]" << std::endl ; } ;
                 source_sequence_position -- ;
             }
-            for ( destination_sequence_position = 1 ; destination_sequence_position <= count_of_highest_ranked_choices ; destination_sequence_position ++ )
+            for ( int destination_sequence_position = 1 ; destination_sequence_position <= count_of_highest_ranked_choices ; destination_sequence_position ++ )
             {
                 choice_counter = destination_sequence_position ;
                 actual_choice = highest_ranked_actual_choice_at_count[ choice_counter ] ;
@@ -6033,7 +6033,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
 
     if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, calculating averaged-scaled-integerized levels]\n" ; } ;
     scale_value = 10 * ( global_adjusted_choice_count - 1 ) ;
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         highest_rank = highest_insertion_sort_sequence_position_for_actual_choice[ actual_choice ] ;
@@ -6045,7 +6045,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
     }
     normalize_ranking( ) ;
     if ( true_or_false_log_details == global_true ) { log_out << "[insertion sort, final normalized ranking levels]\n" ; } ;
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         ranking_level = global_rank_to_normalize_for_adjusted_choice[ adjusted_choice ] ;
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
@@ -6078,7 +6078,7 @@ void calc_votefair_insertion_sort_popularity_rank( )
     if ( true_or_false_log_details == global_true )
     {
         log_out << "[insertion sort, final results:]\n" ;
-        for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+        for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
         {
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
             log_out << "[  choice " << actual_choice << " is at ranking level " << global_insertion_sort_popularity_rank_for_actual_choice[ actual_choice ] << "]" << std::endl ;
@@ -6133,7 +6133,7 @@ void calc_votefair_popularity_rank( )
 //  Initialize the result rankings -- to zeros, which
 //  indicate that no ranking has been done.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         if ( global_using_choice[ actual_choice ] == global_true )
@@ -6149,7 +6149,7 @@ void calc_votefair_popularity_rank( )
 //  Initialize the insertion-sort rankings to zeros,
 //  which indicate that no ranking has been done.
 
-    for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+    for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
     {
         actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
         if ( global_using_choice[ actual_choice ] == global_true )
@@ -6268,7 +6268,7 @@ void calc_votefair_popularity_rank( )
         if ( global_logging_info == global_true ) { log_out << "[popularity rank, using insertion-sort ranking results (because all-score method not done]\n" ; } ;
         {
             global_sequence_score_using_all_scores_method = 0 ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 ranking_level = global_insertion_sort_popularity_rank_for_actual_choice[ actual_choice ] ;
@@ -6310,7 +6310,7 @@ void calc_votefair_popularity_rank( )
         {
             global_choice_count_at_top_popularity_ranking_level = 0 ;
             global_actual_choice_at_top_popularity_ranking_level = 0 ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -6443,7 +6443,7 @@ void calc_votefair_representation_rank( )
 //  not ranked in case of an early exit.
 
     initial_choice_count_for_rep_ranking = 0 ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_using_choice[ actual_choice ] == global_true )
         {
@@ -6486,7 +6486,7 @@ void calc_votefair_representation_rank( )
             global_representation_ranking_for_actual_choice[ most_preferred_choice ] = 1 ;
             global_using_choice[ most_preferred_choice ] = global_false ;
             if ( true_or_false_log_details == global_true ) { log_out << "[rep ranking, first-most-representative choice is " << most_preferred_choice << "]" << std::endl ; } ;
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( ( global_using_choice[ actual_choice ] == global_true ) && ( actual_choice != most_preferred_choice ) )
                 {
@@ -6499,7 +6499,7 @@ void calc_votefair_representation_rank( )
             }
         } else
         {
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( global_using_choice[ actual_choice ] == global_true )
                 {
@@ -6603,7 +6603,7 @@ void calc_votefair_representation_rank( )
         } else if ( global_choice_count_at_top_popularity_ranking_level > 1 )
         {
             if ( true_or_false_log_details == global_true ) { log_out << "[rep ranking, at this representation ranking a tie -- among " << global_choice_count_at_top_popularity_ranking_level << " choices -- has been encountered]\n" ; } ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -6631,7 +6631,7 @@ void calc_votefair_representation_rank( )
 
         if ( number_of_choices_rep_ranked == initial_choice_count_for_rep_ranking - 1 )
         {
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( global_using_choice[ actual_choice ] == global_true )
                 {
@@ -6764,7 +6764,7 @@ void calc_votefair_representation_rank( )
                 tie_exists = global_true ;
                 if ( true_or_false_log_details == global_true ) { log_out << "[rep ranking, two or more choices are tied as most-popular among the voters who did not rank the first-most representative choice at the first preference level]\n" ; } ;
                 number_of_representation_levels_ranked ++ ;
-                for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                     if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -6927,7 +6927,7 @@ void calc_votefair_representation_rank( )
             } else
             {
                 if ( true_or_false_log_details == global_true ) { log_out << "[rep ranking, at this representation ranking -- after reducing the influence of well-represented voters -- a tie has been encountered.  A tie-breaking vote is needed to go further]\n" ; } ;
-                for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+                for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
                 {
                     actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                     if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -6960,7 +6960,7 @@ void calc_votefair_representation_rank( )
 
         if ( initial_choice_count_for_rep_ranking - number_of_choices_rep_ranked == 1 )
         {
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( global_using_choice[ actual_choice ] == global_true )
                 {
@@ -7114,7 +7114,7 @@ void calc_votefair_party_rank( )
 //  Initialize the party ranking results to all
 //  be unranked.
 
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         global_party_ranking_for_actual_choice[ actual_choice ] = 0 ;
     }
@@ -7162,7 +7162,7 @@ void calc_votefair_party_rank( )
     {
         party_ranking_level = 1 ;
         if ( global_logging_info == global_true ) { log_out << "[party ranking, there is a two-way tie for first choice, so a tie-breaking ballot must be added]\n" ; } ;
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( global_full_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
             {
@@ -7196,7 +7196,7 @@ void calc_votefair_party_rank( )
     {
         party_ranking_level = 1 ;
         if ( global_logging_info == global_true ) { log_out << "[party ranking, there is a tie for first choice, so a tie-breaking ballot must be added]\n" ; } ;
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( global_full_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
             {
@@ -7245,7 +7245,7 @@ void calc_votefair_party_rank( )
         {
             party_ranking_level = 2 ;
             if ( global_logging_info == global_true ) { log_out << "[party ranking, there is a tie for second choice, so a tie-breaking ballot must be added]\n" ; } ;
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( global_logging_info == global_true ) { log_out << "[party ranking, representation rank for choice " << actual_choice << " is " << global_full_representation_ranking_for_actual_choice[ actual_choice ] << "]" << std::endl ; } ;
                 if ( global_full_representation_ranking_for_actual_choice[ actual_choice ] == 2 )
@@ -7282,7 +7282,7 @@ void calc_votefair_party_rank( )
     } else if ( global_full_choice_count == 3 )
     {
         party_ranking_level = 3 ;
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( global_party_ranking_for_actual_choice[ actual_choice ] == 0 )
             {
@@ -7300,7 +7300,7 @@ void calc_votefair_party_rank( )
 //  ranked.
 
     set_all_choices_as_used( ) ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_party_ranking_for_actual_choice[ actual_choice ] > 0 )
         {
@@ -7374,7 +7374,7 @@ void calc_votefair_party_rank( )
         } else
         {
             if ( global_logging_info == global_true ) { log_out << "[party ranking, there is a tie for third choice, so a tie-breaking ballot must be added]\n" ; } ;
-            for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+            for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
             {
                 actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
                 if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -7413,7 +7413,7 @@ void calc_votefair_party_rank( )
 
     } else if ( global_full_choice_count - count_of_parties_ranked == 1 )
     {
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( global_party_ranking_for_actual_choice[ actual_choice ] == 0 )
             {
@@ -7431,7 +7431,7 @@ void calc_votefair_party_rank( )
 //  ranked.
 
     set_all_choices_as_used( ) ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_party_ranking_for_actual_choice[ actual_choice ] > 0 )
         {
@@ -7480,7 +7480,7 @@ void calc_votefair_party_rank( )
     } else
     {
         if ( global_logging_info == global_true ) { log_out << "[party ranking, there is a tie for first choice, so a tie-breaking ballot must be added]\n" ; } ;
-        for ( adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
+        for ( int adjusted_choice = 1 ; adjusted_choice <= global_adjusted_choice_count ; adjusted_choice ++ )
         {
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
             if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -7505,7 +7505,7 @@ void calc_votefair_party_rank( )
 
     if ( global_full_choice_count - count_of_parties_ranked == 1 )
     {
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( global_party_ranking_for_actual_choice[ actual_choice ] == 0 )
             {
@@ -7528,7 +7528,7 @@ void calc_votefair_party_rank( )
     calc_votefair_representation_rank( ) ;
     if ( global_logging_info == global_true ) { log_out << "[party ranking, transition back to party ranking from representation ranking calculations]\n" ; } ;
     if ( global_logging_info == global_true ) { log_out << "[party ranking, current ranking level is " << party_ranking_level << "]" << std::endl ; } ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_party_ranking_for_actual_choice[ actual_choice ] == 0 )
         {
@@ -7601,7 +7601,7 @@ void calculate_results_for_one_question( )
 //  Clear the result lists in case some
 //  calculations are not done.
 
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         global_plurality_count_for_actual_choice[ actual_choice ] = 0 ;
         global_popularity_ranking_for_actual_choice[ actual_choice ] = 0 ;
@@ -7790,7 +7790,7 @@ void calculate_results_for_one_question( )
 
     if ( global_logging_info == global_true )
     {
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             global_log_info_choice_at_position[ actual_choice ] = actual_choice ;
         }
@@ -7852,7 +7852,7 @@ void calculate_results_for_one_question( )
 
     global_choice_count_at_full_top_popularity_ranking_level = 0 ;
     global_actual_choice_at_top_of_full_popularity_ranking = 0 ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         global_full_popularity_ranking_for_actual_choice[ actual_choice ] = global_popularity_ranking_for_actual_choice[ actual_choice ] ;
         if ( global_full_popularity_ranking_for_actual_choice[ actual_choice ] == 1 )
@@ -7876,9 +7876,9 @@ void calculate_results_for_one_question( )
     if ( global_logging_info == global_true )
     {
         sequence_position = 1 ;
-        for ( ranking_level = 1 ; ranking_level <= global_full_choice_count ; ranking_level ++ )
+        for ( int ranking_level = 1 ; ranking_level <= global_full_choice_count ; ranking_level ++ )
         {
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( global_full_popularity_ranking_for_actual_choice[ actual_choice ] == ranking_level )
                 {
@@ -7955,7 +7955,7 @@ void calculate_results_for_one_question( )
 
         global_choice_count_at_full_second_representation_level = 0 ;
         global_actual_choice_at_second_representation_ranking = 0 ;
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             global_full_representation_ranking_for_actual_choice[ actual_choice ] = global_representation_ranking_for_actual_choice[ actual_choice ] ;
             if ( global_full_representation_ranking_for_actual_choice[ actual_choice ] == 2 )
@@ -8012,14 +8012,14 @@ void calculate_results_for_one_question( )
         possible_text_rep_not_the_same = "rep same" ;
         possible_text_party_not_the_same = "par same" ;
         comparison_of_methods_table = "[one question, case " + std::to_string( global_case_number ) + " , question " + std::to_string( global_question_number ) + " , comparison of popularity, representation, and party ranking]\n" ;
-        for ( sequence_position = 1 ; sequence_position <= global_full_choice_count + 1 ; sequence_position ++ )
+        for ( int sequence_position = 1 ; sequence_position <= global_full_choice_count + 1 ; sequence_position ++ )
         {
             popularity_level = sequence_position ;
             if ( sequence_position == global_full_choice_count + 1 )
             {
                 popularity_level = 0 ;
             }
-            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            for ( int actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
                 if ( popularity_level == global_full_popularity_ranking_for_actual_choice[ actual_choice ] )
                 {
@@ -8118,7 +8118,7 @@ void do_votefair_calculations( )
 //  question numbers are skipped.
 
     if ( global_logging_info == global_true ) { log_out << "\n[there are " << global_question_count << " questions]\n" ; } ;
-    for ( global_question_number = 1 ; global_question_number <= global_question_count ; global_question_number ++ )
+    for ( int global_question_number = 1 ; global_question_number <= global_question_count ; global_question_number ++ )
         {
 
 
