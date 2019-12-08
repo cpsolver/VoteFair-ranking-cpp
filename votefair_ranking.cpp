@@ -446,6 +446,59 @@ float global_scale_for_logged_pairwise_counts ;
 std::string global_ranking_type_being_calculated ;
 
 
+// -----------------------------------------------
+//  convert_integer_to_text
+//
+//  This function is used instead of "std::to_string"
+//  for compatibility with older C++ "string" libraries
+//  that have a bug.  The bug is that the "to_string"
+//  function is not recognized as being within the
+//  "std" library, even though it is defined there.
+
+std::string convert_integer_to_text( int supplied_integer )
+{
+    int unused_string_length ;
+    char c_format_string[ 50 ] ;
+    unused_string_length = sprintf( c_format_string , "%d" , supplied_integer ) ;
+    return ( std::string ) c_format_string ;
+}
+
+
+// -----------------------------------------------
+//  convert_float_to_text
+//
+//  To read why this function is here, see the comment
+//  above for function: convert_integer_to_text
+
+std::string convert_float_to_text( float supplied_float )
+{
+    int unused_string_length ;
+    char c_format_string[ 50 ] ;
+    unused_string_length = sprintf( c_format_string , "%d" , supplied_float ) ;
+    return ( std::string ) c_format_string ;
+}
+
+
+// -----------------------------------------------
+//  convert_text_to_integer
+//
+//  To read why this function is here, see the comment
+//  above for function: convert_integer_to_text
+
+int convert_text_to_integer( char * supplied_text )
+{
+    int equivalent_integer ;
+    try
+    {
+        equivalent_integer = atoi( supplied_text ) ;
+    }
+    catch( ... )
+    {
+        equivalent_integer = -999 ;
+    }
+    return equivalent_integer ;
+}
+
 
 // -----------------------------------------------
 //    do_initialization
@@ -591,9 +644,9 @@ void do_initialization( )
 // -----------------------------------------------
 //  Request that the output file use negative
 //  code numbers in the output.
-//  If text codes are preferred, either change
-//  this value to global_true, or insert the code
-//  "request_text_output" in the input file.
+//  If text codes are preferred, either insert
+//  the code "request_text_output" in the input file,
+//  or maybe set this value to global_true.
 
     global_true_or_false_request_text_output = global_false ;
 
@@ -661,9 +714,9 @@ void do_initialization( )
 //  using the information in the list
 //  global_voteinfo_code_for_alias_word.
 
-    for ( auto iteration_pointer = std::begin( global_voteinfo_code_for_alias_word ) ; iteration_pointer != std::end( global_voteinfo_code_for_alias_word ) ; iteration_pointer ++ )
+    for ( std::map< std::string , int >::iterator iteration_pointer = global_voteinfo_code_for_alias_word.begin( ) ; iteration_pointer != global_voteinfo_code_for_alias_word.end( ) ; ++ iteration_pointer )
     {
-//        std::cout << " " << iteration_pointer->first << "  " << iteration_pointer->second << std::endl ;
+//        log_out << " " << iteration_pointer->first << "  " << iteration_pointer->second << std::endl ;
         global_text_for_voteinfo_code[ -1 * iteration_pointer->second ] = iteration_pointer->first ;
     }
 
@@ -674,9 +727,9 @@ void do_initialization( )
 //  global_voteinfo_code_for_alias_word.
 
 /*
-    for ( unsigned pointer = 0; pointer < global_voteinfo_code_for_alias_word.bucket_count(); ++pointer) {
+    for ( unsigned pointer = 0; pointer < global_voteinfo_code_for_alias_word.bucket_count() ; ++pointer) {
         std::cout << "bucket #" << pointer << " contains:" ;
-        for ( auto iteration_pointer = global_voteinfo_code_for_alias_word.begin(pointer); iteration_pointer != global_voteinfo_code_for_alias_word.end(pointer); ++iteration_pointer )
+        for ( auto iteration_pointer = global_voteinfo_code_for_alias_word.begin(pointer) ; iteration_pointer != global_voteinfo_code_for_alias_word.end(pointer) ; ++iteration_pointer )
         {
             std::cout << " " << iteration_pointer->first ;
         }
@@ -761,7 +814,7 @@ std::string pad_integer( int input_integer , int pad_width )
         output_text = "0" ;
     } else
     {
-        output_text = std::to_string( input_integer ) ;
+        output_text = convert_integer_to_text( input_integer ) ;
     }
     text_length = output_text.length( ) ;
     while ( text_length < pad_width )
@@ -799,7 +852,7 @@ std::string pad_real( float input_real_number , int pad_width )
         output_text = "0.00" ;
     } else
     {
-        output_text = std::to_string( ( (int) ( input_real_number * 100 ) ) / 100 ) ;
+        output_text = convert_float_to_text( ( (int) ( input_real_number * 100 ) ) / 100 ) ;
     }
     decimal_point_position = output_text.find( "." , 0 ) ;
     if ( decimal_point_position < 1 )
@@ -867,6 +920,14 @@ void read_data( )
 
     for ( std::string input_line ; std::getline( std::cin , input_line ) ; )
     {
+        std::size_t pointer_found = input_line.find_last_not_of( " \t\n\r" ) ;
+        if ( pointer_found != std::string::npos )
+        {
+            input_line.erase( pointer_found + 1 ) ;
+        } else
+        {
+            input_line.clear( ) ;
+        }
         if ( global_logging_info == global_true ) { log_out << "[input line: " << input_line << "]" << std::endl ; } ;
         char input_line_c_version[ 2000 ] = "" ;
         std::size_t line_length = std::min( 2000 , (int) input_line.length() ) ;
@@ -909,7 +970,7 @@ void read_data( )
             {
                 try
                 {
-                    next_number = std::stoi ( pointer_to_word , nullptr ) ;
+                    next_number = convert_text_to_integer( pointer_to_word ) ;
                     log_out << "[" << next_number << "]  " ;
                 }
                 catch( ... )
@@ -1019,7 +1080,7 @@ void put_next_result_info_number( int current_result_info_number )
     if ( global_pointer_to_output_results >= global_maximum_output_results_length )
     {
         global_output_results[ global_pointer_to_output_results ] = global_voteinfo_code_for_end_of_all_cases ;
-        global_possible_error_message = "Error: Not enough room for results from all cases (size limit is " + std::to_string( global_maximum_output_results_length ) + ")." ;
+        global_possible_error_message = "Error: Not enough room for results from all cases (size limit is " + convert_integer_to_text( global_maximum_output_results_length ) + ")." ;
         return ;
     }
 
@@ -1155,7 +1216,7 @@ void write_results( )
             std::cout << "0" ;
         } else if ( next_result_code > 0 )
         {
-            std::cout << std::to_string( next_result_code ) ;
+            std::cout << convert_integer_to_text( next_result_code ) ;
         } else
         {
             if ( global_true_or_false_request_text_output == global_true )
@@ -1167,7 +1228,7 @@ void write_results( )
                 }
             } else
             {
-                std::cout << std::to_string( next_result_code ) ;
+                std::cout << convert_integer_to_text( next_result_code ) ;
                 if ( newline_or_space == "" )
                 {
                     newline_or_space = "\n" ;
@@ -1183,7 +1244,7 @@ void write_results( )
         std::cout << global_text_for_voteinfo_code[ -1 * next_result_code ] ;
     } else
     {
-        std::cout << std::to_string( global_voteinfo_code_for_end_of_all_cases ) ;
+        std::cout << convert_integer_to_text( global_voteinfo_code_for_end_of_all_cases ) ;
     }
     std::cout << newline_or_space ;
     std::cout << "0" << std::endl ;
@@ -1350,12 +1411,12 @@ void check_vote_info_numbers( )
             if ( global_question_number < 0 )
             {
                 if ( global_logging_info == global_true ) { log_out << "[question number is less than one (" << global_question_number << ")]" ; } ;
-                global_possible_error_message = "Error: Encountered question number less than one (" + std::to_string( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Encountered question number less than one (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             } else if ( global_question_number > global_maximum_question_number )
             {
                 if ( global_logging_info == global_true ) { log_out << "[too many questions (limit is " << global_maximum_question_number << "]" ; } ;
-                global_possible_error_message = "Error: Two many questions (" + std::to_string( global_maximum_question_number ) + ")." ;
+                global_possible_error_message = "Error: Two many questions (" + convert_integer_to_text( global_maximum_question_number ) + ")." ;
                 return ;
             } else
             {
@@ -1386,7 +1447,7 @@ void check_vote_info_numbers( )
             if ( ( choice_count_for_current_question < 1 ) || ( choice_count_for_current_question > global_maximum_choice_number ) )
             {
                 if ( global_logging_info == global_true ) { log_out << "[invalid choice count (" << choice_count_for_current_question << ")]" ; } ;
-                global_possible_error_message = "Error: Invalid choice count (" + std::to_string( choice_count_for_current_question ) + ")." ;
+                global_possible_error_message = "Error: Invalid choice count (" + convert_integer_to_text( choice_count_for_current_question ) + ")." ;
                 return ;
             }
             continue ;
@@ -1402,7 +1463,7 @@ void check_vote_info_numbers( )
             if ( global_ballot_info_repeat_count < 1 )
             {
                 if ( global_logging_info == global_true ) { log_out << "[ballot count number is less than one (" << global_ballot_info_repeat_count << ")]" ; } ;
-                global_possible_error_message = "Error: Ballot count number is less than one (" + std::to_string( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Ballot count number is less than one (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             }
             if ( global_logging_info == global_true ) { log_out << "[bc " << global_ballot_info_repeat_count << "]" ; } ;
@@ -1418,18 +1479,18 @@ void check_vote_info_numbers( )
             if ( global_choice_count_for_question[ global_question_number ] == 0 )
             {
                 if ( global_logging_info == global_true ) { log_out << "[choice number appears before number of choices specified, question " << global_question_number << ", ballot vote count " << global_ballot_info_repeat_count << ", choice " << global_choice_number << ", at list position " << pointer_to_vote_info << ")]" ; } ;
-                global_possible_error_message = "Error: Choice number appears before number of choices specified, question (" + std::to_string( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Choice number appears before number of choices specified, question (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             } else if ( global_choice_number > global_choice_count_for_question[ global_question_number ] )
             {
                 if ( global_logging_info == global_true ) { log_out << "[choice number exceeds indicated number of choices (case " << global_case_number << ", question " << global_question_number << ", ballot vote count " << global_ballot_info_repeat_count << ", choice " << global_choice_number << ", specified number " << global_choice_count_for_question[ global_question_number ] << ", at list position " << pointer_to_vote_info << ")]" ; } ;
-                global_possible_error_message = "Error: Choice number exceeds indicated number of choices, question (" + std::to_string( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Choice number exceeds indicated number of choices, question (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             }
             if ( tally_uses_of_choice_number[ global_choice_number ] > 1 )
             {
                 if ( global_logging_info == global_true ) { log_out << "[choice number previously used in this ballot, question " << global_question_number << ", ballot vote count " << global_ballot_info_repeat_count << ", choice " << global_choice_number << ", at list position " << pointer_to_vote_info << ")]" ; } ;
-                global_possible_error_message = "Error: Choice number previously used in same ballot, question (" + std::to_string( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Choice number previously used in same ballot, question (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             }
             tally_uses_of_choice_number[ global_choice_number ] = 1 ;
@@ -1452,7 +1513,7 @@ void check_vote_info_numbers( )
             if ( ( count_of_choices_marked_for_current_question < 1 ) || ( global_question_number < 1 ) )
             {
                 if ( global_logging_info == global_true ) { log_out << "[invalid nesting of tied preference vote info number (question " << global_question_number << ", ballot vote count " << global_current_total_vote_count << ", at list position " << pointer_to_vote_info << ")]" ; } ;
-                global_possible_error_message = "Error: Invalid nesting of tied preference vote info number (" + std::to_string( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Invalid nesting of tied preference vote info number (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             }
             if ( global_logging_info == global_true ) { log_out << "[+]" ; } ;
@@ -1654,7 +1715,7 @@ void check_vote_info_numbers( )
         } else if ( ( current_vote_info_number == global_voteinfo_code_for_end_of_all_cases ) && ( global_case_number < 1 ) )
         {
             if ( global_logging_info == global_true ) { log_out << "[reached end of all cases, but no case has been started]" ; } ;
-                std::cout << "Error: Reached end of all cases before case started (list position " << std::to_string( pointer_to_vote_info ) << ")" ;
+                std::cout << "Error: Reached end of all cases before case started (list position " << convert_integer_to_text( pointer_to_vote_info ) << ")" ;
             continue ;
 
 
@@ -1983,7 +2044,7 @@ void internal_view_matrix( )
             {
                 sequence_string += " , " ;
             }
-            sequence_string += std::to_string( actual_first_choice ) ;
+            sequence_string += convert_integer_to_text( actual_first_choice ) ;
             global_pairwise_matrix_text += "[" ;
             for ( matrix_column_number = 1 ; matrix_column_number <= global_adjusted_choice_count ; matrix_column_number ++ )
             {
@@ -2025,11 +2086,11 @@ void internal_view_matrix( )
         {
             percentage = 0 ;
         }
-//        global_pairwise_matrix_text += "[global_sequence_score: " + std::to_string( global_sequence_score ) + "]\n" ;
-//        global_pairwise_matrix_text += "[opposition_score: " + std::to_string( opposition_score ) + "]\n" ;
-        text_sequence_score = std::to_string( global_sequence_score ) ;
+//        global_pairwise_matrix_text += "[global_sequence_score: " + convert_integer_to_text( global_sequence_score ) + "]\n" ;
+//        global_pairwise_matrix_text += "[opposition_score: " + convert_integer_to_text( opposition_score ) + "]\n" ;
+        text_sequence_score = convert_integer_to_text( global_sequence_score ) ;
         global_pairwise_matrix_text += "\n[above counts apply to sequence: " + sequence_string + "] [seq score = " + text_sequence_score + "]\n" ;
-        text_percentage = std::to_string( percentage ) ;
+        text_percentage = convert_integer_to_text( percentage ) ;
         global_pairwise_matrix_text += "[percent support: " + text_percentage + "]\n" ;
         log_out << std::endl << global_pairwise_matrix_text << std::endl ;
     }
@@ -2254,7 +2315,7 @@ void compare_popularity_results( )
     {
         log_out << "[compare pop results, total vote count is " << global_current_total_vote_count << "]" << std::endl ;
         global_scale_for_logged_pairwise_counts = 100.0 / ( ( float ) global_current_total_vote_count ) ;
-        log_out << "[global_scale_for_logged_pairwise_counts: " + std::to_string( global_scale_for_logged_pairwise_counts ) + "]\n" ;
+        log_out << "[global_scale_for_logged_pairwise_counts: " + convert_float_to_text( global_scale_for_logged_pairwise_counts ) + "]\n" ;
         log_out << "[compare pop results, pairwise counts as percent numbers (if only scaled by total votes):]\n" ;
         internal_view_matrix( ) ;
         global_scale_for_logged_pairwise_counts = 1.0 ;
@@ -2269,7 +2330,7 @@ void compare_popularity_results( )
     global_comparison_count ++ ;
     possible_text_insertion_sort_not_the_same = "InsSrt same" ;
     possible_text_choice_specific_pairwise_score_not_the_same = "CSPS same" ;
-    comparison_of_methods_table = "[compare pop results, case " + std::to_string( global_case_number ) + " , question " + std::to_string( global_question_number ) + " , rank type = " + global_ranking_type_being_calculated + "]\n" ;
+    comparison_of_methods_table = "[compare pop results, case " + convert_integer_to_text( global_case_number ) + " , question " + convert_integer_to_text( global_question_number ) + " , rank type = " + global_ranking_type_being_calculated + "]\n" ;
     comparison_of_methods_table += "[compare pop results, columns: official, insertion, estimated]\n" ;
     for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
     {
@@ -2278,8 +2339,8 @@ void compare_popularity_results( )
         ranking_level_official = global_popularity_ranking_for_actual_choice[ actual_choice ] ;
         ranking_level_choice_specific_pairwise_score = global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] ;
         ranking_level_insertion_sort = global_insertion_sort_popularity_rank_for_actual_choice[ actual_choice ] ;
-        text_actual_choice = std::to_string( actual_choice ) ;
-        comparison_of_methods_table += "[choice " + text_actual_choice + " at levels " + std::to_string( ranking_level_official ) + " , " + std::to_string( ranking_level_insertion_sort ) + " , " + std::to_string( ranking_level_choice_specific_pairwise_score ) + "]" ;
+        text_actual_choice = convert_integer_to_text( actual_choice ) ;
+        comparison_of_methods_table += "[choice " + text_actual_choice + " at levels " + convert_integer_to_text( ranking_level_official ) + " , " + convert_integer_to_text( ranking_level_insertion_sort ) + " , " + convert_integer_to_text( ranking_level_choice_specific_pairwise_score ) + "]" ;
         if ( ranking_level_official != ranking_level_insertion_sort )
         {
             possible_text_insertion_sort_not_the_same = "InsSrt NOT same" ;
@@ -2296,7 +2357,7 @@ void compare_popularity_results( )
     {
         global_not_same_count ++ ;
     }
-    comparison_of_methods_table += "[" + possible_text_insertion_sort_not_the_same + "][" + possible_text_choice_specific_pairwise_score_not_the_same + "][case " + std::to_string( global_case_number ) + " question " + std::to_string( global_question_number ) + "]\n\n" ;
+    comparison_of_methods_table += "[" + possible_text_insertion_sort_not_the_same + "][" + possible_text_choice_specific_pairwise_score_not_the_same + "][case " + convert_integer_to_text( global_case_number ) + " question " + convert_integer_to_text( global_question_number ) + "]\n\n" ;
     if ( global_logging_info == global_true ) { log_out << comparison_of_methods_table << std::endl ; } ;
 
 
@@ -2687,7 +2748,7 @@ int get_numbers_based_on_one_ballot( )
 //  one.
 
     global_ballot_info_repeat_count = 1 ;
-    text_ballot_info = "q " + std::to_string( global_question_number ) + " " ;
+    text_ballot_info = "q " + convert_integer_to_text( global_question_number ) + " " ;
 
 
 // -----------------------------------------------
@@ -2815,7 +2876,7 @@ int get_numbers_based_on_one_ballot( )
             {
                 choice_number = current_vote_info_number ;
                 global_ballot_preference_for_choice[ choice_number ] = preference_level ;
-                text_ballot_info += " " + std::to_string( choice_number ) ;
+                text_ballot_info += " " + convert_integer_to_text( choice_number ) ;
                 if ( preference_level == 1 )
                 {
                     choice_count_at_top_preference_level ++ ;
@@ -2902,7 +2963,7 @@ void add_preferences_to_tally_table( )
 //  calculations.
 
     tally_amount = ( int ) ( ( ( ( float ) global_ballot_info_repeat_count ) * global_ballot_influence_amount ) + 0.5 ) ;
-    if ( global_logging_info == global_true ) { log_out << "[tally preference amount: " << std::to_string( tally_amount ) << "]\n" ; } ;
+    if ( global_logging_info == global_true ) { log_out << "[tally preference amount: " << convert_integer_to_text( tally_amount ) << "]\n" ; } ;
     for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
     {
         adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
@@ -3209,7 +3270,7 @@ void calc_all_sequence_scores( )
                 score += global_tally_second_over_first_in_pair[ pair_counter ] ;
             }
         }
-        score_info = "score = " + std::to_string( score ) ;
+        score_info = "score = " + convert_integer_to_text( score ) ;
 
 
 // -----------------------------------------------
@@ -3235,7 +3296,7 @@ void calc_all_sequence_scores( )
                     count_of_sequences_with_highest_ranking_for_adjusted_choice[ adjusted_choice ] = 1 ;
                     count_of_sequences_with_lowest_ranking_for_adjusted_choice[ adjusted_choice ] = 1 ;
                     ranking_info += global_adjusted_ranking_for_adjusted_choice_top_down_version[ adjusted_choice ] + " ; " ;
-                    ranking_changes_info += "      ranking of " + std::to_string( adjusted_choice ) + " set to " + std::to_string( sequence_position ) + "\n" ;
+                    ranking_changes_info += "      ranking of " + convert_integer_to_text( adjusted_choice ) + " set to " + convert_integer_to_text( sequence_position ) + "\n" ;
                 }
 
 
@@ -3259,13 +3320,13 @@ void calc_all_sequence_scores( )
                     if ( sequence_position > global_adjusted_ranking_for_adjusted_choice_top_down_version[ adjusted_choice ] )
                     {
                         global_adjusted_ranking_for_adjusted_choice_top_down_version[ adjusted_choice ] = sequence_position ;
-                        ranking_changes_info += "      top-down ranking of " + std::to_string( adjusted_choice ) + " reduced to " + std::to_string( sequence_position ) + "\n" ;
+                        ranking_changes_info += "      top-down ranking of " + convert_integer_to_text( adjusted_choice ) + " reduced to " + convert_integer_to_text( sequence_position ) + "\n" ;
                         count_of_sequences_with_lowest_ranking_for_adjusted_choice[ adjusted_choice ] ++ ;
                     }
                     if ( sequence_position < global_adjusted_ranking_for_adjusted_choice_bottom_up_version[ adjusted_choice ] )
                     {
                         global_adjusted_ranking_for_adjusted_choice_bottom_up_version[ adjusted_choice ] = sequence_position ;
-                        ranking_changes_info += "      bottom-up ranking of " + std::to_string( adjusted_choice ) + " increased to " + std::to_string( sequence_position ) + "\n" ;
+                        ranking_changes_info += "      bottom-up ranking of " + convert_integer_to_text( adjusted_choice ) + " increased to " + convert_integer_to_text( sequence_position ) + "\n" ;
                         count_of_sequences_with_highest_ranking_for_adjusted_choice[ adjusted_choice ] ++ ;
                     }
                 }
@@ -3985,7 +4046,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
         if ( tie_count_limit < 1 )
         {
             if ( true_or_false_log_details == global_true ) { log_out << "[ERROR: choice-score, tie_count_limit (" << count_of_tied_scores << ") is too small]\n" ; } ;
-            global_possible_error_message += "Error: Value of tie_count_limit " + std::to_string( tie_count_limit ) + " is less than one, which is too small." ;
+            global_possible_error_message += "Error: Value of tie_count_limit " + convert_integer_to_text( tie_count_limit ) + " is less than one, which is too small." ;
             return ;
         }
 
@@ -6869,7 +6930,7 @@ void calc_votefair_representation_rank( )
 //  values to integer numbers -- so that tied
 //  situations are correctly handled.
 
-            text_reduced_influence_amount = std::to_string( reduced_influence_amount ) ;
+            text_reduced_influence_amount = convert_float_to_text( reduced_influence_amount ) ;
             if ( global_logging_info == global_true ) { log_out << "[rep ranking, calculating popularity ranking with reduced influence -- of " << text_reduced_influence_amount << " -- for the " << vote_count_for_reduced_influence << " ballots that prefer choice " << previous_most_representative_choice << " more than choice " << alternative_most_preferred_choice << ", and scaling decimal pairwise counts by " << ( vote_count_for_reduced_influence * 10 ) << "]" << std::endl ; } ;
             while ( global_true )
             {
@@ -6881,11 +6942,11 @@ void calc_votefair_representation_rank( )
                 if ( global_ballot_preference_for_choice[ previous_most_representative_choice ] <= global_ballot_preference_for_choice[ alternative_most_preferred_choice ] )
                 {
                     global_ballot_influence_amount = ( int ) ( ( reduced_influence_amount * ( ( float ) vote_count_for_reduced_influence ) * 10.0 ) + 0.5 ) ;
-                    if ( global_logging_info == global_true ) { log_out << "[rep ranking, one ballot, influence reduced to " << std::to_string( global_ballot_influence_amount ) << "]\n" ; } ;
+                    if ( global_logging_info == global_true ) { log_out << "[rep ranking, one ballot, influence reduced to " << convert_float_to_text( global_ballot_influence_amount ) << "]\n" ; } ;
                 } else
                 {
                     global_ballot_influence_amount = ( int ) ( ( 1.0 * ( ( float ) vote_count_for_reduced_influence ) * 10.0 ) + 0.5 ) ;
-                    if ( global_logging_info == global_true ) { log_out << "[rep ranking, one ballot, at full influence " << std::to_string( global_ballot_influence_amount ) << "]\n" ; } ;
+                    if ( global_logging_info == global_true ) { log_out << "[rep ranking, one ballot, at full influence " << convert_float_to_text( global_ballot_influence_amount ) << "]\n" ; } ;
                 }
                 add_preferences_to_tally_table( ) ;
             }
@@ -8016,7 +8077,7 @@ void calculate_results_for_one_question( )
     {
         possible_text_rep_not_the_same = "rep same" ;
         possible_text_party_not_the_same = "par same" ;
-        comparison_of_methods_table = "[one question, case " + std::to_string( global_case_number ) + " , question " + std::to_string( global_question_number ) + " , comparison of popularity, representation, and party ranking]\n" ;
+        comparison_of_methods_table = "[one question, case " + convert_integer_to_text( global_case_number ) + " , question " + convert_integer_to_text( global_question_number ) + " , comparison of popularity, representation, and party ranking]\n" ;
         for ( sequence_position = 1 ; sequence_position <= global_full_choice_count + 1 ; sequence_position ++ )
         {
             popularity_level = sequence_position ;
@@ -8029,11 +8090,11 @@ void calculate_results_for_one_question( )
                 if ( popularity_level == global_full_popularity_ranking_for_actual_choice[ actual_choice ] )
                 {
                     representation_level = global_full_representation_ranking_for_actual_choice[ actual_choice ] ;
-                    comparison_of_methods_table += "[  choice " + std::to_string( actual_choice ) + " at popularity level " + std::to_string( popularity_level ) + " , representation level " + std::to_string( representation_level ) ;
+                    comparison_of_methods_table += "[  choice " + convert_integer_to_text( actual_choice ) + " at popularity level " + convert_integer_to_text( popularity_level ) + " , representation level " + convert_integer_to_text( representation_level ) ;
                     if ( global_true_or_false_request_votefair_party_rank == global_true )
                     {
                         party_level = global_party_ranking_for_actual_choice[ actual_choice ] ;
-                        comparison_of_methods_table += " , party level " + std::to_string( party_level ) ;
+                        comparison_of_methods_table += " , party level " + convert_integer_to_text( party_level ) ;
                     } else
                     {
                         party_level = representation_level ;
