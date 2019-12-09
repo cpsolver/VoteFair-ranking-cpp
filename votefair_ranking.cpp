@@ -459,8 +459,15 @@ std::string convert_integer_to_text( int supplied_integer )
 {
     int unused_string_length ;
     char c_format_string[ 50 ] ;
-    unused_string_length = sprintf( c_format_string , "%d" , supplied_integer ) ;
-    return ( std::string ) c_format_string ;
+    try
+    {
+        unused_string_length = sprintf( c_format_string , "%1d" , supplied_integer ) ;
+        return ( std::string ) c_format_string ;
+    }
+    catch( ... )
+    {
+    	return "NAN" ;
+    }
 }
 
 
@@ -472,10 +479,22 @@ std::string convert_integer_to_text( int supplied_integer )
 
 std::string convert_float_to_text( float supplied_float )
 {
-    int unused_string_length ;
+	std::string returned_string ;
     char c_format_string[ 50 ] ;
-    unused_string_length = sprintf( c_format_string , "%d" , supplied_float ) ;
-    return ( std::string ) c_format_string ;
+    int unused_string_length ;
+    try
+    {
+        unused_string_length = sprintf( c_format_string , "%1f" , supplied_float ) ;
+        returned_string = ( std::string ) c_format_string ;
+        //  next line assumes the sprintf result always includes a decimal point
+        returned_string.erase( returned_string.find_last_not_of( "0" ) + 1 , std::string::npos ) ;
+        returned_string.erase( returned_string.find_last_not_of( "." ) + 1 , std::string::npos ) ;
+        return returned_string ;
+    }
+    catch( ... )
+    {
+    	return "NAN" ;
+    }
 }
 
 
@@ -1246,8 +1265,7 @@ void write_results( )
     {
         std::cout << convert_integer_to_text( global_voteinfo_code_for_end_of_all_cases ) ;
     }
-    std::cout << newline_or_space ;
-    std::cout << "0" << std::endl ;
+    std::cout << newline_or_space << "0" << std::endl ;
     if ( global_logging_info == global_true ) { log_out << "\n[end output result codes]\n" ; } ;
 
 
@@ -1382,9 +1400,14 @@ void check_vote_info_numbers( )
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_case_number )
         {
+            if ( global_case_number != 0 )
+            {
+                if ( global_logging_info == global_true ) { log_out << "[error, second case number encountered, which is not allowed]" ; } ;
+                global_possible_error_message = "Error: Second case number encountered, which is not valid." ;
+                return ;
+            }
             global_case_number = next_vote_info_number ;
             status_pair_just_handled = global_true ;
-            global_current_total_vote_count = 0 ;
             if ( global_logging_info == global_true ) { log_out << "[case " << global_case_number << "]" ; } ;
             if ( global_case_number == 0 )
             {
