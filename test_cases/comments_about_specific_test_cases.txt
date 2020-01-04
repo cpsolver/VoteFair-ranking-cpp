@@ -1,0 +1,6 @@
+Case 120:
+This case has 7 choices and is designed to get different results depending on whether global_check_all_scores_choice_limit equals 6 -- which gives an answer that differs from using the full Condorcet-Kemeny calculations -- or global_check_all_scores_choice_limit equals 7 -- which gives the correct answer according to the full Condorcet-Kemeny calculations.
+It was designed by Kristofer Munsterhjelm who wrote:
+The VoteFair ranking is F>C>E>A>G>D>B with Kemeny score 118, but
+C>A>F>E>G>D>B has Kemeny score 119 and is the unique maximum ranking.
+In other words, this case has a rock-paper-scissors-like ("Condorcet") cycle that spans all 7 choices.
