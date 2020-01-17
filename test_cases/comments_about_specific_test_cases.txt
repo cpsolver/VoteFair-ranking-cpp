@@ -4,3 +4,44 @@ It was designed by Kristofer Munsterhjelm who wrote:
 The VoteFair ranking is F>C>E>A>G>D>B with Kemeny score 118, but
 C>A>F>E>G>D>B has Kemeny score 119 and is the unique maximum ranking.
 In other words, this case has a rock-paper-scissors-like ("Condorcet") cycle that spans all 7 choices.
+
+Case 121:
+These are the numbers used in the Wikipedia example about favorite location in Tennessee.
+1 = Memphis
+2 = Nashville
+3 = Chattanooga
+4 = Knoxville
+
+42 voters:
+1    Memphis
+2    Nashville
+3    Chattanooga
+4    Knoxville
+
+26 voters:
+2    Nashville
+3    Chattanooga
+4    Knoxville
+1    Memphis
+
+15 voters:
+3    Chattanooga
+4    Knoxville
+2    Nashville
+1    Memphis
+
+17 voters:
+4    Knoxville
+3    Chattanooga
+2    Nashville
+1    Memphis
+
+output case 121:
+popularity-sequence ch 2 next-level ch 3 next-level ch 4 next-level ch 1 end-pop-seq
+rep-seq ch 2 next-level ch 1 next-level ch 3 next-level ch 4 end-rep-seq
+party-seq ch 2 next-level ch 1 next-level ch 4 next-level ch 3 end-party-seq
+
+[rep ranking, now excluding ballots that rank choice 2 as most preferred, and excluding that choice from the available choices]
+[rep ranking, counting ballots that rank choice 2 as preferred more than choice 1]
+[rep ranking, influence reduced by: 0.137931]
+[rep ranking, calculating popularity ranking with reduced influence -- of 0.137931 -- for the 58 ballots that prefer choice 2 more than choice 1, and scaling decimal pairwise counts by 580]

@@ -1,0 +1,8 @@
+request-text-output
+request-rep  request-party
+request-no-pairwise-counts
+case 121 q 1 choices 4
+x 42 q 1  1 2 3 4
+x 26 q 1  2 3 4 1
+x 15 q 1  3 4 2 1
+x 17 q 1  4 3 2 1
