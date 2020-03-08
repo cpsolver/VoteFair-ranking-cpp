@@ -78,11 +78,13 @@
 //  full popularity ranking of all candidates (or choices in the case
 //  of a survey) from most popular and second-most popular down to
 //  least popular.  It uses the preference information collected on
-//  1-2-3 ballots (or any equivalent way of expressing "ranked"
-//  preferences).  When a single position is being filled, the most
-//  popular candidate is declared the winner.  This calculation method
-//  is mathematically equivalent to the Condorcet-Kemeny election
-//  method.
+//  1-2-3 ballots or ranked ballots (or any equivalent way of
+//  expressing "ranked" preferences).  When a single position
+//  is being filled, the most popular candidate is declared the winner.
+//  This calculation method is mathematically equivalent to the
+//  Condorcet-Kemeny election method.  See below about very rare cases
+//  when this software can yield results that do not match VoteFair
+//  popularity ranking.
 //
 //  * VoteFair representation ranking.  This voting method is used to
 //  elect a second candidate who represents the voters who are not
@@ -134,10 +136,32 @@
 //  "linear ordering problem".  See Wikipedia for details about these
 //  terms.
 //
-//  Also in mathematical terms, the VoteFair popularity ranking
-//  calculations are mathematically equivalent to the
-//  Condorcet-Kemeny vote-counting method, which is also described in
-//  Wikipedia.
+//  VoteFair popularity ranking calculations are mathematically
+//  equivalent to the Condorcet-Kemeny vote-counting method.
+//
+//  Clarification: For reasons of computation time, there are some
+//  very rare cases for which this software can produce results that
+//  differ from full VoteFair popularity ranking results.
+//  These exceptions involve more choices (candidates) than the
+//  value of the constant named "global_check_all_scores_choice_limit",
+//  which currently has a default value of 6.
+//  In those rare cases, the software estimates which top (6) choices
+//  are the most popular, and then does the full VoteFair popularity
+//  ranking to determine which of those top choices is most popular.
+//  The rare cases in which the estimation method produces different
+//  results involve one or more rock-paper-scissors-like cycles
+//  that include the top choices, which is a rare combination.
+//  As an analogy, those cases are like finding the highest
+//  sand dune in a desert, whereas most cases are like finding
+//  the highest mountain peak in a mountain range.
+//  As the number of ballots increases (such as beyond 50 ballots),
+//  the likelihood of such cycles greatly decreases.
+//  If this difference is important, the value of the constant
+//  "global_check_all_scores_choice_limit" can be increased, but
+//  that change will dramatically increase calculation time,
+//  to the point of requiring years of computation time for values
+//  even as small as 20.  Therefore, values larger than 12 are not
+//  recommended.
 //
 //  Additional details about the calculations appear within comments
 //  in the source-code file.
