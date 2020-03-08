@@ -43,5 +43,6 @@ party-seq ch 2 next-level ch 1 next-level ch 4 next-level ch 3 end-party-seq
 
 [rep ranking, now excluding ballots that rank choice 2 as most preferred, and excluding that choice from the available choices]
 [rep ranking, counting ballots that rank choice 2 as preferred more than choice 1]
+= 58 ballots
 [rep ranking, influence reduced by: 0.137931]
 [rep ranking, calculating popularity ranking with reduced influence -- of 0.137931 -- for the 58 ballots that prefer choice 2 more than choice 1, and scaling decimal pairwise counts by 580]
