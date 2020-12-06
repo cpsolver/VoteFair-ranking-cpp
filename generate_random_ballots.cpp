@@ -66,13 +66,15 @@
 // -----------------------------------------------
 //  Specify libraries needed.
 
-#include <iostream>
-#include <fstream>
-#include <string>
 #include <cstring>
+#include <string>
 #include <cstdio>
+#include <fstream>
+#include <iostream>
 #include <random>
 #include <chrono>
+
+// #include <stdlib>
 
 
 // -----------------------------------------------
@@ -95,7 +97,7 @@ std::string convert_integer_to_text( int supplied_integer )
     }
     catch( ... )
     {
-    	return "NAN" ;
+        return "NAN" ;
     }
 }
 
@@ -125,20 +127,20 @@ int convert_text_to_integer( char * supplied_text )
 // -----------------------------------------------
 //  Execution starts here.
 
-int main() {
+int main( ) {
 
 
 // -----------------------------------------------
 //  Declare the random number generator.
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator (seed);
+    std::default_random_engine generator ( seed ) ;
 
 
 // -----------------------------------------------
 //  Declare the needed arrays.
 
-    int ranking_level_at_position[ 99 ] ;
+    int choice_number_at_position[ 99 ] ;
     int usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
 
 
@@ -146,6 +148,7 @@ int main() {
 //  Specify the number of ballots and the number
 //  of choices.
 
+    const int maximum_case_count = 2 ;
     const int maximum_ballot_number = 17 ;
     const int maximum_choice_number = 4 ;
 
@@ -156,150 +159,195 @@ int main() {
     const int global_yes = 1 ;
     const int global_no = 0 ;
     const int question_number = 1 ;
-    const int maximum_case_number = 9999999 ;
+    const int maximum_case_id = 9999999 ;
 
 
 // -----------------------------------------------
-//  Initialization.
+//  Declare integer variables.
 
-    int case_number = 0 ;
-    int ballot_number = 0 ;
-    int choice_number = 0 ;
-    int ranking_level = 0 ;
-    int position_number = 0 ;
-    int pointer_number = 0 ;
-    int count_of_choices_not_yet_ranked = 0 ;
-
-    for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
-    {
-        for ( ranking_level = 1 ; ranking_level <= maximum_choice_number ; ranking_level ++ )
-        {
-            usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] = 0 ;
-        }
-    }
+    int case_count ;
+    int case_id ;
+    int ballot_number ;
+    int choice_number ;
+    int ranking_level ;
+    int position_number ;
+    int pointer_number ;
+    int count_of_choices_not_yet_ranked ;
+    int integer_from_system_call ;
 
 
 // -----------------------------------------------
 //  Specify codes that identify the meaning of the
 //  next number in the coded output list.
 
-	std::string voteinfo_code_for_start_of_all_cases = "-1" ;
-	std::string voteinfo_code_for_end_of_all_cases = "-2" ;
-	std::string voteinfo_code_for_case_number = "-3" ;
-	std::string voteinfo_code_for_question_number = "-4" ;
-	std::string voteinfo_code_for_total_ballot_count = "-5" ;
-	std::string voteinfo_code_for_number_of_choices = "-6" ;
-	std::string voteinfo_code_for_start_of_all_vote_info = "-7" ;
-	std::string voteinfo_code_for_end_of_all_vote_info = "-8" ;
-	std::string voteinfo_code_for_start_of_ballot = "-9" ;
-	std::string voteinfo_code_for_end_of_ballot = "-10" ;
-	std::string voteinfo_code_for_preference_level = "-12" ;
-	std::string voteinfo_code_for_choice = "-13" ;
+    std::string voteinfo_code_for_end_of_all_cases = "-2" ;
+    std::string voteinfo_code_for_case_number = "-3" ;
+    std::string voteinfo_code_for_question_number = "-4" ;
+    std::string voteinfo_code_for_number_of_choices = "-6" ;
+    std::string voteinfo_code_for_start_of_all_vote_info = "-7" ;
+    std::string voteinfo_code_for_end_of_all_vote_info = "-8" ;
+    std::string voteinfo_code_for_end_of_ballot = "-10" ;
+    std::string voteinfo_code_for_ballot_count = "-11" ;
+    std::string voteinfo_code_for_preference_level = "-12" ;
+
+
+// -----------------------------------------------
+//  Begin a loop that handles one case.
+
+    for ( case_count = 1 ; case_count <= maximum_case_count ; case_count ++ )
+    {
+
+
+// -----------------------------------------------
+//  Initialization.
+
+        ballot_number = 0 ;
+        choice_number = 0 ;
+        ranking_level = 0 ;
+        position_number = 0 ;
+        pointer_number = 0 ;
+        count_of_choices_not_yet_ranked = 0 ;
+        integer_from_system_call = 0 ;
+
+        for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
+        {
+            for ( ranking_level = 1 ; ranking_level <= maximum_choice_number ; ranking_level ++ )
+            {
+                usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] = 0 ;
+            }
+        }
 
 
 // -----------------------------------------------
 //  Randomly generate a case number.
 
-    std::uniform_int_distribution<int> distribution( 1 , maximum_case_number );
-    case_number = distribution( generator );  
+        std::uniform_int_distribution<int> distribution( 1 , maximum_case_id );
+        case_id = distribution( generator );  
 
 
 // -----------------------------------------------
-//  Write the beginning of the output file.
+//  Write the beginning of a new output file.
 
-    std::cout << voteinfo_code_for_start_of_all_cases << std::endl ;
-    std::cout << voteinfo_code_for_start_of_all_vote_info << std::endl ;
-    std::cout << voteinfo_code_for_case_number << " " << case_number << std::endl ;
-    std::cout << voteinfo_code_for_question_number << " " << question_number << std::endl ;
-    std::cout << voteinfo_code_for_total_ballot_count << " " << maximum_ballot_number << std::endl ;
+        std::fstream outfile;
+        outfile.open ( "temp_generated_random_ballots.txt" , std::fstream::out ) ;
+        outfile << voteinfo_code_for_start_of_all_vote_info << std::endl ;
+        outfile << voteinfo_code_for_case_number << " " << case_id << std::endl ;
+        outfile << voteinfo_code_for_question_number << " " << question_number << std::endl ;
+        outfile << voteinfo_code_for_number_of_choices << " " << maximum_choice_number << std::endl ;
 
 
 // -----------------------------------------------
 //  Begin a loop that handles one ballot.
 
-    for ( ballot_number = 1 ; ballot_number <= maximum_ballot_number ; ballot_number ++ )
-    {
-        std::cout << voteinfo_code_for_start_of_ballot << " " << std::endl ;
+        for ( ballot_number = 1 ; ballot_number <= maximum_ballot_number ; ballot_number ++ )
+        {
+            outfile << voteinfo_code_for_ballot_count << " 1" << std::endl ;
+            outfile << voteinfo_code_for_question_number << " " << question_number << std::endl ;
 
 
 // -----------------------------------------------
-//  Put the ranking levels in a list so that
+//  Put the choice numbers in a list so that
 //  they can be chosen at random without repeating
-//  any ranking level.
+//  any choice number.
 
-        for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
-        {
-        	ranking_level_at_position[ choice_number ] = choice_number ;
-        }
-        count_of_choices_not_yet_ranked = maximum_choice_number ;
-
-
-// -----------------------------------------------
-//  Begin a loop that handles one choice.
-//  In elections the choice number refers to
-//  a candidate number, but other things
-//  besides candidates can be ranked.
-
-        for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
-        {
+            for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
+            {
+                choice_number_at_position[ choice_number ] = choice_number ;
+            }
+            count_of_choices_not_yet_ranked = maximum_choice_number ;
 
 
 // -----------------------------------------------
-//  Randomly generate a ranking level for this choice,
-//  but do not repeat any ranking level already used
-//  for another choice.
+//  Begin a loop that handles one ranking level.
+
+            for ( ranking_level = 1 ; ranking_level <= maximum_choice_number ; ranking_level ++ )
+            {
+
+
+// -----------------------------------------------
+//  Randomly choose a choice number for this ranking
+//  level.  Do not repeat any choice number already used
+//  at a previous ranking level.
 //  Also keep track of usage to verify randomness.
 
-            std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked );
-            position_number = distribution( generator );  
-        	ranking_level = ranking_level_at_position[ position_number ] ;
-            for ( pointer_number = position_number ; pointer_number <= count_of_choices_not_yet_ranked - 1 ; pointer_number ++ )
-            {
-                ranking_level_at_position[ pointer_number ] = ranking_level_at_position[ pointer_number + 1 ] ;
-            }
-            count_of_choices_not_yet_ranked -- ;
-            usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] ++ ;
+                std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked );
+                position_number = distribution( generator );  
+                choice_number = choice_number_at_position[ position_number ] ;
+                for ( pointer_number = position_number ; pointer_number <= count_of_choices_not_yet_ranked - 1 ; pointer_number ++ )
+                {
+                    choice_number_at_position[ pointer_number ] = choice_number_at_position[ pointer_number + 1 ] ;
+                }
+                count_of_choices_not_yet_ranked -- ;
+                usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] ++ ;
 
 
 // -----------------------------------------------
-//  Write the info for one ranking.
+//  Write the choice number that is at the
+//  next-lower preference level.
 
-            std::cout << voteinfo_code_for_preference_level << " " << convert_integer_to_text( ranking_level ) << " " << voteinfo_code_for_choice << " " << convert_integer_to_text( choice_number ) << std::endl ;
+                outfile << convert_integer_to_text( choice_number ) << std::endl ;
 
 
 // -----------------------------------------------
 //  Repeat the loop that handles one preference ranking.
 
-        }
+            }
+
+// -----------------------------------------------
+//  Indicate the end of this ballot.
+
+            outfile << voteinfo_code_for_end_of_ballot << std::endl ;
 
 
 // -----------------------------------------------
 //  Repeat the loop that handles one ballot.
 
-            std::cout << voteinfo_code_for_end_of_ballot << std::endl ;
-    }
+        }
 
 
 // -----------------------------------------------
 //  Write the codes at the end of the output file.
 
-    std::cout << voteinfo_code_for_end_of_all_vote_info << std::endl ;
-    std::cout << voteinfo_code_for_end_of_all_cases << std::endl ;
+        outfile << voteinfo_code_for_end_of_all_vote_info << std::endl ;
+        outfile << voteinfo_code_for_end_of_all_cases << std::endl ;
+
+
+// -----------------------------------------------
+//  Close the output file that contains the ballots.
+
+        outfile.close( ) ;
 
 
 // -----------------------------------------------
 //  Optionally verify that the preference info is
 //  really random.
 
-    if ( global_yes == global_no )
-    {
-	    for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
-	    {
-	        for ( ranking_level = 1 ; ranking_level <= maximum_choice_number ; ranking_level ++ )
-	        {
-	            std::cout << "choice " << choice_number << " rank " << ranking_level << " " << usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] << std::endl ;
-	        }
-	    }
+        if ( 1 == 1 )
+        {
+            std::fstream verifyfile;
+            verifyfile.open ( "temp_verify_randomness.txt" , std::fstream::app ) ;
+            for ( choice_number = 1 ; choice_number <= maximum_choice_number ; choice_number ++ )
+            {
+                for ( ranking_level = 1 ; ranking_level <= maximum_choice_number ; ranking_level ++ )
+                {
+                    verifyfile << "choice " << choice_number << " rank " << ranking_level << " " << usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] << std::endl ;
+                }
+            }
+            verifyfile.close( ) ;
+        }
+
+
+// -----------------------------------------------
+//  Run the VoteFair-ranking-cpp program.
+//  documentation:  https://cplusplus.com/reference/cstdlib/system/
+
+        integer_from_system_call = system( ".\\votefair_ranking < temp_generated_random_ballots.txt >> temp_votefair_ranking_output.txt" ) ;
+        std::cout << integer_from_system_call << std::endl ;
+
+
+// -----------------------------------------------
+//  Repeat the loop that handles one case.
+
     }
 
 
