@@ -189,6 +189,9 @@ int main( ) {
     std::string voteinfo_code_for_end_of_ballot = "-10" ;
     std::string voteinfo_code_for_ballot_count = "-11" ;
     std::string voteinfo_code_for_preference_level = "-12" ;
+    std::string voteinfo_code_for_request_instant_runoff_voting = "-50" ;
+    std::string voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
+    std::string voteinfo_code_for_request_irv_plus_pairwise_loser = "-52" ;
 
 
 // -----------------------------------------------
@@ -232,6 +235,9 @@ int main( ) {
         outfile.open ( "temp_generated_random_ballots.txt" , std::fstream::out ) ;
         outfile << voteinfo_code_for_start_of_all_vote_info << std::endl ;
         outfile << voteinfo_code_for_case_number << " " << case_id << std::endl ;
+
+        outfile << voteinfo_code_for_request_instant_runoff_voting << std::endl ;
+
         outfile << voteinfo_code_for_question_number << " " << question_number << std::endl ;
         outfile << voteinfo_code_for_number_of_choices << " " << maximum_choice_number << std::endl ;
 
