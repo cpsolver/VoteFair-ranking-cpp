@@ -391,6 +391,12 @@ int global_choice_number ;
 std::ofstream log_out ;
 
 
+//  Specify an extra output file for writing
+//  data to a spreadsheet file.
+
+std::ofstream spreadsheet_out ;
+
+
 //  Declare message strings.
 
 std::string global_possible_error_message ;
@@ -452,7 +458,6 @@ int global_pair_counter_maximum ;
 int global_true_or_false_tally_table_created ;
 int global_check_all_scores_choice_limit ;
 int global_representation_levels_requested ;
-int global_first_most_popular_actual_choice ;
 int global_second_most_representative_actual_choice ;
 int global_actual_choice_at_top_of_full_popularity_ranking ;
 int global_actual_choice_at_second_representation_ranking ;
@@ -477,26 +482,43 @@ std::string global_ranking_type_being_calculated ;
 //  Declare variables, constants, arrays, and strings
 //  for counting methods that eliminate one choice
 //  during each elimination round.
+//  For speed reasons, arrays are declared here
+//  instead of the single function that uses them.
+//  These variables and lists use actual choice
+//  numbers, not adjusted choice numbers.
+
+std::string global_elimination_type_requested = "none" ;
+std::string global_string_same_or_diff = "" ;
+std::string global_string_same = "same" ;
+std::string global_string_diff = "different" ;
+std::string global_string_tied = "tied_unknown" ;
 
 int global_true_or_false_request_single_elimination = global_false ;
-int global_true_or_false_request_check_pairwise_loser = global_false ;
-int global_true_or_false_request_check_first_choice_counting = global_false ;
-int global_true_or_false_request_check_pairwise_opposition_support = global_false ;
+int global_true_or_false_request_instant_pairwise_elimination = global_false ;
+int global_true_or_false_request_instant_runoff_voting = global_false ;
+int global_true_or_false_request_instant_runoff_plus_pairwise_elimination = global_false ;
+int global_true_or_false_calc_instant_pairwise_elimination = global_false ;
+int global_true_or_false_calc_instant_runoff_voting = global_false ;
+int global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
 
 int global_number_of_elimination_rounds ;
 int global_winner_of_elimination_rounds ;
-int global_most_recent_actual_choice_eliminated ;
+int global_most_recent_choice_eliminated ;
 
-int global_first_choice_count_for_actual_choice[ 99 ] ;
-int global_true_or_false_continuing_for_actual_choice[ 99 ] ;
-int global_largest_pairwise_opposition_count_for_actual_choice[ 99 ] ;
-int global_smallest_pairwise_support_count_for_actual_choice[ 99 ] ;
-int global_loss_count_for_actual_choice[ 99 ] ;
-int global_list_of_top_ranked_choices[ 10 ] ;
+int global_first_choice_count_for_choice[ 99 ] ;
+int global_true_or_false_continuing_for_choice[ 99 ] ;
+int global_true_or_false_tie_includes_choice[ 99 ] ;
+int global_pairwise_opposition_count_for_choice[ 99 ] ;
+int global_pairwise_support_count_for_choice[ 99 ] ;
+int global_loss_count_for_choice[ 99 ] ;
+int global_list_of_top_ranked_choices[ 99 ] ;
+int global_list_of_choices_with_fewest_first_choice_counts[ 99 ] ;
+int global_list_of_choices_with_largest_pairwise_opposition[ 99 ] ;
+int global_list_of_choices_with_smallest_pairwise_support[ 99 ] ;
 
 int const global_maximum_fraction_denominator = 10 ;
 
-int global_fractional_count_for_actual_choice_and_denominator[ 99 ][ 10 ] ;
+int global_fractional_count_for_choice_and_denominator[ 99 ][ 10 ] ;
 
 
 // -----------------------------------------------
@@ -771,7 +793,6 @@ void do_initialization( )
     global_choice_count_at_full_top_popularity_ranking_level = 0 ;
     global_choice_count_at_full_second_representation_level = 0 ;
     global_representation_levels_requested = 0 ;
-    global_first_most_popular_actual_choice = 0 ;
     global_second_most_representative_actual_choice = 0 ;
     global_actual_choice_at_top_of_full_popularity_ranking = 0 ;
     global_actual_choice_at_second_representation_ranking = 0 ;
@@ -1436,7 +1457,7 @@ void check_vote_info_numbers( )
         {
             next_vote_info_number = global_vote_info_list[ pointer_to_vote_info + 1 ] ;
         }
-        if ( global_logging_info == global_true ) { log_out << "\n[" << current_vote_info_number << "]"; } ;
+        if ( global_logging_info == global_true ) { log_out << "\n[" << current_vote_info_number << "]" ; } ;
 
 
 // -----------------------------------------------
@@ -1781,19 +1802,13 @@ void check_vote_info_numbers( )
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_runoff_voting )
         {
-            global_true_or_false_request_check_pairwise_loser = global_false ;
-            global_true_or_false_request_check_first_choice_counting = global_true ;
-            global_true_or_false_request_check_pairwise_opposition_support = global_false ;
+            global_true_or_false_request_instant_runoff_voting = global_true ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_pairwise_elimination )
         {
-            global_true_or_false_request_check_pairwise_loser = global_false ;
-            global_true_or_false_request_check_first_choice_counting = global_false ;
-            global_true_or_false_request_check_pairwise_opposition_support = global_true ;
+            global_true_or_false_request_instant_pairwise_elimination = global_true ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_irv_plus_pairwise_loser )
         {
-            global_true_or_false_request_check_pairwise_loser = global_true ;
-            global_true_or_false_request_check_first_choice_counting = global_false ;
-            global_true_or_false_request_check_pairwise_opposition_support = global_true ;
+            global_true_or_false_request_instant_runoff_plus_pairwise_elimination = global_true ;
 
 
 // -----------------------------------------------
@@ -8354,9 +8369,9 @@ void do_votefair_calculations( )
 //  The following values indicate which criteria
 //  are used for elimination:
 //
-//  global_true_or_false_request_check_pairwise_loser
-//  global_true_or_false_request_check_first_choice_counting
-//  global_true_or_false_request_check_pairwise_opposition_support
+//  global_true_or_false_calc_instant_pairwise_elimination
+//  global_true_or_false_calc_instant_runoff_voting
+//  global_true_or_false_calc_instant_runoff_plus_pairwise_elimination
 //
 // -----------------------------------------------
 // -----------------------------------------------
@@ -8379,8 +8394,6 @@ void calc_eliminate_one_choice_each_round( )
     int choice_count_at_top_preference_level ;
     int largest_pairwise_opposition_count ;
     int smallest_pairwise_support_count ;
-    int choice_with_largest_pairwise_opposition_count ;
-    int choice_with_smallest_pairwise_support_count ;
     int count_of_choices_at_largest_pairwise_opposition_count ;
     int count_of_choices_at_smallest_pairwise_support_count ;
     int count_of_ballots_ignored_this_elimination_round ;
@@ -8390,19 +8403,34 @@ void calc_eliminate_one_choice_each_round( )
     int top_ranked_continuing_preference_level ;
     int top_ranked_continuing_choice ;
     int smallest_first_choice_count ;
-    int choice_with_smallest_first_choice_count ;
+    int count_of_choices_with_smallest_first_choice_count ;
     int sum_of_all_first_choice_counts ;
     int sum_of_fractional_ballot_counts ;
     int fraction_numerator ;
     int fraction_denominator ;
     int pointer_to_top_ranked_continuing_choices ;
+    int true_or_false_tie_among_fewest_first_choice_counts ;
+    int true_or_false_tie_among_highest_opposition_count ;
+    int pointer_to_list_of_tied_choices ;
 
 
 // -----------------------------------------------
+//  Determine which kind of elimination voting
+//  to do this time through this function.
+//  This function can be repeated once for each kind.
 //  If none of the calculations done in this function
 //  have been requested, return without doing anything.
 
-    if ( ( global_true_or_false_request_check_pairwise_loser == global_false ) && ( global_true_or_false_request_check_first_choice_counting == global_false ) && ( global_true_or_false_request_check_pairwise_opposition_support == global_false ) )
+    if ( global_true_or_false_calc_instant_pairwise_elimination == global_true )
+    {
+        global_elimination_type_requested = "ipe" ;
+    } else if ( global_true_or_false_calc_instant_runoff_voting == global_true )
+    {
+        global_elimination_type_requested = "irv" ;
+    } else if ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true )
+    {
+        global_elimination_type_requested = "ir+pe" ;
+    } else
     {
         return ;
     }
@@ -8433,14 +8461,16 @@ void calc_eliminate_one_choice_each_round( )
 //  If this is the first round of elimination,
 //  do initialization.
 
-    if ( global_number_of_elimination_rounds == 0 )
-    {
-        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        if ( global_number_of_elimination_rounds == 0 )
         {
-            global_true_or_false_continuing_for_actual_choice[ actual_choice ] = global_true ;
+            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            {
+                global_true_or_false_continuing_for_choice[ actual_choice ] = global_true ;
+            }
         }
-    }
-    global_number_of_elimination_rounds ++ ;
+        global_number_of_elimination_rounds ++ ;
+        true_or_false_tie_among_highest_opposition_count = global_true ;
+        global_string_same_or_diff = global_string_tied ;
 
 
 // -----------------------------------------------
@@ -8450,7 +8480,7 @@ void calc_eliminate_one_choice_each_round( )
         count_of_continuing_choices = 0 ;
         for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
-            if ( global_true_or_false_continuing_for_actual_choice[ actual_choice ] == global_true )
+            if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
             {
                 count_of_continuing_choices ++ ;
                 possible_single_continuing_choice = actual_choice ;
@@ -8468,85 +8498,111 @@ void calc_eliminate_one_choice_each_round( )
         {
             global_winner_of_elimination_rounds = possible_single_continuing_choice ;
             if ( global_logging_info == global_true ) { log_out << "[elimination winner is choice " << convert_integer_to_text( global_winner_of_elimination_rounds ) << "]" << std::endl ; } ;
-
-            if ( global_winner_of_elimination_rounds == global_choice_count_at_full_top_popularity_ranking_level )
+            if ( global_winner_of_elimination_rounds == global_actual_choice_at_top_of_full_popularity_ranking )
             {
+                global_string_same_or_diff = global_string_same ;
                 if ( global_logging_info == global_true ) { log_out << "[elim_same]" << std::endl ; } ;
             } else
             {
+                global_string_same_or_diff = global_string_diff ;
                 if ( global_logging_info == global_true ) { log_out << "[elim_diff]" << std::endl ; } ;
-                if ( global_logging_info == global_true ) { log_out << "[actual most popular is choice " << convert_integer_to_text( global_choice_count_at_full_top_popularity_ranking_level ) << "]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[actual most popular is choice " << convert_integer_to_text( global_actual_choice_at_top_of_full_popularity_ranking ) << "]" << std::endl ; } ;
             }
+            if ( global_logging_info == global_true ) { log_out << "[" << global_string_same_or_diff << "]" << std::endl ; } ;
             return ;
         }
 
 
 // -----------------------------------------------
 //  If requested by the flag:
-//    global_true_or_false_request_check_pairwise_loser
-//  then eliminate a pairwise loser if there is one.
+//    global_true_or_false_calc_instant_runoff_plus_pairwise_elimination
+//  then begin to eliminate a pairwise loser if there
+//  is one.
 
-        if ( global_true_or_false_request_check_pairwise_loser == global_true )
+        if ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true )
         {
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
-                global_loss_count_for_actual_choice[ actual_choice ] = 0 ;
+                global_loss_count_for_choice[ actual_choice ] = 0 ;
             }
+
+
+// -----------------------------------------------
+//  Identify the pairwise loser and eliminate it
+//  if there is one.
+
             for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
-        {
+            {
                 adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
                 adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
                 actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
                 actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
-                if ( global_true_or_false_continuing_for_actual_choice[ actual_first_choice ] == global_false )
+                if ( global_true_or_false_continuing_for_choice[ actual_first_choice ] == global_false )
                 {
                     continue ;
                 }
-                if ( global_true_or_false_continuing_for_actual_choice[ actual_second_choice ] == global_false )
+                if ( global_true_or_false_continuing_for_choice[ actual_second_choice ] == global_false )
                 {
                     continue ;
                 }
                 if ( global_tally_first_over_second_in_pair[ pair_counter ] < global_tally_second_over_first_in_pair[ pair_counter ] )
                 {
-                    global_loss_count_for_actual_choice[ actual_first_choice ] ++ ;
+                    global_loss_count_for_choice[ actual_first_choice ] ++ ;
                 } else if ( global_tally_second_over_first_in_pair[ pair_counter ] < global_tally_first_over_second_in_pair[ pair_counter ] )
                 {
-                    global_loss_count_for_actual_choice[ actual_second_choice ] ++ ;
+                    global_loss_count_for_choice[ actual_second_choice ] ++ ;
                 }
             }
-            global_most_recent_actual_choice_eliminated = 0 ;
+            global_most_recent_choice_eliminated = 0 ;
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
-                if ( global_true_or_false_continuing_for_actual_choice[ actual_choice ] == global_true )
+                if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
                 {
-                    if ( global_loss_count_for_actual_choice[ actual_choice ] == count_of_continuing_choices - 1 )
+                    if ( global_loss_count_for_choice[ actual_choice ] == count_of_continuing_choices - 1 )
                     {
-                        if ( global_logging_info == global_true ) { log_out << "[found pairwise loser, choice " << actual_choice << "]" << std::endl ; } ;
-                        global_true_or_false_continuing_for_actual_choice[ actual_choice ] = global_false ;
-                        global_most_recent_actual_choice_eliminated = actual_choice ;
+                        if ( global_logging_info == global_true ) { log_out << "[eliminating pairwise loser, choice " << actual_choice << "]" << std::endl ; } ;
+                        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                        global_most_recent_choice_eliminated = actual_choice ;
                         break ;
                     }
                 }
             }
-            if ( global_most_recent_actual_choice_eliminated > 0 )
+            if ( global_most_recent_choice_eliminated > 0 )
             {
-                if ( global_logging_info == global_true ) { log_out << "[eliminated choice " << global_most_recent_actual_choice_eliminated << "]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[eliminated choice " << global_most_recent_choice_eliminated << "]" << std::endl ; } ;
                 continue ;
             }
+
+
+// -----------------------------------------------
+//  Finish skipping over the elimination of a
+//  pairwise loser if that kind of elimination
+//  is not requested.
+
         }
 
 
 // -----------------------------------------------
+//  In case both of the next elimination types
+//  (smallest first-choice count and largest pairwise
+//  opposition) are used, allow the pairwise opposition
+//  elimination to be limited to the choices that
+//  have the smallest first-choice count.
+
+        count_of_choices_with_smallest_first_choice_count = 0 ;
+
+
+// -----------------------------------------------
 //  If requested by the flag:
-//    global_true_or_false_request_check_first_choice_counting
+//    global_true_or_false_calc_instant_runoff_voting
 //  then begin to eliminate the choice with the
 //  fewest first-choice votes.
 
-        if ( global_true_or_false_request_check_first_choice_counting == global_true )
+        if ( global_true_or_false_calc_instant_runoff_voting == global_true )
         {
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
-                global_first_choice_count_for_actual_choice[ actual_choice ] = 0 ;
+                global_first_choice_count_for_choice[ actual_choice ] = 0 ;
             }
 
 
@@ -8554,7 +8610,7 @@ void calc_eliminate_one_choice_each_round( )
 //  Begin a loop that accesses the raw ballot info.
 
             count_of_ballots_ignored_this_elimination_round = 0 ;
-            preference_level = 0 ;
+            preference_level = 1 ;
             top_ranked_continuing_preference_level = 0 ;
             pointer_to_vote_info = global_input_pointer_start_next_case ;
             while ( pointer_to_vote_info < global_maximum_vote_info_list_length )
@@ -8563,8 +8619,8 @@ void calc_eliminate_one_choice_each_round( )
 
 
 // -----------------------------------------------
-//  Begin to handle the different codes within the
-//  raw ballot data.
+//  Begin to handle special vote-info codes
+//  within the raw ballot data.
 
                 if ( current_vote_info_number == global_voteinfo_code_for_question_number )
                 {
@@ -8582,7 +8638,7 @@ void calc_eliminate_one_choice_each_round( )
                 {
                     pointer_to_vote_info ++ ;
                     global_ballot_info_repeat_count = global_vote_info_list[ pointer_to_vote_info ] ;
-                    if ( global_logging_info == global_true ) { log_out << "[ballot info repeat count is " << global_ballot_info_repeat_count << "]" << std::endl ; } ;
+//                    if ( global_logging_info == global_true ) { log_out << "[ballot info repeat count is " << global_ballot_info_repeat_count << "]" << std::endl ; } ;
                 } else if ( current_vote_info_number == global_voteinfo_code_for_preference_level )
                 {
                     pointer_to_vote_info ++ ;
@@ -8597,10 +8653,15 @@ void calc_eliminate_one_choice_each_round( )
                         choice_at_top_preference_level = 0 ;
                     }
                     if ( global_logging_info == global_true ) { log_out << "[preference level is still " << preference_level << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  Handle a choice number.
+
                 } else if ( current_vote_info_number > 0 )
                 {
                     actual_choice = current_vote_info_number ;
-                    if ( global_true_or_false_continuing_for_actual_choice[ actual_choice ] == global_true )
+                    if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
                     {
                         if ( top_ranked_continuing_preference_level == 0 )
                         {
@@ -8619,13 +8680,12 @@ void calc_eliminate_one_choice_each_round( )
                         {
                             if ( global_logging_info == global_true ) { log_out << "[count of top-ranked choices is " << count_of_top_ranked_continuing_choices << "]" << std::endl ; } ;
                         }
-                        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference_level " << preference_level << "]" << std::endl ; } ;
 
 // todo, finish debugging this code
 
                     }
+//                    if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
                     preference_level ++ ;
-                    if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -8636,8 +8696,8 @@ void calc_eliminate_one_choice_each_round( )
                     if ( count_of_top_ranked_continuing_choices == 1 )
                     {
                         top_ranked_continuing_choice = global_list_of_top_ranked_choices[ count_of_top_ranked_continuing_choices ] ;
-                        global_first_choice_count_for_actual_choice[ top_ranked_continuing_choice ] ++ ;
-                        if ( global_logging_info == global_true ) { log_out << "[end of ballot, top ranked continuing choice is " << top_ranked_continuing_choice << "]" << std::endl ; } ;
+                        global_first_choice_count_for_choice[ top_ranked_continuing_choice ] += global_ballot_info_repeat_count ;
+//                        if ( global_logging_info == global_true ) { log_out << "[end of ballot, top ranked continuing choice is " << top_ranked_continuing_choice << "]" << std::endl ; } ;
                     } else if ( count_of_top_ranked_continuing_choices > 1 )
                     {
                         if ( count_of_top_ranked_continuing_choices <= global_maximum_fraction_denominator )
@@ -8645,7 +8705,7 @@ void calc_eliminate_one_choice_each_round( )
                             for ( pointer_to_top_ranked_continuing_choices = 1 ; pointer_to_top_ranked_continuing_choices <= count_of_top_ranked_continuing_choices ; pointer_to_top_ranked_continuing_choices ++ )
                             {
                                 top_ranked_continuing_choice = global_list_of_top_ranked_choices[ pointer_to_top_ranked_continuing_choices ] ;
-global_fractional_count_for_actual_choice_and_denominator[ top_ranked_continuing_choice ][ count_of_top_ranked_continuing_choices ] ++ ;
+global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice ][ count_of_top_ranked_continuing_choices ] ++ ;
                             }
                         } else
                         {
@@ -8656,7 +8716,7 @@ global_fractional_count_for_actual_choice_and_denominator[ top_ranked_continuing
                     {
                         if ( global_logging_info == global_true ) { log_out << "[error! count_of_top_ranked_continuing_choices equals zero ]" << std::endl ; } ;
                     }
-                    preference_level = 0 ;
+                    preference_level = 1 ;
                     count_of_top_ranked_continuing_choices = 0 ;
                     top_ranked_continuing_preference_level = 0 ;
 
@@ -8681,52 +8741,94 @@ global_fractional_count_for_actual_choice_and_denominator[ top_ranked_continuing
 //  Combine the fractional ballot counts with the
 //  integer counts, and also identify the choice
 //  that has the smallest first-choice count.
+//  Allow for the possibility of a tie.
 
+            smallest_first_choice_count = 0 ;
+            count_of_choices_with_smallest_first_choice_count = 0 ;
+            sum_of_all_first_choice_counts = 0 ;
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
-            	smallest_first_choice_count = 0 ;
+                if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_false )
+                {
+                    continue ;
+                }
                 sum_of_fractional_ballot_counts = 0 ;
                 for ( fraction_denominator = 1 ; fraction_denominator <= global_maximum_fraction_denominator ; fraction_denominator ++ )
                 {
-                    fraction_numerator = global_fractional_count_for_actual_choice_and_denominator[ actual_choice ][ fraction_denominator ] ;
+                    fraction_numerator = global_fractional_count_for_choice_and_denominator[ actual_choice ][ fraction_denominator ] ;
                     if ( fraction_numerator > 0 )
                     {
-                        sum_of_fractional_ballot_counts =+ int( fraction_numerator / fraction_denominator ) ;
+                        sum_of_fractional_ballot_counts += int( fraction_numerator / fraction_denominator ) ;
                         if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has fraction numerator of " << fraction_numerator << " and denominator of " << fraction_denominator << "]" << std::endl ; } ;
                         if ( global_logging_info == global_true ) { log_out << "[sum of fractions is " << sum_of_fractional_ballot_counts << "]" << std::endl ; } ;
-                        global_first_choice_count_for_actual_choice[ actual_choice ] =+ sum_of_fractional_ballot_counts ;
+                        global_first_choice_count_for_choice[ actual_choice ] += sum_of_fractional_ballot_counts ;
                     }
-                    sum_of_all_first_choice_counts =+global_first_choice_count_for_actual_choice[ actual_choice ] ;
                 }
-                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has integer vote count of " << global_first_choice_count_for_actual_choice[ actual_choice ] << "]" << std::endl ; } ;
-                if ( smallest_first_choice_count == 0 )
+                sum_of_all_first_choice_counts +=global_first_choice_count_for_choice[ actual_choice ] ;
+                if ( ( smallest_first_choice_count == 0 ) || ( global_first_choice_count_for_choice[ actual_choice ] < smallest_first_choice_count ) )
                 {
-                	smallest_first_choice_count = global_first_choice_count_for_actual_choice[ actual_choice ] ;
-                	choice_with_smallest_first_choice_count = actual_choice ;
-                }
-                if ( global_first_choice_count_for_actual_choice[ actual_choice ] < smallest_first_choice_count )
+                    count_of_choices_with_smallest_first_choice_count = 1 ;
+                    smallest_first_choice_count = global_first_choice_count_for_choice[ actual_choice ] ;
+                    global_list_of_choices_with_fewest_first_choice_counts[ count_of_choices_with_smallest_first_choice_count ] = actual_choice ;
+                    if ( global_logging_info == global_true ) { log_out << "[update, choice " << actual_choice << " has smallest-first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                } else if ( global_first_choice_count_for_choice[ actual_choice ] == smallest_first_choice_count )
                 {
-                	smallest_first_choice_count = global_first_choice_count_for_actual_choice[ actual_choice ] ;
-                	choice_with_smallest_first_choice_count = actual_choice ;
+                    count_of_choices_with_smallest_first_choice_count ++ ;
+                    global_list_of_choices_with_fewest_first_choice_counts[ count_of_choices_with_smallest_first_choice_count ] = actual_choice ;
+                    if ( global_logging_info == global_true ) { log_out << "[tie, choice " << actual_choice << " also has smallest-first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                 }
             }
-
-// -----------------------------------------------
-//  Eliminate the choice with the smallest
-//  first-choice count:
-
-            global_true_or_false_continuing_for_actual_choice[ choice_with_smallest_first_choice_count ] = global_false ;
 
 
 // -----------------------------------------------
 //  Verify that all the votes are accounted for.
 
-            if ( global_logging_info == global_true ) { log_out << "[correct ballot count is " << global_current_total_vote_count << "]" << std::endl ; } ;
-            if ( global_logging_info == global_true ) { log_out << "[sum of all first choice counts is " << sum_of_all_first_choice_counts << "]" << std::endl ; } ;
-            if ( global_logging_info == global_true ) { log_out << "[count of ballots ignored is " << count_of_ballots_ignored_this_elimination_round << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[correct ballot count is " << global_current_total_vote_count << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[sum of all first choice counts is " << sum_of_all_first_choice_counts << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[count of ballots ignored is " << count_of_ballots_ignored_this_elimination_round << "]" << std::endl ; } ;
             if ( sum_of_all_first_choice_counts + count_of_ballots_ignored_this_elimination_round != global_current_total_vote_count )
             {
                 if ( global_logging_info == global_true ) { log_out << "[error! counts done during first-choice elimination do not sum to total ballot count]" << std::endl ; } ;
+                return ;
+            }
+
+
+// -----------------------------------------------
+//  Eliminate the choice with the smallest
+//  first-choice count, then repeat the elimination
+//  loop.
+//  If there is more than one such choice, and if
+//  the pairwise opposition counts should be used
+//  to choose which one to eliminate, keep track of
+//  which choices are tied, and set a special flag
+//  to indicate the need for tie resolution.
+
+            true_or_false_tie_among_fewest_first_choice_counts = global_false ;
+            if ( count_of_choices_with_smallest_first_choice_count == 1 )
+            {
+                actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ count_of_choices_with_smallest_first_choice_count ] ;
+                global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << actual_choice << " as having the smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                continue ;
+            } else if ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true )
+            {
+                true_or_false_tie_among_fewest_first_choice_counts = global_true ;
+                for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                {
+                    global_true_or_false_tie_includes_choice[ actual_choice ] = global_false ;
+                }
+                for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= count_of_choices_with_smallest_first_choice_count ; pointer_to_list_of_tied_choices ++ )
+                {
+                    actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ pointer_to_list_of_tied_choices ] ;
+                    global_true_or_false_tie_includes_choice[ actual_choice ] = global_true ;
+                    if ( global_logging_info == global_true ) { log_out << "[one of the tied choices is choice " << actual_choice << "]" << std::endl ; } ;
+                }
+                if ( global_logging_info == global_true ) { log_out << "[there are " << count_of_choices_with_smallest_first_choice_count << " choices that have the same smallest first-choice count, and the pairwise opposition count will be used to resolve the tie]" << std::endl ; } ;
+            } else
+            {
+                global_string_same_or_diff = "tied_first_choice" ;
+                if ( global_logging_info == global_true ) { log_out << "[there are " << count_of_choices_with_smallest_first_choice_count << " choices that have the same smallest first-choice count, but resolving that tie has not been requested, so exit this elimination function]" << std::endl ; } ;
+                return ;
             }
 
 
@@ -8739,80 +8841,207 @@ global_fractional_count_for_actual_choice_and_denominator[ top_ranked_continuing
 
 // -----------------------------------------------
 //  If requested by the flag:
-//    global_true_or_false_request_check_pairwise_opposition_support
-//  then eliminate the choice with the highest
+//    global_true_or_false_calc_instant_pairwise_elimination
+//  or the flag:
+//    true_or_false_tie_among_fewest_first_choice_counts
+//  then begin to eliminate the choice with the highest
 //  pairwise opposition count, or else the choice
 //  with the smallest pairwise support count.
 
-        if ( global_true_or_false_request_check_pairwise_opposition_support == global_true )
+        if ( ( global_true_or_false_calc_instant_pairwise_elimination == global_true ) || ( true_or_false_tie_among_fewest_first_choice_counts == global_true ) )
         {
             if ( global_logging_info == global_true ) { log_out << "\n[checking pairwise opposition and support counts]" << std::endl ; } ;
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
-                global_largest_pairwise_opposition_count_for_actual_choice[ actual_choice ] = 0 ;
-                global_smallest_pairwise_support_count_for_actual_choice[ actual_choice ] = 0 ;
+                global_pairwise_opposition_count_for_choice[ actual_choice ] = 0 ;
+                global_pairwise_support_count_for_choice[ actual_choice ] = 0 ;
             }
+
+
+// -----------------------------------------------
+//  If instant pairwise elimination (IPE) is being
+//  done, copy into the list
+//  "global_true_or_false_tie_includes_choice"
+//  the choices that are continuing (not yet eliminated).
+//  This allows the code below to be used for two
+//  different calculation methods.
+
+            if ( global_true_or_false_calc_instant_pairwise_elimination == global_true )
+            {
+                for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                {
+                    global_true_or_false_tie_includes_choice[ actual_choice ] = global_true_or_false_continuing_for_choice[ actual_choice ] ;
+                }
+            }
+
+
+// -----------------------------------------------
+//  Calculate the pairwise opposition count for
+//  each choice that either has not yet been
+//  eliminated, or is among the tied choices.
+
             for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
             {
                 adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
                 adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
                 actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
                 actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
-                if ( global_true_or_false_continuing_for_actual_choice[ actual_first_choice ] == global_false )
+                if ( global_true_or_false_tie_includes_choice[ actual_first_choice ] == global_false )
                 {
                     continue ;
                 }
-                if ( global_true_or_false_continuing_for_actual_choice[ actual_second_choice ] == global_false )
+                if ( global_true_or_false_tie_includes_choice[ actual_second_choice ] == global_false )
                 {
                     continue ;
                 }
-                global_largest_pairwise_opposition_count_for_actual_choice[ actual_first_choice ] =+ global_tally_second_over_first_in_pair[ pair_counter ] ;
-                global_smallest_pairwise_support_count_for_actual_choice[ actual_second_choice ] =+ global_tally_first_over_second_in_pair[ pair_counter ] ;
+
+//  todo: verify correctness:
+
+                global_pairwise_opposition_count_for_choice[ actual_first_choice ] += global_tally_second_over_first_in_pair[ pair_counter ] ;
+                global_pairwise_opposition_count_for_choice[ actual_second_choice ] += global_tally_first_over_second_in_pair[ pair_counter ] ;
             }
-            largest_pairwise_opposition_count = -1 ;
-            smallest_pairwise_support_count = -1 ;
+
+
+// -----------------------------------------------
+//  Identify which choice has the largest pairwise
+//  opposition count. Allow for ties.
+
+            largest_pairwise_opposition_count = 0 ;
             count_of_choices_at_largest_pairwise_opposition_count = 0 ;
-            count_of_choices_at_smallest_pairwise_support_count = 0 ;
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
-                if ( global_logging_info == global_true ) { log_out << "[pairwise opposition count for choice " << actual_choice << " is " << global_largest_pairwise_opposition_count_for_actual_choice[ actual_choice ] << "]" << std::endl ; } ;
-                if ( global_largest_pairwise_opposition_count_for_actual_choice[ actual_choice ] > largest_pairwise_opposition_count )
+                if ( global_true_or_false_tie_includes_choice[ actual_choice ] == global_false )
                 {
-                    largest_pairwise_opposition_count = global_largest_pairwise_opposition_count_for_actual_choice[ actual_choice ] ;
-                    choice_with_largest_pairwise_opposition_count = actual_choice ;
+                    continue ;
+                }
+                if ( global_logging_info == global_true ) { log_out << "[pairwise opposition count for choice " << actual_choice << " is " << global_pairwise_opposition_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                if ( ( largest_pairwise_opposition_count == 0 ) || ( global_pairwise_opposition_count_for_choice[ actual_choice ] > largest_pairwise_opposition_count ) )
+                {
+                    largest_pairwise_opposition_count = global_pairwise_opposition_count_for_choice[ actual_choice ] ;
                     count_of_choices_at_largest_pairwise_opposition_count = 1 ;
-                } else if ( global_largest_pairwise_opposition_count_for_actual_choice[ actual_choice ] == largest_pairwise_opposition_count )
+                    global_list_of_choices_with_largest_pairwise_opposition[ count_of_choices_at_largest_pairwise_opposition_count ] = actual_choice ;
+                } else if ( global_pairwise_opposition_count_for_choice[ actual_choice ] == largest_pairwise_opposition_count )
                 {
                     count_of_choices_at_largest_pairwise_opposition_count ++ ;
-                }
-                if ( global_logging_info == global_true ) { log_out << "[pairwise support count for choice " << actual_choice << " is " << global_smallest_pairwise_support_count_for_actual_choice[ actual_choice ] << "]" << std::endl ; } ;
-                if ( ( global_largest_pairwise_opposition_count_for_actual_choice[ actual_choice ] < smallest_pairwise_support_count ) || ( smallest_pairwise_support_count < 0 ) )
-                {
-                    smallest_pairwise_support_count = global_smallest_pairwise_support_count_for_actual_choice[ actual_choice ] ;
-                    choice_with_smallest_pairwise_support_count = actual_choice ;
-                    count_of_choices_at_smallest_pairwise_support_count = 1 ;
-                } else if ( global_smallest_pairwise_support_count_for_actual_choice[ actual_choice ] == smallest_pairwise_support_count )
-                {
-                    count_of_choices_at_smallest_pairwise_support_count ++ ;
+                    global_list_of_choices_with_largest_pairwise_opposition[ count_of_choices_at_largest_pairwise_opposition_count ] = actual_choice ;
+                    if ( global_logging_info == global_true ) { log_out << "[tied pairwise opposition count for choice " << actual_choice << " is " << global_pairwise_opposition_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                 }
             }
+
+
+// -----------------------------------------------
+//  Eliminate the choice with the largest pairwise
+//  opposition count, and repeat the elimination
+//  loop.
+
             if ( count_of_choices_at_largest_pairwise_opposition_count == 1 )
             {
-                global_true_or_false_continuing_for_actual_choice[ choice_with_largest_pairwise_opposition_count ] == global_false ;
-                if ( global_logging_info == global_true ) { log_out << "[found largest pairwise opposition count, so eliminated choice " << choice_with_largest_pairwise_opposition_count << "]" << std::endl ; } ;
+                actual_choice = global_list_of_choices_with_largest_pairwise_opposition[ 1 ] ;
+                global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                if ( global_logging_info == global_true ) { log_out << "[eliminated choice " << actual_choice << " because it has the single largest pairwise opposition count]" << std::endl ; } ;
                 continue ;
-            }
 
-// todo, limit next tie breaker to above tied choices
 
-            if ( count_of_choices_at_smallest_pairwise_support_count == 1 )
+// -----------------------------------------------
+//  If there is a tie, put the tied choices into
+//  a list, calculate the pairwise support count
+//  for each tied choice, but use only the
+//  pairwise counts that involve those tied choices.
+
+            } else
             {
-                global_true_or_false_continuing_for_actual_choice[ choice_with_smallest_pairwise_support_count ] == global_false ;
-                if ( global_logging_info == global_true ) { log_out << "[found smallest pairwise support count, so eliminated choice " << choice_with_smallest_pairwise_support_count << "]" << std::endl ; } ;
-                continue ;
+                for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                {
+                    global_true_or_false_tie_includes_choice[ actual_choice ] = global_false ;
+                }
+                for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= count_of_choices_at_largest_pairwise_opposition_count ; pointer_to_list_of_tied_choices ++ )
+                {
+                    actual_choice = global_list_of_choices_with_largest_pairwise_opposition[ pointer_to_list_of_tied_choices ] ;
+                    global_true_or_false_tie_includes_choice[ actual_choice ] = global_true ;
+                    if ( global_logging_info == global_true ) { log_out << "[one of the tied choices is choice " << actual_choice << "]" << std::endl ; } ;
+                }
+                if ( global_logging_info == global_true ) { log_out << "[there are " << count_of_choices_at_largest_pairwise_opposition_count << " choices that have the same largest pairwise opposition count, and the pairwise support count will be used to resolve this tie]" << std::endl ; } ;
+                for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+                {
+                    adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
+                    adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
+                    actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
+                    actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
+                    if ( global_true_or_false_tie_includes_choice[ actual_first_choice ] == global_false )
+                    {
+                        continue ;
+                    }
+                    if ( global_true_or_false_tie_includes_choice[ actual_second_choice ] == global_false )
+                    {
+                        continue ;
+                    }
+
+//  todo: verify correctness:
+
+                    global_pairwise_support_count_for_choice[ actual_first_choice ] += global_tally_first_over_second_in_pair[ pair_counter ] ;
+                    global_pairwise_support_count_for_choice[ actual_second_choice ] += global_tally_second_over_first_in_pair[ pair_counter ] ;
+                }
+
+
+// -----------------------------------------------
+//  Identify which choice has the smallest pairwise
+//  support count. Allow for ties.
+
+                smallest_pairwise_support_count = 0 ;
+                count_of_choices_at_smallest_pairwise_support_count = 0 ;
+                for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                {
+                    if ( global_true_or_false_tie_includes_choice[ actual_choice ] == global_false )
+                    {
+                        continue ;
+                    }
+                    if ( global_logging_info == global_true ) { log_out << "[pairwise support count for choice " << actual_choice << " is " << global_pairwise_support_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                    if ( ( smallest_pairwise_support_count == 0 ) || ( global_pairwise_support_count_for_choice[ actual_choice ] > smallest_pairwise_support_count ) )
+                    {
+                        smallest_pairwise_support_count = global_pairwise_support_count_for_choice[ actual_choice ] ;
+                        count_of_choices_at_smallest_pairwise_support_count = 1 ;
+                        global_list_of_choices_with_smallest_pairwise_support[ count_of_choices_at_smallest_pairwise_support_count ] = actual_choice ;
+                    } else if ( global_pairwise_support_count_for_choice[ actual_choice ] == smallest_pairwise_support_count )
+                    {
+                        count_of_choices_at_smallest_pairwise_support_count ++ ;
+                        global_list_of_choices_with_smallest_pairwise_support[ count_of_choices_at_smallest_pairwise_support_count ] = actual_choice ;
+                        if ( global_logging_info == global_true ) { log_out << "[tied pairwise support count for choice " << actual_choice << " is " << global_pairwise_support_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                    }
+                }
+
+
+// -----------------------------------------------
+//  Eliminate the choice with the smallest pairwise
+//  support count. If there is more than one
+//  choice with the smallest pairwise support count,
+//  just list the tied choices in the log file
+//  without trying to resolve such a tie.
+
+                if ( count_of_choices_at_smallest_pairwise_support_count == 1 )
+                {
+                        actual_choice = global_list_of_choices_with_smallest_pairwise_support[ 1 ] ;
+                        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                        if ( global_logging_info == global_true ) { log_out << "[eliminated choice " << actual_choice << " because it has the single smallest pairwise support count]" << std::endl ; } ;
+                        continue ;
+                } else
+                {
+                    for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= count_of_choices_at_smallest_pairwise_support_count ; pointer_to_list_of_tied_choices ++ )
+                    {
+                        actual_choice = global_list_of_choices_with_smallest_pairwise_support[ pointer_to_list_of_tied_choices ] ;
+                        if ( global_logging_info == global_true ) { log_out << "[one of the tied choices is choice " << actual_choice << "]" << std::endl ; } ;
+                    }
+                    global_string_same_or_diff = "tied_support_count" ;
+                    if ( global_logging_info == global_true ) { log_out << "[there are " << count_of_choices_at_smallest_pairwise_support_count << " choices that have the same smallest pairwise support count]" << std::endl ; } ;
+                    return ;
+                }
+
+
+// -----------------------------------------------
+//  Done handling an elimination based on the
+//  largest pairwise opposition and possibly the
+//  smallest support count.
+
             }
-            if ( global_logging_info == global_true ) { log_out << "[encountered a tie, unable to eliminate a choice]" << std::endl ; } ;
-            break ;
         }
 
 
@@ -8825,6 +9054,78 @@ global_fractional_count_for_actual_choice_and_denominator[ top_ranked_continuing
 
 // -----------------------------------------------
 //  End of function calc_eliminate_one_choice_each_round.
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
+//  If requested, calculate results using rounds
+//  of elimination.
+
+void calc_eliminate_methods() {
+
+
+// -----------------------------------------------
+//  Initialization.
+
+    spreadsheet_out.open ( "output_random_ballot_spreadsheet_data.txt" , std::ios::app ) ;
+    global_true_or_false_request_single_elimination = global_false ;
+
+
+// -----------------------------------------------
+//  Possibly find the winner according to instant
+//  pairwise elimination (IPE).
+
+    if ( global_true_or_false_request_instant_pairwise_elimination == global_true )
+    {
+        global_true_or_false_calc_instant_pairwise_elimination = global_true ;
+        global_true_or_false_calc_instant_runoff_voting = global_false ;
+        global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
+        global_number_of_elimination_rounds = 0 ;
+        calc_eliminate_one_choice_each_round( ) ;
+        spreadsheet_out << "ipe " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << std::endl ;
+    }
+
+
+// -----------------------------------------------
+//  Possibly find the winner according to instant
+//  runoff voting (IRV).
+
+    if ( global_true_or_false_request_instant_runoff_voting == global_true )
+    {
+        global_true_or_false_calc_instant_runoff_voting = global_true ;
+        global_true_or_false_calc_instant_pairwise_elimination = global_false ;
+        global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
+        global_number_of_elimination_rounds = 0 ;
+        global_elimination_type_requested = "irv" ;
+        calc_eliminate_one_choice_each_round( ) ;
+        spreadsheet_out << "irv " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << std::endl ;
+    }
+
+
+// -----------------------------------------------
+//  Possibly find the winner according to instant
+//  runoff plus pairwise elimination voting (IRPPEV).
+
+    if ( global_true_or_false_request_instant_runoff_plus_pairwise_elimination == global_true )
+    {
+        global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_true ;
+        global_true_or_false_calc_instant_runoff_voting = global_false ;
+        global_true_or_false_calc_instant_pairwise_elimination = global_false ;
+        global_number_of_elimination_rounds = 0 ;
+        global_elimination_type_requested = "irppev" ;
+        calc_eliminate_one_choice_each_round( ) ;
+        spreadsheet_out << "irppev " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << std::endl ;
+    }
+
+
+// -----------------------------------------------
+//  End of function calc_eliminate_methods.
+
+    spreadsheet_out.close ( ) ;
 
     return ;
 
@@ -8888,9 +9189,7 @@ int main() {
 //  If requested, calculate results using rounds
 //  of elimination.
 
-    global_number_of_elimination_rounds = 0 ;
-    global_true_or_false_request_single_elimination = global_false ;
-    calc_eliminate_one_choice_each_round( ) ;
+    calc_eliminate_methods( ) ;
 
 
 // -----------------------------------------------
