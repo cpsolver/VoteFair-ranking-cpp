@@ -117,7 +117,7 @@ int convert_text_to_integer( char * supplied_text )
     }
     catch( ... )
     {
-        equivalent_integer = -999 ;
+        equivalent_integer = -99999 ;
     }
     return equivalent_integer ;
 }
@@ -148,8 +148,8 @@ int main( ) {
 //  Specify the number of ballots and the number
 //  of choices.
 
-    const int maximum_case_count = 2 ;
-    const int maximum_ballot_number = 17 ;
+    const int maximum_case_count = 100 ;
+    const int maximum_ballot_number = 9 ;
     const int maximum_choice_number = 4 ;
 
 
@@ -159,7 +159,8 @@ int main( ) {
     const int global_yes = 1 ;
     const int global_no = 0 ;
     const int question_number = 1 ;
-    const int maximum_case_id = 9999999 ;
+    const int minimum_case_id = 100000 ;
+    const int maximum_case_id = 999999 ;
 
 
 // -----------------------------------------------
@@ -189,6 +190,7 @@ int main( ) {
     std::string voteinfo_code_for_end_of_ballot = "-10" ;
     std::string voteinfo_code_for_ballot_count = "-11" ;
     std::string voteinfo_code_for_preference_level = "-12" ;
+
     std::string voteinfo_code_for_request_instant_runoff_voting = "-50" ;
     std::string voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
     std::string voteinfo_code_for_request_irv_plus_pairwise_loser = "-52" ;
@@ -197,6 +199,7 @@ int main( ) {
 // -----------------------------------------------
 //  Begin a loop that handles one case.
 
+    case_id = minimum_case_id ;  
     for ( case_count = 1 ; case_count <= maximum_case_count ; case_count ++ )
     {
 
@@ -222,10 +225,12 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Randomly generate a case number.
+//  Generate the case number.
 
-        std::uniform_int_distribution<int> distribution( 1 , maximum_case_id );
-        case_id = distribution( generator );  
+//        std::uniform_int_distribution<int> distribution( minimum_case_id , maximum_case_id );
+//        case_id = distribution( generator );  
+
+        case_id ++ ;  
 
 
 // -----------------------------------------------
@@ -236,7 +241,9 @@ int main( ) {
         outfile << voteinfo_code_for_start_of_all_vote_info << std::endl ;
         outfile << voteinfo_code_for_case_number << " " << case_id << std::endl ;
 
-        outfile << voteinfo_code_for_request_instant_runoff_voting << std::endl ;
+//        outfile << voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
+//        outfile << voteinfo_code_for_request_instant_runoff_voting << std::endl ;
+        outfile << voteinfo_code_for_request_irv_plus_pairwise_loser << std::endl ;
 
         outfile << voteinfo_code_for_question_number << " " << question_number << std::endl ;
         outfile << voteinfo_code_for_number_of_choices << " " << maximum_choice_number << std::endl ;
@@ -345,6 +352,7 @@ int main( ) {
 
 // -----------------------------------------------
 //  Run the VoteFair-ranking-cpp program.
+//
 //  documentation:  https://cplusplus.com/reference/cstdlib/system/
 
         integer_from_system_call = system( ".\\votefair_ranking < temp_generated_random_ballots.txt >> temp_votefair_ranking_output.txt" ) ;
