@@ -33,6 +33,11 @@
 //  See the Perl-version history for earlier
 //  developments.
 //
+//  Version 6.10 - In 2020 Richard Fobes added
+//  the calc_eliminate_one_choice_each_round
+//  function to calculate methods that eliminate
+//  one choice (candidate) at a time.
+//
 //
 // -----------------------------------------------
 //
@@ -393,12 +398,6 @@ int global_choice_number ;
 //  debugging intermediate calculations.
 
 std::ofstream log_out ;
-
-
-//  Specify an extra output file for writing
-//  data to a spreadsheet file.
-
-std::ofstream spreadsheet_out ;
 
 
 //  Declare message strings.
@@ -8337,28 +8336,9 @@ void do_votefair_calculations( )
 
 
 // -----------------------------------------------
-//  Terminate the results list.
-
-    put_next_result_info_number( global_voteinfo_code_for_end_of_all_cases ) ;
-    if ( global_logging_info == global_true ) { log_out << "[all questions done]\n" ; } ;
-
-
-// -----------------------------------------------
-//  Save the result-info list pointer as the
-//  length of the portion of the result-info
-//  list that contains results.
-//  Then reset the pointer to the
-//  beginning of the list.
-
-    global_length_of_result_info_list = global_pointer_to_output_results + 1 ;
-    global_pointer_to_output_results = 0 ;
-    if ( global_logging_info == global_true ) { log_out << "[all questions, length of output list is " << global_length_of_result_info_list << "]" << std::endl ; } ;
-
-
-// -----------------------------------------------
 //  End of function votefair_do_calculations_all_questions.
 
-    if ( global_logging_info == global_true ) { log_out << "[all questions, exiting function]\n" ; } ;
+    if ( global_logging_info == global_true ) { log_out << "[all questions done, exiting function]\n" ; } ;
     return ;
 
 }
@@ -9024,6 +9004,8 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  just list the tied choices in the log file
 //  without trying to resolve such a tie.
 
+//  todo: if fewer ties than before, repeat analysis
+
                 if ( count_of_choices_at_smallest_pairwise_support_count == 1 )
                 {
                         actual_choice = global_list_of_choices_with_smallest_pairwise_support[ 1 ] ;
@@ -9080,7 +9062,6 @@ void calc_eliminate_methods() {
 // -----------------------------------------------
 //  Initialization.
 
-    spreadsheet_out.open ( "output_random_ballot_spreadsheet_data.txt" , std::ios::app ) ;
     global_true_or_false_request_single_elimination = global_false ;
 
 
@@ -9095,7 +9076,7 @@ void calc_eliminate_methods() {
         global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
         global_number_of_elimination_rounds = 0 ;
         calc_eliminate_one_choice_each_round( ) ;
-        spreadsheet_out << "ipe " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << std::endl ;
+        if ( global_logging_info == global_true ) { log_out << "\n[ipe " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
     }
 
 
@@ -9111,7 +9092,7 @@ void calc_eliminate_methods() {
         global_number_of_elimination_rounds = 0 ;
         global_elimination_type_requested = "irv" ;
         calc_eliminate_one_choice_each_round( ) ;
-        spreadsheet_out << "irv " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << std::endl ;
+        if ( global_logging_info == global_true ) { log_out << "\n[irv " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
     }
 
 
@@ -9127,14 +9108,12 @@ void calc_eliminate_methods() {
         global_number_of_elimination_rounds = 0 ;
         global_elimination_type_requested = "irppev" ;
         calc_eliminate_one_choice_each_round( ) ;
-        spreadsheet_out << "irppev " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << std::endl ;
+        if ( global_logging_info == global_true ) { log_out << "\n[irppev " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
     }
 
 
 // -----------------------------------------------
 //  End of function calc_eliminate_methods.
-
-    spreadsheet_out.close ( ) ;
 
     return ;
 
@@ -9187,18 +9166,22 @@ int main() {
 
 
 // -----------------------------------------------
-//  Write the results to standard output (which
-//  typically is a file).  If there is a major
-//  error, a simple error code is written.
-
-    write_results( ) ;
-
-
-// -----------------------------------------------
 //  If requested, calculate results using rounds
 //  of elimination.
 
     calc_eliminate_methods( ) ;
+
+
+// -----------------------------------------------
+//  Write the results to standard output (which
+//  typically is a file).  If there is a major
+//  error, a simple error code is written.
+
+    put_next_result_info_number( global_voteinfo_code_for_end_of_all_cases ) ;
+    global_length_of_result_info_list = global_pointer_to_output_results + 1 ;
+    if ( global_logging_info == global_true ) { log_out << "\n[all results, length of output list is " << global_length_of_result_info_list << "]" << std::endl ; } ;
+    global_pointer_to_output_results = 0 ;
+    write_results( ) ;
 
 
 // -----------------------------------------------
