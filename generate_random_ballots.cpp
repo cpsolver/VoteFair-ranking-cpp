@@ -1,5 +1,8 @@
 //  generate_random_ballots.cpp
 //
+//  This program generates random ballots for use with the
+//  votefair_ranking.cpp code.
+//
 //
 // -----------------------------------------------
 //
@@ -18,7 +21,7 @@
 //
 //  VERSION
 //
-//  Version 0.10
+//  Version 0.70
 //
 //
 // -----------------------------------------------
@@ -79,7 +82,7 @@
 //  Specify the number of ballots and the number
 //  of choices.
 
-const int global_maximum_case_count = 1000 ;
+const int global_maximum_case_count = 800 ;
 const int global_maximum_ballot_number = 17 ;
 const int global_maximum_choice_number = 5 ;
 
@@ -98,10 +101,12 @@ const int global_true = 1 ;
 int global_case_id = 0 ;
 int global_count_of_ipe_cases_that_agree = 0 ;
 int global_count_of_ipe_cases_that_disagree = 0 ;
-int global_count_of_irv_cases_that_agree = 0 ;
-int global_count_of_irv_cases_that_disagree = 0 ;
 int global_count_of_irv_ppl_cases_that_agree = 0 ;
 int global_count_of_irv_ppl_cases_that_disagree = 0 ;
+int global_count_of_irv_cases_that_agree = 0 ;
+int global_count_of_irv_cases_that_disagree = 0 ;
+int global_count_of_votefair_single_winner = 0 ;
+int global_count_of_votefair_no_single_winner = 0 ;
 
 
 // -----------------------------------------------
@@ -366,6 +371,7 @@ void handle_calculated_results( )
 
     if ( choice_winner_from_votefair_ranking > 0 )
     {
+    	global_count_of_votefair_single_winner ++ ;
         if ( choice_winner_from_instant_pairwise_elimination == choice_winner_from_votefair_ranking )
         {
             global_count_of_ipe_cases_that_agree ++ ;
@@ -389,6 +395,9 @@ void handle_calculated_results( )
         {
             global_count_of_irv_cases_that_disagree ++ ;
         }
+    } else
+    {
+    	global_count_of_votefair_no_single_winner ++ ;
     }
 
 
@@ -418,6 +427,8 @@ int main( ) {
     int pointer_number ;
     int count_of_choices_not_yet_ranked ;
     int integer_from_system_call ;
+    int calculated_result_agree ;
+    int calculated_result_disagree ;
 
 
 // -----------------------------------------------
@@ -610,9 +621,18 @@ int main( ) {
 //  incorrect, and tied calculated results.
 
     log_out << std::endl << std::endl << std::endl ;
-    log_out << "[ipe agree/disagree: " << global_count_of_ipe_cases_that_agree << "  " << global_count_of_ipe_cases_that_disagree << "]" << std::endl ;
-    log_out << "[irv_ppl agree/disagree: " << global_count_of_irv_ppl_cases_that_agree << "  " << global_count_of_irv_ppl_cases_that_disagree << "]" << std::endl ;
-    log_out << "[irv agree/disagree: " << global_count_of_irv_cases_that_agree << "  " << global_count_of_irv_cases_that_disagree << "]" << std::endl ;
+
+    calculated_result_agree = int( ( 1000 * global_count_of_ipe_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_disagree = int( ( 1000 * global_count_of_ipe_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
+    log_out << "[ipe agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "]" << std::endl ;
+
+    calculated_result_agree = int( ( 1000 * global_count_of_irv_ppl_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_disagree = int( ( 1000 * global_count_of_irv_ppl_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
+    log_out << "[irv_ppl agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "]" << std::endl ;
+
+    calculated_result_agree = int( ( 1000 * global_count_of_irv_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_disagree = int( ( 1000 * global_count_of_irv_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
+    log_out << "[irv agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "]" << std::endl ;
 
 
 // -----------------------------------------------
