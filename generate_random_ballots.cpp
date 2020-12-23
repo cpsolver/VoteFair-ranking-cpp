@@ -82,7 +82,7 @@
 //  Specify the number of ballots and the number
 //  of choices.
 
-const int global_maximum_case_count = 800 ;
+const int global_maximum_case_count = 80 ;
 const int global_maximum_ballot_number = 17 ;
 const int global_maximum_choice_number = 5 ;
 
@@ -105,6 +105,8 @@ int global_count_of_irv_ppl_cases_that_agree = 0 ;
 int global_count_of_irv_ppl_cases_that_disagree = 0 ;
 int global_count_of_irv_cases_that_agree = 0 ;
 int global_count_of_irv_cases_that_disagree = 0 ;
+int global_count_of_star_cases_that_agree = 0 ;
+int global_count_of_star_cases_that_disagree = 0 ;
 int global_count_of_votefair_single_winner = 0 ;
 int global_count_of_votefair_no_single_winner = 0 ;
 
@@ -126,6 +128,7 @@ std::string global_voteinfo_code_for_preference_level = "-12" ;
 std::string global_voteinfo_code_for_request_instant_runoff_voting = "-50" ;
 std::string global_voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
 std::string global_voteinfo_code_for_request_irv_plus_pairwise_loser = "-52" ;
+std::string global_voteinfo_code_for_request_star_voting = "-56" ;
 
 const int global_voteinfo_code_for_choice = -13 ;
 const int global_voteinfo_code_for_tie = -14 ;
@@ -134,6 +137,7 @@ const int global_voteinfo_code_for_start_of_votefair_popularity_ranking_sequence
 const int global_voteinfo_code_for_winner_instant_runoff_voting = -53 ;
 const int global_voteinfo_code_for_winner_instant_pairwise_elimination = -54 ;
 const int global_voteinfo_code_for_winner_irv_plus_pairwise_loser = -55 ;
+const int global_voteinfo_code_for_winner_star_voting = -57 ;
 
 
 // -----------------------------------------------
@@ -239,9 +243,10 @@ void handle_calculated_results( )
     int count_of_result_codes = 0 ;
     int true_or_false_just_got_votefair_ranking_winner = 0 ;
     int choice_winner_from_votefair_ranking = 0 ;
-    int choice_winner_from_instant_runoff_voting = 0 ;
     int choice_winner_from_instant_pairwise_elimination = 0 ;
     int choice_winner_from_irv_plus_pairwise_loser = 0 ;
+    int choice_winner_from_instant_runoff_voting = 0 ;
+    int choice_winner_from_star_voting = 0 ;
     int count_position_at_start_of_votefair_popularity_sequence = 0 ;
     int count_position_at_choice_number = 0 ;
 
@@ -317,9 +322,10 @@ void handle_calculated_results( )
             {
                 choice_winner_from_votefair_ranking = current_result_code ;
                 true_or_false_just_got_votefair_ranking_winner = global_true ;
-                choice_winner_from_instant_runoff_voting = 0 ;
                 choice_winner_from_instant_pairwise_elimination = 0 ;
+                choice_winner_from_instant_runoff_voting = 0 ;
                 choice_winner_from_irv_plus_pairwise_loser = 0 ;
+                choice_winner_from_star_voting = 0 ;
                 log_out << std::endl << "[vf " << choice_winner_from_votefair_ranking << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_tie )
             {
@@ -332,10 +338,6 @@ void handle_calculated_results( )
                 }
                 log_out << "[vf_tie " << choice_winner_from_votefair_ranking << "]" ;
                 true_or_false_just_got_votefair_ranking_winner = global_false ;
-            } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
-            {
-                choice_winner_from_instant_runoff_voting = current_result_code ;
-                log_out << "[irv " << choice_winner_from_instant_runoff_voting << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_pairwise_elimination )
             {
                 choice_winner_from_instant_pairwise_elimination = current_result_code ;
@@ -344,6 +346,14 @@ void handle_calculated_results( )
             {
                 choice_winner_from_irv_plus_pairwise_loser = current_result_code ;
                 log_out << "[irv_ple " << choice_winner_from_irv_plus_pairwise_loser << "]" ;
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
+            {
+                choice_winner_from_instant_runoff_voting = current_result_code ;
+                log_out << "[irv " << choice_winner_from_instant_runoff_voting << "]" ;
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_star_voting )
+            {
+                choice_winner_from_star_voting = current_result_code ;
+                log_out << "[star " << choice_winner_from_star_voting << "]" ;
             }
 
 
@@ -394,6 +404,14 @@ void handle_calculated_results( )
         } else
         {
             global_count_of_irv_cases_that_disagree ++ ;
+        }
+
+        if ( choice_winner_from_star_voting == choice_winner_from_votefair_ranking )
+        {
+            global_count_of_star_cases_that_agree ++ ;
+        } else
+        {
+            global_count_of_star_cases_that_disagree ++ ;
         }
     } else
     {
@@ -485,6 +503,7 @@ int main( ) {
         outfile << global_voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
         outfile << global_voteinfo_code_for_request_instant_runoff_voting << std::endl ;
         outfile << global_voteinfo_code_for_request_irv_plus_pairwise_loser << std::endl ;
+        outfile << global_voteinfo_code_for_request_star_voting << std::endl ;
         outfile << global_voteinfo_code_for_question_number << " " << global_question_number << std::endl ;
         outfile << global_voteinfo_code_for_number_of_choices << " " << global_maximum_choice_number << std::endl ;
 
@@ -633,6 +652,10 @@ int main( ) {
     calculated_result_agree = int( ( 1000 * global_count_of_irv_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
     calculated_result_disagree = int( ( 1000 * global_count_of_irv_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
     log_out << "[irv agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "]" << std::endl ;
+
+    calculated_result_agree = int( ( 1000 * global_count_of_star_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_disagree = int( ( 1000 * global_count_of_star_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
+    log_out << "[star agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "]" << std::endl ;
 
 
 // -----------------------------------------------
