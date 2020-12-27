@@ -82,7 +82,7 @@
 //  Specify the number of ballots and the number
 //  of choices.
 
-const int global_maximum_case_count = 800 ;
+const int global_maximum_case_count = 700 ;
 const int global_maximum_ballot_number = 17 ;
 const int global_maximum_choice_number = 5 ;
 
@@ -102,17 +102,21 @@ int global_case_id = 0 ;
 int global_count_of_ipe_cases_that_agree = 0 ;
 int global_count_of_ipe_cases_that_disagree = 0 ;
 int global_count_of_ipe_cases_tied = 0 ;
-int global_count_of_irv_ple_cases_that_agree = 0 ;
-int global_count_of_irv_ple_cases_that_disagree = 0 ;
-int global_count_of_irv_ple_cases_tied = 0 ;
+int global_count_of_irmpl_cases_that_agree = 0 ;
+int global_count_of_irmpl_cases_that_disagree = 0 ;
+int global_count_of_irmpl_cases_tied = 0 ;
 int global_count_of_irv_cases_that_agree = 0 ;
 int global_count_of_irv_cases_that_disagree = 0 ;
 int global_count_of_irv_cases_tied = 0 ;
 int global_count_of_star_cases_that_agree = 0 ;
 int global_count_of_star_cases_that_disagree = 0 ;
 int global_count_of_star_cases_tied = 0 ;
+int global_count_of_ple_cases_that_agree = 0 ;
+int global_count_of_ple_cases_that_disagree = 0 ;
+int global_count_of_ple_cases_tied = 0 ;
 int global_count_of_votefair_single_winner = 0 ;
 int global_count_of_votefair_no_single_winner = 0 ;
+int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
 
 
 // -----------------------------------------------
@@ -131,8 +135,9 @@ std::string global_voteinfo_code_for_preference_level = "-12" ;
 
 std::string global_voteinfo_code_for_request_instant_runoff_voting = "-50" ;
 std::string global_voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
-std::string global_voteinfo_code_for_request_irv_plus_pairwise_loser = "-52" ;
+std::string global_voteinfo_code_for_request_irv_minus_pairwise_losers = "-52" ;
 std::string global_voteinfo_code_for_request_star_voting = "-56" ;
+std::string global_voteinfo_code_for_request_pairwise_loser_elimination = "-58" ;
 
 const int global_voteinfo_code_for_choice = -13 ;
 const int global_voteinfo_code_for_tie = -14 ;
@@ -140,8 +145,9 @@ const int global_voteinfo_code_for_start_of_votefair_popularity_ranking_sequence
 
 const int global_voteinfo_code_for_winner_instant_runoff_voting = -53 ;
 const int global_voteinfo_code_for_winner_instant_pairwise_elimination = -54 ;
-const int global_voteinfo_code_for_winner_irv_plus_pairwise_loser = -55 ;
+const int global_voteinfo_code_for_winner_irv_minus_pairwise_losers = -55 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
+const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 
 
 // -----------------------------------------------
@@ -205,6 +211,121 @@ int convert_text_to_integer( char * supplied_text )
 
 // -----------------------------------------------
 // -----------------------------------------------
+//  generate_preference
+//
+//  This function generates random preferences
+//  for the ballots.
+
+void generate_preferences( ) {
+
+
+// -----------------------------------------------
+//  Initialization.
+
+    int ballot_number = 0 ;
+    int choice_number = 0 ;
+    int ranking_level = 0 ;
+    int position_number = 0 ;
+    int pointer_number = 0 ;
+    int count_of_choices_not_yet_ranked = 0 ;
+
+        for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
+        {
+            for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
+            {
+                global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] = 0 ;
+            }
+        }
+
+
+// -----------------------------------------------
+//  Begin a loop that handles one ballot.
+
+    for ( ballot_number = 1 ; ballot_number <= global_maximum_ballot_number ; ballot_number ++ )
+    {
+//        log_out << "[" ;
+
+
+// -----------------------------------------------
+//  Put the choice numbers in a list so that
+//  they can be chosen at random without repeating
+//  any choice number.
+
+        for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
+        {
+            global_choice_number_at_position[ choice_number ] = choice_number ;
+        }
+        count_of_choices_not_yet_ranked = global_maximum_choice_number ;
+
+
+// -----------------------------------------------
+//  Begin a loop that handles one ranking level.
+
+        for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
+        {
+
+
+// -----------------------------------------------
+//  Randomly choose a choice number for this ranking
+//  level.  Do not repeat any choice number already used
+//  at a previous ranking level.
+//  Also keep track of usage to verify randomness.
+
+            std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked );
+            position_number = distribution( generator );  
+            choice_number = global_choice_number_at_position[ position_number ] ;
+            global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] = choice_number ;
+            for ( pointer_number = position_number ; pointer_number <= count_of_choices_not_yet_ranked - 1 ; pointer_number ++ )
+            {
+                global_choice_number_at_position[ pointer_number ] = global_choice_number_at_position[ pointer_number + 1 ] ;
+            }
+            count_of_choices_not_yet_ranked -- ;
+            global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] ++ ;
+//            log_out << choice_number << " " ;
+
+
+// -----------------------------------------------
+//  Repeat the loop that handles one ranking level.
+
+        }
+
+
+// -----------------------------------------------
+//  Repeat the loop that handles one ballot.
+
+//        log_out << "]" << std::endl ;
+    }
+
+
+// -----------------------------------------------
+//  Optionally verify that the preference info is
+//  really random.
+
+    if ( 1 == 1 )
+    {
+        std::fstream verifyfile;
+        verifyfile.open ( "temp_verify_randomness.txt" , std::fstream::app ) ;
+        for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
+        {
+            for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
+            {
+                verifyfile << "choice " << choice_number << " rank " << ranking_level << " usage " << global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] << std::endl ;
+            }
+        }
+        verifyfile.close( ) ;
+    }
+
+
+// -----------------------------------------------
+//  End of function generate_preferences.
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
 //     handle_calculated_results
 //
 //  Reads numbers and codes from the file
@@ -228,6 +349,7 @@ void handle_calculated_results( )
     int choice_winner_from_irv_minus_pairwise_loser = 0 ;
     int choice_winner_from_instant_runoff_voting = 0 ;
     int choice_winner_from_star_voting = 0 ;
+    int choice_winner_from_pairwise_loser_elimination = 0 ;
     int count_position_at_start_of_votefair_popularity_sequence = 0 ;
     int count_position_at_choice_number = 0 ;
 
@@ -313,10 +435,10 @@ void handle_calculated_results( )
             {
                 choice_winner_from_instant_pairwise_elimination = current_result_code ;
                 log_out << "[ipe " << choice_winner_from_instant_pairwise_elimination << "]" ;
-            } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_plus_pairwise_loser )
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_minus_pairwise_losers )
             {
                 choice_winner_from_irv_minus_pairwise_loser = current_result_code ;
-                log_out << "[irv_ple " << choice_winner_from_irv_minus_pairwise_loser << "]" ;
+                log_out << "[irmpl " << choice_winner_from_irv_minus_pairwise_loser << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
             {
                 choice_winner_from_instant_runoff_voting = current_result_code ;
@@ -325,6 +447,10 @@ void handle_calculated_results( )
             {
                 choice_winner_from_star_voting = current_result_code ;
                 log_out << "[star " << choice_winner_from_star_voting << "]" ;
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_pairwise_loser_elimination )
+            {
+                choice_winner_from_pairwise_loser_elimination = current_result_code ;
+                log_out << "[ple " << choice_winner_from_pairwise_loser_elimination << "]" ;
             }
 
 
@@ -369,13 +495,13 @@ void handle_calculated_results( )
 
         if ( choice_winner_from_irv_minus_pairwise_loser == choice_winner_from_votefair_ranking )
         {
-            global_count_of_irv_ple_cases_that_agree ++ ;
+            global_count_of_irmpl_cases_that_agree ++ ;
         } else if ( choice_winner_from_irv_minus_pairwise_loser > 0 )
         {
-            global_count_of_irv_ple_cases_that_disagree ++ ;
+            global_count_of_irmpl_cases_that_disagree ++ ;
         } else
         {
-            global_count_of_irv_ple_cases_tied ++ ;
+            global_count_of_irmpl_cases_tied ++ ;
         }
 
         if ( choice_winner_from_instant_runoff_voting == choice_winner_from_votefair_ranking )
@@ -399,6 +525,18 @@ void handle_calculated_results( )
         {
             global_count_of_star_cases_tied ++ ;
         }
+
+        if ( choice_winner_from_pairwise_loser_elimination == choice_winner_from_votefair_ranking )
+        {
+            global_count_of_ple_cases_that_agree ++ ;
+        } else if ( choice_winner_from_pairwise_loser_elimination > 0 )
+        {
+            global_count_of_ple_cases_that_disagree ++ ;
+        } else
+        {
+            global_count_of_ple_cases_tied ++ ;
+        }
+
     } else
     {
     	global_count_of_votefair_no_single_winner ++ ;
@@ -423,17 +561,17 @@ int main( ) {
 // -----------------------------------------------
 //  Declare integer variables.
 
-    int case_count ;
-    int ballot_number ;
-    int choice_number ;
-    int ranking_level ;
-    int position_number ;
-    int pointer_number ;
-    int count_of_choices_not_yet_ranked ;
-    int integer_from_system_call ;
-    int calculated_result_agree ;
-    int calculated_result_disagree ;
-    int calculated_result_tied ;
+    int case_count = 0 ;
+    int ballot_number = 0 ;
+    int choice_number = 0 ;
+    int ranking_level = 0 ;
+    int position_number = 0 ;
+    int pointer_number = 0 ;
+    int count_of_choices_not_yet_ranked = 0 ;
+    int integer_from_system_call = 0 ;
+    int calculated_result_agree = 0 ;
+    int calculated_result_disagree = 0 ;
+    int calculated_result_tied = 0 ;
 
 
 // -----------------------------------------------
@@ -452,32 +590,15 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Initialization.
+//  Update the case number.
 
-        ballot_number = 0 ;
-        choice_number = 0 ;
-        ranking_level = 0 ;
-        position_number = 0 ;
-        pointer_number = 0 ;
-        count_of_choices_not_yet_ranked = 0 ;
-        integer_from_system_call = 0 ;
-
-        for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
-        {
-            for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
-            {
-                global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] = 0 ;
-            }
-        }
+        global_case_id ++ ;  
 
 
 // -----------------------------------------------
-//  Generate the case number.
+//  Randomly generate the ballot rankings.
 
-//        std::uniform_int_distribution<int> distribution( global_minimum_case_id , global_maximum_case_id );
-//        case_id = distribution( generator );  
-
-        global_case_id ++ ;  
+        generate_preferences( ) ;
 
 
 // -----------------------------------------------
@@ -489,8 +610,9 @@ int main( ) {
         outfile << global_voteinfo_code_for_case_number << " " << global_case_id << std::endl ;
         outfile << global_voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
         outfile << global_voteinfo_code_for_request_instant_runoff_voting << std::endl ;
-        outfile << global_voteinfo_code_for_request_irv_plus_pairwise_loser << std::endl ;
+        outfile << global_voteinfo_code_for_request_irv_minus_pairwise_losers << std::endl ;
         outfile << global_voteinfo_code_for_request_star_voting << std::endl ;
+        outfile << global_voteinfo_code_for_request_pairwise_loser_elimination << std::endl ;
         outfile << global_voteinfo_code_for_question_number << " " << global_question_number << std::endl ;
         outfile << global_voteinfo_code_for_number_of_choices << " " << global_maximum_choice_number << std::endl ;
 
@@ -505,18 +627,6 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Put the choice numbers in a list so that
-//  they can be chosen at random without repeating
-//  any choice number.
-
-            for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
-            {
-                global_choice_number_at_position[ choice_number ] = choice_number ;
-            }
-            count_of_choices_not_yet_ranked = global_maximum_choice_number ;
-
-
-// -----------------------------------------------
 //  Begin a loop that handles one ranking level.
 
             for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
@@ -524,26 +634,10 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Randomly choose a choice number for this ranking
-//  level.  Do not repeat any choice number already used
-//  at a previous ranking level.
-//  Also keep track of usage to verify randomness.
-
-                std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked );
-                position_number = distribution( generator );  
-                choice_number = global_choice_number_at_position[ position_number ] ;
-                for ( pointer_number = position_number ; pointer_number <= count_of_choices_not_yet_ranked - 1 ; pointer_number ++ )
-                {
-                    global_choice_number_at_position[ pointer_number ] = global_choice_number_at_position[ pointer_number + 1 ] ;
-                }
-                count_of_choices_not_yet_ranked -- ;
-                global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] ++ ;
-
-
-// -----------------------------------------------
 //  Write the choice number that is at the
 //  next-lower preference level.
 
+                choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
                 outfile << choice_number << std::endl ;
 
 
@@ -551,6 +645,7 @@ int main( ) {
 //  Repeat the loop that handles one preference ranking.
 
             }
+
 
 // -----------------------------------------------
 //  Indicate the end of this ballot.
@@ -578,31 +673,19 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Optionally verify that the preference info is
-//  really random.
-
-        if ( 1 == 1 )
-        {
-            std::fstream verifyfile;
-            verifyfile.open ( "temp_verify_randomness.txt" , std::fstream::app ) ;
-            for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
-            {
-                for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
-                {
-                    verifyfile << "choice " << choice_number << " rank " << ranking_level << " usage " << global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] << std::endl ;
-                }
-            }
-            verifyfile.close( ) ;
-        }
-
-
-// -----------------------------------------------
 //  Run the VoteFair-ranking-cpp program.
 //
 //  documentation:  https://cplusplus.com/reference/cstdlib/system/
 
-        integer_from_system_call = system( ".\\votefair_ranking < temp_generated_random_ballots.txt >> temp_votefair_ranking_output.txt" ) ;
+        integer_from_system_call = system( ".\\votefair_ranking < temp_generated_random_ballots.txt > temp_votefair_ranking_output.txt" ) ;
         outfile << integer_from_system_call << std::endl ;
+
+
+// -----------------------------------------------
+//  Join the log files to allow viewing details
+//  of specific cases of interest.
+
+        integer_from_system_call = system( "type temp_output_votefair_ranking_log.txt >> temp_joined_output_votefair_ranking_log.txt" ) ;
 
 
 // -----------------------------------------------
@@ -633,10 +716,10 @@ int main( ) {
     calculated_result_tied = int( ( 1000 * global_count_of_ipe_cases_tied ) / global_count_of_votefair_single_winner ) ;
     log_out << "[IPE agree/disagree/tied: " << calculated_result_agree << "  " << calculated_result_disagree << "  " << calculated_result_tied << "]" << std::endl ;
 
-    calculated_result_agree = int( ( 1000 * global_count_of_irv_ple_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
-    calculated_result_disagree = int( ( 1000 * global_count_of_irv_ple_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
-    calculated_result_tied = int( ( 1000 * global_count_of_irv_ple_cases_tied ) / global_count_of_votefair_single_winner ) ;
-    log_out << "[IRV_PLE agree/disagree/tied: " << calculated_result_agree << "  " << calculated_result_disagree << "  " << calculated_result_tied << "]" << std::endl ;
+    calculated_result_agree = int( ( 1000 * global_count_of_irmpl_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_disagree = int( ( 1000 * global_count_of_irmpl_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_tied = int( ( 1000 * global_count_of_irmpl_cases_tied ) / global_count_of_votefair_single_winner ) ;
+    log_out << "[IRMPL agree/disagree/tied: " << calculated_result_agree << "  " << calculated_result_disagree << "  " << calculated_result_tied << "]" << std::endl ;
 
     calculated_result_agree = int( ( 1000 * global_count_of_star_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
     calculated_result_disagree = int( ( 1000 * global_count_of_star_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
@@ -647,6 +730,11 @@ int main( ) {
     calculated_result_disagree = int( ( 1000 * global_count_of_irv_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
     calculated_result_tied = int( ( 1000 * global_count_of_irv_cases_tied ) / global_count_of_votefair_single_winner ) ;
     log_out << "[IRV agree/disagree/tied: " << calculated_result_agree << "  " << calculated_result_disagree << "  " << calculated_result_tied << "]" << std::endl ;
+
+    calculated_result_agree = int( ( 1000 * global_count_of_ple_cases_that_agree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_disagree = int( ( 1000 * global_count_of_ple_cases_that_disagree ) / global_count_of_votefair_single_winner ) ;
+    calculated_result_tied = int( ( 1000 * global_count_of_ple_cases_tied ) / global_count_of_votefair_single_winner ) ;
+    log_out << "[PLE agree/disagree/tied: " << calculated_result_agree << "  " << calculated_result_disagree << "  " << calculated_result_tied << "]" << std::endl ;
 
 
 // -----------------------------------------------

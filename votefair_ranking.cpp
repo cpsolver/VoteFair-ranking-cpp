@@ -365,12 +365,14 @@ const int global_voteinfo_code_for_number_of_representation_levels_to_compute = 
 const int global_voteinfo_code_for_request_text_output = -49 ;
 const int global_voteinfo_code_for_request_instant_runoff_voting = -50 ;
 const int global_voteinfo_code_for_request_instant_pairwise_elimination = -51 ;
-const int global_voteinfo_code_for_request_irv_plus_pairwise_loser = -52 ;
+const int global_voteinfo_code_for_request_irv_minus_pairwise_losers = -52 ;
 const int global_voteinfo_code_for_winner_instant_runoff_voting = -53 ;
 const int global_voteinfo_code_for_winner_instant_pairwise_elimination = -54 ;
-const int global_voteinfo_code_for_winner_irv_plus_pairwise_loser = -55 ;
+const int global_voteinfo_code_for_winner_irv_minus_pairwise_losers = -55 ;
 const int global_voteinfo_code_for_request_star_voting = -56 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
+const int global_voteinfo_code_for_request_pairwise_loser_elimination = -58 ;
+const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -502,13 +504,15 @@ std::string global_string_tied = "tied_unknown" ;
 int global_elimination_result_type = 0 ;
 int global_true_or_false_request_single_elimination = global_false ;
 int global_true_or_false_request_instant_pairwise_elimination = global_false ;
-int global_true_or_false_request_instant_runoff_plus_pairwise_elimination = global_false ;
+int global_true_or_false_request_instant_runoff_minus_pairwise_losers = global_false ;
 int global_true_or_false_request_instant_runoff_voting = global_false ;
 int global_true_or_false_request_star_voting = global_false ;
+int global_true_or_false_request_pairwise_loser_elimination = global_false ;
 int global_true_or_false_calc_instant_pairwise_elimination = global_false ;
-int global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
+int global_true_or_false_calc_instant_runoff_minus_pairwise_losers = global_false ;
 int global_true_or_false_calc_instant_runoff_voting = global_false ;
 int global_true_or_false_calc_star_voting = global_false ;
+int global_true_or_false_calc_pairwise_loser_elimination = global_false ;
 
 int global_number_of_elimination_rounds ;
 int global_winner_of_elimination_rounds ;
@@ -1812,15 +1816,18 @@ void check_vote_info_numbers( )
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_pairwise_elimination )
         {
             global_true_or_false_request_instant_pairwise_elimination = global_true ;
-        } else if ( current_vote_info_number == global_voteinfo_code_for_request_irv_plus_pairwise_loser )
+        } else if ( current_vote_info_number == global_voteinfo_code_for_request_irv_minus_pairwise_losers )
         {
-            global_true_or_false_request_instant_runoff_plus_pairwise_elimination = global_true ;
+            global_true_or_false_request_instant_runoff_minus_pairwise_losers = global_true ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_runoff_voting )
         {
             global_true_or_false_request_instant_runoff_voting = global_true ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_star_voting )
         {
             global_true_or_false_request_star_voting = global_true ;
+        } else if ( current_vote_info_number == global_voteinfo_code_for_request_pairwise_loser_elimination )
+        {
+            global_true_or_false_request_pairwise_loser_elimination = global_true ;
 
 
 // -----------------------------------------------
@@ -8425,10 +8432,10 @@ void calc_eliminate_one_choice_each_round( )
     {
         global_elimination_type_requested = "IPE" ;
         global_elimination_result_type = global_voteinfo_code_for_winner_instant_pairwise_elimination ;
-    } else if ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true )
+    } else if ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true )
     {
         global_elimination_type_requested = "IRV+PLE" ;
-        global_elimination_result_type = global_voteinfo_code_for_winner_irv_plus_pairwise_loser ;
+        global_elimination_result_type = global_voteinfo_code_for_winner_irv_minus_pairwise_losers ;
     } else if ( global_true_or_false_calc_instant_runoff_voting == global_true )
     {
         global_elimination_type_requested = "IRV" ;
@@ -8437,6 +8444,10 @@ void calc_eliminate_one_choice_each_round( )
     {
         global_elimination_type_requested = "STAR" ;
         global_elimination_result_type = global_voteinfo_code_for_winner_star_voting ;
+    } else if ( global_true_or_false_calc_pairwise_loser_elimination == global_true )
+    {
+        global_elimination_type_requested = "PLE" ;
+        global_elimination_result_type = global_voteinfo_code_for_winner_pairwise_loser_elimination ;
     } else
     {
         return ;
@@ -8525,12 +8536,13 @@ void calc_eliminate_one_choice_each_round( )
 
 
 // -----------------------------------------------
-//  If requested by the flag:
-//    global_true_or_false_calc_instant_runoff_plus_pairwise_elimination
+//  If requested by either flag:
+//    global_true_or_false_calc_instant_runoff_minus_pairwise_losers
+//    global_true_or_false_calc_pairwise_loser_elimination
 //  then begin to eliminate a pairwise loser if there
 //  is one.
 
-        if ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true )
+        if ( ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true ) || ( global_true_or_false_calc_pairwise_loser_elimination == global_true ) )
         {
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
@@ -8586,6 +8598,13 @@ void calc_eliminate_one_choice_each_round( )
             if ( true_or_false_pairwise_loser_eliminated == global_true )
             {
                 continue ;
+            } else if ( global_true_or_false_calc_pairwise_loser_elimination == global_true )
+            {
+                put_next_result_info_number( global_elimination_result_type ) ;
+                put_next_result_info_number( global_voteinfo_code_for_tie ) ;
+                global_string_same_or_diff = "tied_pairwise_loser" ;
+                if ( global_logging_info == global_true ) { log_out << "[there are no pairwise losers in this elimination round, but resolving this case has not been requested, so exit this elimination function]" << std::endl ; } ;
+                return ;
             }
 
 
@@ -8610,14 +8629,14 @@ void calc_eliminate_one_choice_each_round( )
 // -----------------------------------------------
 //  If requested by either flag:
 //    global_true_or_false_calc_instant_runoff_voting
-//    global_true_or_false_calc_instant_runoff_plus_pairwise_elimination
+//    global_true_or_false_calc_instant_runoff_minus_pairwise_losers
 //  then begin to eliminate the choice with the
 //  fewest first-choice votes.
 //  If requested by the flag:
 //    global_true_or_false_calc_star_voting
 //  then enter this code to calculate "score" counts.
 
-        if ( ( global_true_or_false_calc_instant_runoff_voting == global_true ) || ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true ) || ( global_true_or_false_calc_star_voting == global_true ) )
+        if ( ( global_true_or_false_calc_instant_runoff_voting == global_true ) || ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true ) || ( global_true_or_false_calc_star_voting == global_true ) )
         {
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
@@ -8773,7 +8792,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  Skip ahead if STAR voting calculations are
 //  being done.
 
-        if ( ( global_true_or_false_calc_instant_runoff_voting == global_true ) || ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true ) )
+        if ( ( global_true_or_false_calc_instant_runoff_voting == global_true ) || ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true ) )
         {
 
 
@@ -8871,7 +8890,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
                 global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
                 if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << actual_choice << " as having the smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                 continue ;
-            } else if ( global_true_or_false_calc_instant_runoff_plus_pairwise_elimination == global_true )
+            } else if ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true )
             {
                 true_or_false_tie_among_fewest_first_choice_counts = global_true ;
                 for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
@@ -9243,9 +9262,10 @@ void calc_eliminate_methods() {
 
     global_true_or_false_request_single_elimination = global_false ;
     global_true_or_false_calc_instant_pairwise_elimination = global_false ;
-    global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
+    global_true_or_false_calc_instant_runoff_minus_pairwise_losers = global_false ;
     global_true_or_false_calc_instant_runoff_voting = global_false ;
     global_true_or_false_calc_star_voting = global_false ;
+    global_true_or_false_calc_pairwise_loser_elimination = global_false ;
 
 
 // -----------------------------------------------
@@ -9266,13 +9286,13 @@ void calc_eliminate_methods() {
 //  Possibly find the winner according to instant
 //  runoff plus pairwise loser elimination (IRP+PLE).
 
-    if ( global_true_or_false_request_instant_runoff_plus_pairwise_elimination == global_true )
+    if ( global_true_or_false_request_instant_runoff_minus_pairwise_losers == global_true )
     {
-        global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_true ;
+        global_true_or_false_calc_instant_runoff_minus_pairwise_losers = global_true ;
         global_number_of_elimination_rounds = 0 ;
         calc_eliminate_one_choice_each_round( ) ;
         if ( global_logging_info == global_true ) { log_out << "\n[" << global_elimination_type_requested << " " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
-        global_true_or_false_calc_instant_runoff_plus_pairwise_elimination = global_false ;
+        global_true_or_false_calc_instant_runoff_minus_pairwise_losers = global_false ;
     }
 
 
@@ -9301,6 +9321,20 @@ void calc_eliminate_methods() {
         calc_eliminate_one_choice_each_round( ) ;
         if ( global_logging_info == global_true ) { log_out << "\n[" << global_elimination_type_requested << " " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
         global_true_or_false_calc_star_voting = global_false ;
+    }
+
+
+// -----------------------------------------------
+//  Possibly find the winner according to pairwise
+//  loser elimination (PLE).
+
+    if ( global_true_or_false_request_pairwise_loser_elimination == global_true )
+    {
+        global_true_or_false_calc_pairwise_loser_elimination = global_true ;
+        global_number_of_elimination_rounds = 0 ;
+        calc_eliminate_one_choice_each_round( ) ;
+        if ( global_logging_info == global_true ) { log_out << "\n[" << global_elimination_type_requested << " " << global_full_choice_count << " " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
+        global_true_or_false_calc_pairwise_loser_elimination = global_false ;
     }
 
 
