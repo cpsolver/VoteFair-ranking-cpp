@@ -8722,6 +8722,7 @@ void calc_eliminate_one_choice_each_round( )
                         if ( global_true_or_false_calc_star_voting == global_true )
                         {
                             global_star_score_count_for_choice[ actual_choice ] += global_ballot_info_repeat_count * ( global_full_choice_count - preference_level );
+                            if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has score of " << global_star_score_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                         }
                     }
 //                    if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
@@ -9191,21 +9192,16 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
                 adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
                 actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
                 actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
-                if ( global_winner_of_elimination_rounds = choice_with_largest_score )
+                if ( ( ( actual_first_choice == choice_with_largest_score ) && ( actual_second_choice == choice_with_second_largest_score ) ) || ( ( actual_first_choice == choice_with_second_largest_score ) && ( actual_second_choice == choice_with_largest_score ) ) )
                 {
                     if ( global_tally_first_over_second_in_pair[ pair_counter ] < global_tally_second_over_first_in_pair[ pair_counter ] )
                     {
-                        global_winner_of_elimination_rounds = choice_with_largest_score ;
+                        global_winner_of_elimination_rounds = actual_second_choice ;
+                        break ;
                     } else if ( global_tally_second_over_first_in_pair[ pair_counter ] < global_tally_first_over_second_in_pair[ pair_counter ] )
                     {
-                        global_winner_of_elimination_rounds = choice_with_second_largest_score ;
-                    } else
-                    {
-                        global_winner_of_elimination_rounds = 0 ;
-                        put_next_result_info_number( global_elimination_result_type ) ;
-                        put_next_result_info_number( global_voteinfo_code_for_tie ) ;
-                        if ( global_logging_info == global_true ) { log_out << "[more than two choices have the top scores, so there is a tie that STAR voting does not define how to resolve]" << std::endl ; } ;
-                        return ;
+                        global_winner_of_elimination_rounds = actual_first_choice ;
+                        break ;
                     }
                 }
             }
