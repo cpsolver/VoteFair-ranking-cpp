@@ -82,18 +82,18 @@
 //  Specify which test to run.
 
 const int global_test_matches_with_votefair_ranking = 1 ;
+int global_test_type = global_test_matches_with_votefair_ranking ;
 const int global_test_irrelevant_alternatives = 2 ;
-int global_test_type = global_test_irrelevant_alternatives ;
-// int global_test_type = global_test_matches_with_votefair_ranking ;
+// int global_test_type = global_test_irrelevant_alternatives ;
 
 
 // -----------------------------------------------
 //  Specify the number of ballots and the number
 //  of choices.
 
-const int global_maximum_case_count = 200 ;
+const int global_maximum_case_count = 4000 ;
 const int global_maximum_ballot_number = 17 ;
-const int global_maximum_choice_number = 6 ;
+const int global_maximum_choice_number = 7 ;
 
 
 // -----------------------------------------------
@@ -972,19 +972,22 @@ int main( ) {
     {
 
         calculated_result_failures = int( ( 1000 *  global_count_of_votefair_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[vf irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        log_out << "[VF irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
 
         calculated_result_failures = int( ( 1000 *  global_count_of_ipe_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[ipe irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        log_out << "[IPE irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
 
         calculated_result_failures = int( ( 1000 *  global_count_of_irmpl_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[irmpl irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        log_out << "[IRMPL irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
 
         calculated_result_failures = int( ( 1000 *  global_count_of_star_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[star irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        log_out << "[STAR irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+
+        calculated_result_failures = int( ( 1000 *  global_count_of_irv_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
+        log_out << "[IRV irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
 
         calculated_result_failures = int( ( 1000 *  global_count_of_ple_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[ple irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        log_out << "[PLE irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
 
     }
 
