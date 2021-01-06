@@ -1811,7 +1811,8 @@ void check_vote_info_numbers( )
 //  Handle the code for a request to calculate
 //  instant-runoff voting (IRV), or
 //  instant pairwise elimination (IPE), or
-//  IRV plus pairwise loser elimination.
+//  IRV plus pairwise loser elimination, or
+//  STAR (Score Then Automatic Runoff).
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_pairwise_elimination )
         {
@@ -8418,7 +8419,9 @@ void calc_eliminate_one_choice_each_round( )
     int choice_with_largest_score ;
     int second_largest_score ;
     int choice_with_second_largest_score ;
+    int count_of_choices_with_largest_score_count ;
     int count_of_choices_with_second_largest_score_count ;
+    int true_or_false_request_resolve_tie_in_star_voting ;
 
 
 // -----------------------------------------------
@@ -8536,13 +8539,16 @@ void calc_eliminate_one_choice_each_round( )
 
 
 // -----------------------------------------------
-//  If requested by either flag:
+//  If requested by any of these flags:
 //    global_true_or_false_calc_instant_runoff_minus_pairwise_losers
 //    global_true_or_false_calc_pairwise_loser_elimination
+//    true_or_false_request_resolve_tie_in_star_voting
 //  then begin to eliminate a pairwise loser if there
 //  is one.
+//  In the case of resolving a tie in STAR voting,
+//  the winner will have the fewest loses.
 
-        if ( ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true ) || ( global_true_or_false_calc_pairwise_loser_elimination == global_true ) )
+        if ( ( global_true_or_false_calc_instant_runoff_minus_pairwise_losers == global_true ) || ( global_true_or_false_calc_pairwise_loser_elimination == global_true ) || ( true_or_false_request_resolve_tie_in_star_voting == global_true ) )
         {
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
             {
@@ -8574,6 +8580,28 @@ void calc_eliminate_one_choice_each_round( )
                 } else if ( global_tally_second_over_first_in_pair[ pair_counter ] < global_tally_first_over_second_in_pair[ pair_counter ] )
                 {
                     global_loss_count_for_choice[ actual_second_choice ] ++ ;
+                }
+            }
+
+// -----------------------------------------------
+//  If resolving a tie in STAR voting, identify
+//  the winner as the choice with zero loses.
+
+            if ( true_or_false_request_resolve_tie_in_star_voting == global_true )
+            {
+                for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                {
+                    if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
+                    {
+                        if ( global_loss_count_for_choice[ actual_choice ] == 0 )
+                        {
+                            global_winner_of_elimination_rounds = actual_choice ;
+                            put_next_result_info_number( global_elimination_result_type ) ;
+                            put_next_result_info_number( global_winner_of_elimination_rounds ) ;
+            if ( global_logging_info == global_true ) { log_out << "[after tie, STAR winner is choice " << convert_integer_to_text( global_winner_of_elimination_rounds ) << "]" << std::endl ; } ;
+                            return ;
+                        }
+                    }
                 }
             }
 
@@ -9137,10 +9165,8 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 
 // -----------------------------------------------
 //  If calculating the results using STAR voting,
-//  find the choices with the two highest score
-//  counts, then do a top-two pairwise runoff to
-//  determine the winner, then eliminate all the
-//  other choices as not continuing.
+//  find the choice with the highest score count,
+//  but allow for a tie at that highest score count.
 
         if ( global_true_or_false_calc_star_voting == global_true )
         {
@@ -9152,9 +9178,45 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
                 {
                     largest_score = global_star_score_count_for_choice[ actual_choice ] ;
                     choice_with_largest_score = actual_choice ;
+                    count_of_choices_with_largest_score_count = 1 ;
                     if ( global_logging_info == global_true ) { log_out << "[top score for choice " << actual_choice << " is " << global_star_score_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                } else if ( global_star_score_count_for_choice[ actual_choice ] == largest_score )
+                {
+                    choice_with_largest_score = actual_choice ;
+                    count_of_choices_with_largest_score_count ++ ;
+                    if ( global_logging_info == global_true ) { log_out << "[top score (again) for choice " << actual_choice << " is " << global_star_score_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                 }
             }
+
+
+// -----------------------------------------------
+//  For STAR voting, if there are more than two
+//  choices tied with the highest score,
+//  eliminate all the other choices, then
+//  loop back to resolve the tie using pairwise
+//  counts.
+
+            if ( count_of_choices_with_largest_score_count > 1 )
+            {
+                if ( global_logging_info == global_true ) { log_out << "[there are multiple choices with the top score]" << std::endl ; } ;
+            for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+            {
+            	if ( global_star_score_count_for_choice[ actual_choice ] < largest_score )
+            	{
+                    global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                    if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << actual_choice << "]" << std::endl ; } ;
+                    }
+                }
+                true_or_false_request_resolve_tie_in_star_voting = global_true ;
+                if ( global_logging_info == global_true ) { log_out << "[there is a tie at top score]" << std::endl ; } ;
+                continue ;
+            }
+
+
+// -----------------------------------------------
+//  For STAR voting, find the choice(s) with the
+//  second-highest score count.
+
             second_largest_score = 0 ;
             choice_with_second_largest_score = 0 ;
             count_of_choices_with_second_largest_score_count = 0 ;
@@ -9178,14 +9240,36 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
                 }
             }
             if ( global_logging_info == global_true ) { log_out << "[count of choices with second-largest score count is " << count_of_choices_with_second_largest_score_count << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  For STAR voting, if there are more than two
+//  choices tied with the same second-top score,
+//  identify the winner as the choice with the
+//  highest score.
+
             if ( count_of_choices_with_second_largest_score_count > 1 )
             {
-                if ( global_logging_info == global_true ) { log_out << "[more than two choices have the top scores, so there is a tie that STAR voting does not define how to resolve]" << std::endl ; } ;
-                global_winner_of_elimination_rounds = 0 ;
-                put_next_result_info_number( global_elimination_result_type ) ;
-                put_next_result_info_number( global_voteinfo_code_for_tie ) ;
-                return ;
+                global_winner_of_elimination_rounds = choice_with_largest_score ;
+                for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                {
+                	if ( actual_choice != choice_with_largest_score )
+                	{
+                        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                    }
+                }
+                if ( global_logging_info == global_true ) { log_out << "[winner is " << choice_with_largest_score << "]" << std::endl ; } ;
+                continue ;
             }
+
+
+// -----------------------------------------------
+//  For STAR voting, do a top-two pairwise runoff --
+//  between the choice with the highest score and
+//  the choice with the second-highest score --
+//  to determine the winner, then eliminate all the
+//  other choices as not continuing.
+
             for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
             {
                 adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
