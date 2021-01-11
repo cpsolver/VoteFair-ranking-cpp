@@ -119,6 +119,27 @@ const int global_question_number = 1 ;
 
 
 // -----------------------------------------------
+//  Assign numbers and names to the vote-counting
+//  methods, and specify how many methods there
+//  are.
+
+int global_number_of_methods = 6 ;
+const int global_method_votefair = 1 ;
+const int global_method_ipe = 2 ;
+const int global_method_irmpl = 3 ;
+const int global_method_star = 4 ;
+const int global_method_irv = 5 ;
+const int global_method_ple = 6 ;
+
+std::string global_name_for_method_votefair = "VF" ;
+std::string global_name_for_method_ipe = "IPE" ;
+std::string global_name_for_method_irmpl = "IRMPL" ;
+std::string global_name_for_method_star = "STAR" ;
+std::string global_name_for_method_irv = "IRV" ;
+std::string global_name_for_method_ple = "PLE" ;
+
+
+// -----------------------------------------------
 //  Define true and false constants (for easier
 //  conversion between programming languages).
 
@@ -137,49 +158,22 @@ int global_choice_omitted = 0 ;
 int global_count_of_votefair_single_winner = 0 ;
 int global_count_of_votefair_no_single_winner = 0 ;
 
-int global_choice_winner_from_votefair_ranking_all_choices = 0 ;
-int global_count_of_votefair_cases_that_match = 0 ;
-int global_count_of_votefair_cases_that_fail_match = 0 ;
-int global_count_of_votefair_cases_tied = 0 ;
-int global_count_of_votefair_group_failures = 0 ;
-
-int global_choice_winner_from_ipe_all_choices = 0 ;
-int global_count_of_ipe_cases_that_match = 0 ;
-int global_count_of_ipe_cases_that_fail_match = 0 ;
-int global_count_of_ipe_cases_tied = 0 ;
-int global_count_of_ipe_group_failures = 0 ;
-
-int global_choice_winner_from_irmpl_all_choices = 0 ;
-int global_count_of_irmpl_cases_that_match = 0 ;
-int global_count_of_irmpl_cases_that_fail_match = 0 ;
-int global_count_of_irmpl_cases_tied = 0 ;
-int global_count_of_irmpl_group_failures = 0 ;
-
-int global_choice_winner_from_irv_all_choices = 0 ;
-int global_count_of_irv_cases_that_match = 0 ;
-int global_count_of_irv_cases_that_fail_match = 0 ;
-int global_count_of_irv_cases_tied = 0 ;
-int global_count_of_irv_group_failures = 0 ;
-
-int global_choice_winner_from_star_all_choices = 0 ;
-int global_count_of_star_cases_that_match = 0 ;
-int global_count_of_star_cases_that_fail_match = 0 ;
-int global_count_of_star_cases_tied = 0 ;
-int global_count_of_star_group_failures = 0 ;
-
-int global_choice_winner_from_ple_all_choices = 0 ;
-int global_count_of_ple_cases_that_match = 0 ;
-int global_count_of_ple_cases_that_fail_match = 0 ;
-int global_count_of_ple_cases_tied = 0 ;
-int global_count_of_ple_group_failures = 0 ;
-
 
 // -----------------------------------------------
 //  Declare the needed arrays.
 
+std::string global_name_for_method[ 20 ] ;
+
 int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
+
+int global_choice_winner_all_choices_for_method[ 20 ] ;
+int global_count_of_cases_that_match_for_method[ 20 ] ;
+int global_count_of_cases_that_fail_match_for_method[ 20 ] ;
+int global_count_of_cases_tied_for_method[ 20 ] ;
+int global_count_of_group_failures_for_method[ 20 ] ;
+int global_choice_winner_from_method[ 20 ] ;
 
 
 // -----------------------------------------------
@@ -424,22 +418,25 @@ void generate_preferences( ) {
 void handle_calculated_results( )
 {
 
+    int method_id = 1 ;
     std::string input_line ;
     std::string input_text_word ;
+
+
+// -----------------------------------------------
+//  Initialization.
 
     int current_result_code = 0 ;
     int previous_result_code = 0 ;
     int next_result_code = 0 ;
     int count_of_result_codes = 0 ;
-    int choice_winner_from_votefair_ranking = 0 ;
-    int choice_winner_from_ipe = 0 ;
-    int choice_winner_from_irmpl = 0 ;
-    int choice_winner_from_star = 0 ;
-    int choice_winner_from_irv = 0 ;
-    int choice_winner_from_ple = 0 ;
     int count_position_at_start_of_votefair_popularity_sequence = 0 ;
     int count_position_at_choice_number = 0 ;
     int choice_number_adjustment = 0 ;
+    for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+    {
+        global_choice_winner_from_method[ method_id ] = 0 ;
+    }
 
 
 // -----------------------------------------------
@@ -510,36 +507,36 @@ void handle_calculated_results( )
                 count_position_at_choice_number = count_of_result_codes ;
             } else if ( ( count_of_result_codes == count_position_at_start_of_votefair_popularity_sequence + 2 ) && ( count_of_result_codes == count_position_at_choice_number + 1 ) )
             {
-                choice_winner_from_votefair_ranking = current_result_code ;
-                choice_winner_from_ipe = 0 ;
-                choice_winner_from_irv = 0 ;
-                choice_winner_from_irmpl = 0 ;
-                choice_winner_from_star = 0 ;
-                log_out << "[vf " << choice_winner_from_votefair_ranking << "]" ;
+                for ( method_id = 2 ; method_id <= global_number_of_methods ; method_id ++ )
+                {
+                    global_choice_winner_from_method[ method_id ] = 0 ;
+                }
+                global_choice_winner_from_method[ global_method_votefair ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_votefair ] << " " << global_choice_winner_from_method[ global_method_votefair ] << "]" ;
             } else if ( ( current_result_code == global_voteinfo_code_for_tie ) && ( count_of_result_codes == count_position_at_start_of_votefair_popularity_sequence + 3 ) )
             {
-                choice_winner_from_votefair_ranking = 0 ;
-                log_out << "[vf_tie " << choice_winner_from_votefair_ranking << "]" ;
+                global_choice_winner_from_method[ global_method_votefair ] = 0 ;
+                log_out << "[" << global_name_for_method[ global_method_votefair ] << "_tie]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_pairwise_elimination )
             {
-                choice_winner_from_ipe = current_result_code ;
-                log_out << "[ipe " << choice_winner_from_ipe << "]" ;
+                global_choice_winner_from_method[ global_method_ipe ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_ipe ] << " " << global_choice_winner_from_method[ global_method_ipe ] << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_minus_pairwise_losers )
             {
-                choice_winner_from_irmpl = current_result_code ;
-                log_out << "[irmpl " << choice_winner_from_irmpl << "]" ;
+                global_choice_winner_from_method[ global_method_irmpl ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_irmpl ] << " " << global_choice_winner_from_method[ global_method_irmpl ] << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
             {
-                choice_winner_from_irv = current_result_code ;
-                log_out << "[irv " << choice_winner_from_irv << "]" ;
+                global_choice_winner_from_method[ global_method_irv ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_irv ] << " " << global_choice_winner_from_method[ global_method_irv ] << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_star_voting )
             {
-                choice_winner_from_star = current_result_code ;
-                log_out << "[star " << choice_winner_from_star << "]" ;
+                global_choice_winner_from_method[ global_method_star ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_star ] << " " << global_choice_winner_from_method[ global_method_star ] << "]" ;
             } else if ( previous_result_code == global_voteinfo_code_for_winner_pairwise_loser_elimination )
             {
-                choice_winner_from_ple = current_result_code ;
-                log_out << "[ple " << choice_winner_from_ple << "]" ;
+                global_choice_winner_from_method[ global_method_ple ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_ple ] << " " << global_choice_winner_from_method[ global_method_ple ] << "]" ;
             }
 
 
@@ -571,65 +568,22 @@ void handle_calculated_results( )
 
     if ( global_test_type == global_test_matches_with_votefair_ranking )
     {
-        if ( choice_winner_from_votefair_ranking > 0 )
+        if ( global_choice_winner_from_method[ global_method_votefair ] > 0 )
         {
             global_count_of_votefair_single_winner ++ ;
-
-            if ( choice_winner_from_ipe == choice_winner_from_votefair_ranking )
+            for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
-                global_count_of_ipe_cases_that_match ++ ;
-            } else if ( choice_winner_from_ipe > 0 )
-            {
-                global_count_of_ipe_cases_that_fail_match ++ ;
-            } else
-            {
-                global_count_of_ipe_cases_tied ++ ;
+                if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method[ global_method_votefair ] )
+                {
+                    global_count_of_cases_that_match_for_method[ method_id ] ++ ;
+                } else if ( global_choice_winner_from_method[ method_id ] > 0 )
+                {
+                    global_count_of_cases_that_fail_match_for_method[ method_id ] ++ ;
+                } else
+                {
+                    global_count_of_cases_tied_for_method[ method_id ] ++ ;
+                }
             }
-
-            if ( choice_winner_from_irmpl == choice_winner_from_votefair_ranking )
-            {
-                global_count_of_irmpl_cases_that_match ++ ;
-            } else if ( choice_winner_from_irmpl > 0 )
-            {
-                global_count_of_irmpl_cases_that_fail_match ++ ;
-            } else
-            {
-                global_count_of_irmpl_cases_tied ++ ;
-            }
-
-            if ( choice_winner_from_irv == choice_winner_from_votefair_ranking )
-            {
-                global_count_of_irv_cases_that_match ++ ;
-            } else if ( choice_winner_from_irv > 0 )
-            {
-                global_count_of_irv_cases_that_fail_match ++ ;
-            } else
-            {
-                global_count_of_irv_cases_tied ++ ;
-            }
-
-            if ( choice_winner_from_star == choice_winner_from_votefair_ranking )
-            {
-                global_count_of_star_cases_that_match ++ ;
-            } else if ( choice_winner_from_star > 0 )
-            {
-                global_count_of_star_cases_that_fail_match ++ ;
-            } else
-            {
-                global_count_of_star_cases_tied ++ ;
-            }
-
-            if ( choice_winner_from_ple == choice_winner_from_votefair_ranking )
-            {
-                global_count_of_ple_cases_that_match ++ ;
-            } else if ( choice_winner_from_ple > 0 )
-            {
-                global_count_of_ple_cases_that_fail_match ++ ;
-            } else
-            {
-                global_count_of_ple_cases_tied ++ ;
-            }
-
         } else
         {
             global_count_of_votefair_no_single_winner ++ ;
@@ -643,12 +597,11 @@ void handle_calculated_results( )
 
     if ( global_choice_count_case_specific == global_maximum_choice_number )
     {
-        global_choice_winner_from_votefair_ranking_all_choices = choice_winner_from_votefair_ranking ;
-        global_choice_winner_from_ipe_all_choices = choice_winner_from_ipe ;
-        global_choice_winner_from_irmpl_all_choices = choice_winner_from_irmpl ;
-        global_choice_winner_from_star_all_choices = choice_winner_from_star ;
-        global_choice_winner_from_irv_all_choices = choice_winner_from_irv ;
-        global_choice_winner_from_ple_all_choices = choice_winner_from_ple ;
+        global_choice_winner_all_choices_for_method[ global_method_votefair ] = global_choice_winner_from_method[ global_method_votefair ] ;
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            global_choice_winner_all_choices_for_method[ method_id ] = global_choice_winner_from_method[ method_id ] ;
+        }
     }
 
 
@@ -662,116 +615,31 @@ void handle_calculated_results( )
 
     if ( ( ( global_test_type == global_test_irrelevant_alternatives ) || ( global_test_type == global_test_clone_independence ) ) && ( global_choice_count_case_specific < global_maximum_choice_number ) )
     {
-
-        if ( ( choice_winner_from_votefair_ranking > 0 ) && ( global_choice_winner_from_votefair_ranking_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_votefair_ranking_all_choices ) )
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            choice_number_adjustment = 0 ;
-            if ( global_choice_winner_from_votefair_ranking_all_choices > global_choice_omitted )
+            if ( ( global_choice_winner_from_method[ method_id ] > 0 ) && ( global_choice_winner_all_choices_for_method[ method_id ] > 0 ) && ( global_choice_omitted != global_choice_winner_all_choices_for_method[ method_id ] ) )
             {
-                choice_number_adjustment = 1 ;
-            }
-            if ( choice_winner_from_votefair_ranking + choice_number_adjustment != global_choice_winner_from_votefair_ranking_all_choices )
-            {
-                global_count_of_votefair_group_failures ++ ;
-                log_out << "[vf_fail]" ;
-            }
-        }
-
-        if ( ( choice_winner_from_ipe > 0 ) && ( global_choice_winner_from_ipe_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_ipe_all_choices ) )
-        {
-            choice_number_adjustment = 0 ;
-            if ( global_choice_winner_from_ipe_all_choices > global_choice_omitted )
-            {
-                choice_number_adjustment = 1 ;
-            }
-            if ( choice_winner_from_ipe + choice_number_adjustment != global_choice_winner_from_ipe_all_choices )
-            {
-                global_count_of_ipe_group_failures ++ ;
-                log_out << "[ipe_fail]" ;
-            }
-        }
-
-        if ( ( choice_winner_from_irmpl > 0 ) && ( global_choice_winner_from_irmpl_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_irmpl_all_choices ) )
-        {
-            choice_number_adjustment = 0 ;
-            if ( global_choice_winner_from_irmpl_all_choices > global_choice_omitted )
-            {
-                choice_number_adjustment = 1 ;
-            }
-            if ( choice_winner_from_irmpl + choice_number_adjustment != global_choice_winner_from_irmpl_all_choices )
-            {
-                global_count_of_irmpl_group_failures ++ ;
-                log_out << "[irmpl_fail]" ;
-            }
-        }
-
-        if ( ( choice_winner_from_star > 0 ) && ( global_choice_winner_from_star_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_star_all_choices ) )
-        {
-            choice_number_adjustment = 0 ;
-            if ( global_choice_winner_from_star_all_choices > global_choice_omitted )
-            {
-                choice_number_adjustment = 1 ;
-            }
-            if ( choice_winner_from_star + choice_number_adjustment != global_choice_winner_from_star_all_choices )
-            {
-                global_count_of_star_group_failures ++ ;
-                log_out << "[star_fail]" ;
-            }
-        }
-
-        if ( ( choice_winner_from_irv > 0 ) && ( global_choice_winner_from_irv_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_irv_all_choices ) )
-        {
-            choice_number_adjustment = 0 ;
-            if ( global_choice_winner_from_irv_all_choices > global_choice_omitted )
-            {
-                choice_number_adjustment = 1 ;
-            }
-            if ( choice_winner_from_irv + choice_number_adjustment != global_choice_winner_from_irv_all_choices )
-            {
-                global_count_of_irv_group_failures ++ ;
-                log_out << "[irv_fail]" ;
-            }
-        }
-
-        if ( ( choice_winner_from_ple > 0 ) && ( global_choice_winner_from_ple_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_ple_all_choices ) )
-        {
-            choice_number_adjustment = 0 ;
-            if ( global_choice_winner_from_ple_all_choices > global_choice_omitted )
-            {
-                choice_number_adjustment = 1 ;
-            }
-            if ( choice_winner_from_ple + choice_number_adjustment != global_choice_winner_from_ple_all_choices )
-            {
-                global_count_of_ple_group_failures ++ ;
-                log_out << "[ple_fail]" ;
+                choice_number_adjustment = 0 ;
+                if ( global_choice_winner_all_choices_for_method[ method_id ] > global_choice_omitted )
+                {
+                    choice_number_adjustment = 1 ;
+                }
+                if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment != global_choice_winner_all_choices_for_method[ method_id ] )
+                {
+                    global_count_of_group_failures_for_method[ method_id ] ++ ;
+                    log_out << "[" << global_name_for_method[ method_id ] << "_fail]" ;
+                }
             }
         }
 
         if ( global_choice_omitted == global_maximum_choice_number )
         {
-            if ( global_count_of_votefair_group_failures > 0 )
+            for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
-                global_count_of_votefair_cases_that_fail_match ++ ;
-            }
-            if ( global_count_of_ipe_group_failures > 0 )
-            {
-                global_count_of_ipe_cases_that_fail_match ++ ;
-            }
-            if ( global_count_of_irmpl_group_failures > 0 )
-            {
-                global_count_of_irmpl_cases_that_fail_match ++ ;
-            }
-            if ( global_count_of_star_group_failures > 0 )
-            {
-                global_count_of_star_cases_that_fail_match ++ ;
-            }
-            if ( global_count_of_irv_group_failures > 0 )
-            {
-                global_count_of_irv_cases_that_fail_match ++ ;
-            }
-            if ( global_count_of_ple_group_failures > 0 )
-            {
-                global_count_of_ple_cases_that_fail_match ++ ;
+                if ( global_count_of_group_failures_for_method[ method_id ] > 0 )
+                {
+                    global_count_of_cases_that_fail_match_for_method[ method_id ] ++ ;
+                }
             }
         }
     }
@@ -795,6 +663,7 @@ int main( ) {
 // -----------------------------------------------
 //  Declare integer variables.
 
+    int method_id = 1 ;
     int case_count = 0 ;
     int ballot_number = 0 ;
     int choice_number = 0 ;
@@ -814,6 +683,12 @@ int main( ) {
 //  Initialization.
 
     global_choice_count_case_specific = global_maximum_choice_number ;
+    global_name_for_method[ global_method_votefair ] = global_name_for_method_votefair ;
+    global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
+    global_name_for_method[ global_method_irmpl ] = global_name_for_method_irmpl ;
+    global_name_for_method[ global_method_star ] = global_name_for_method_star ;
+    global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
+    global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
 
 
 // -----------------------------------------------
@@ -846,12 +721,10 @@ int main( ) {
         {
             global_choice_omitted = 0 ;
             global_count_of_tests ++ ;
-            global_count_of_votefair_group_failures = 0 ;
-            global_count_of_ipe_group_failures = 0 ;
-            global_count_of_irmpl_group_failures = 0 ;
-            global_count_of_star_group_failures = 0 ;
-            global_count_of_irv_group_failures = 0 ;
-            global_count_of_ple_group_failures = 0 ;
+            for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+            {
+                global_count_of_group_failures_for_method[ method_id ] = 0 ;
+            }
         }
 
 
@@ -870,12 +743,10 @@ int main( ) {
             {
                 global_choice_omitted = 0 ;
                 global_count_of_tests ++ ;
-                global_count_of_votefair_group_failures = 0 ;
-                global_count_of_ipe_group_failures = 0 ;
-                global_count_of_irmpl_group_failures = 0 ;
-                global_count_of_star_group_failures = 0 ;
-                global_count_of_irv_group_failures = 0 ;
-                global_count_of_ple_group_failures = 0 ;
+                for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+                {
+                    global_count_of_group_failures_for_method[ method_id ] = 0 ;
+                }
             }
         }
 
@@ -1053,36 +924,14 @@ int main( ) {
 
     if ( global_test_type == global_test_matches_with_votefair_ranking )
     {
-
-        count_of_cases_agree_plus_disagree = global_count_of_ipe_cases_that_match + global_count_of_ipe_cases_that_fail_match ;
-        calculated_result_agree = int( ( 1000 * global_count_of_ipe_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_ipe_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_tied = global_count_of_ipe_cases_tied ;
-        log_out << "[IPE agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
-
-        count_of_cases_agree_plus_disagree = global_count_of_irmpl_cases_that_match + global_count_of_irmpl_cases_that_fail_match ;
-        calculated_result_agree = int( ( 1000 * global_count_of_irmpl_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_irmpl_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_tied = global_count_of_irmpl_cases_tied ;
-        log_out << "[IRMPL agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
-
-        count_of_cases_agree_plus_disagree = global_count_of_star_cases_that_match + global_count_of_star_cases_that_fail_match ;
-        calculated_result_agree = int( ( 1000 * global_count_of_star_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_star_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_tied = global_count_of_star_cases_tied ;
-        log_out << "[STAR agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
-
-        count_of_cases_agree_plus_disagree = global_count_of_irv_cases_that_match + global_count_of_irv_cases_that_fail_match ;
-        calculated_result_agree = int( ( 1000 * global_count_of_irv_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_irv_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_tied = global_count_of_irv_cases_tied ;
-        log_out << "[IRV agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
-
-        count_of_cases_agree_plus_disagree = global_count_of_ple_cases_that_match + global_count_of_ple_cases_that_fail_match ;
-        calculated_result_agree = int( ( 1000 * global_count_of_ple_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_ple_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_tied = global_count_of_ple_cases_tied ;
-        log_out << "[PLE agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            count_of_cases_agree_plus_disagree = global_count_of_cases_that_match_for_method[ method_id ] + global_count_of_cases_that_fail_match_for_method[ method_id ] ;
+            calculated_result_agree = int( ( 1000 * global_count_of_cases_that_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
+            calculated_result_disagree = int( ( 1000 * global_count_of_cases_that_fail_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
+            calculated_result_tied = global_count_of_cases_tied_for_method[ method_id ] ;
+            log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
+        }
     }
 
 
@@ -1093,25 +942,11 @@ int main( ) {
 
     if ( ( global_test_type == global_test_irrelevant_alternatives ) || ( global_test_type == global_test_clone_independence ) )
     {
-
-        calculated_result_failures = int( ( 1000 *  global_count_of_votefair_cases_that_fail_match ) / global_count_of_tests ) ;
-        log_out << "[VF failures per k: " << calculated_result_failures << "]" << std::endl ;
-
-        calculated_result_failures = int( ( 1000 *  global_count_of_ipe_cases_that_fail_match ) / global_count_of_tests ) ;
-        log_out << "[IPE failures per k: " << calculated_result_failures << "]" << std::endl ;
-
-        calculated_result_failures = int( ( 1000 *  global_count_of_irmpl_cases_that_fail_match ) / global_count_of_tests ) ;
-        log_out << "[IRMPL failures per k: " << calculated_result_failures << "]" << std::endl ;
-
-        calculated_result_failures = int( ( 1000 *  global_count_of_star_cases_that_fail_match ) / global_count_of_tests ) ;
-        log_out << "[STAR failures per k: " << calculated_result_failures << "]" << std::endl ;
-
-        calculated_result_failures = int( ( 1000 *  global_count_of_irv_cases_that_fail_match ) / global_count_of_tests ) ;
-        log_out << "[IRV failures per k: " << calculated_result_failures << "]" << std::endl ;
-
-        calculated_result_failures = int( ( 1000 *  global_count_of_ple_cases_that_fail_match ) / global_count_of_tests ) ;
-        log_out << "[PLE failures per k: " << calculated_result_failures << "]" << std::endl ;
-
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            calculated_result_failures = int( ( 1000 *  global_count_of_cases_that_fail_match_for_method[ method_id ] ) / global_count_of_tests ) ;
+            log_out << "[" << global_name_for_method[ method_id ] << " failures per k: " << calculated_result_failures << "]" << std::endl ;
+        }
     }
 
 
