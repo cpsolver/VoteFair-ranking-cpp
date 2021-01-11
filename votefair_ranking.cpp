@@ -8598,11 +8598,16 @@ void calc_eliminate_one_choice_each_round( )
                             global_winner_of_elimination_rounds = actual_choice ;
                             put_next_result_info_number( global_elimination_result_type ) ;
                             put_next_result_info_number( global_winner_of_elimination_rounds ) ;
-            if ( global_logging_info == global_true ) { log_out << "[after tie, STAR winner is choice " << convert_integer_to_text( global_winner_of_elimination_rounds ) << "]" << std::endl ; } ;
+                            if ( global_logging_info == global_true ) { log_out << "[after tie, STAR winner is choice " << convert_integer_to_text( global_winner_of_elimination_rounds ) << "]" << std::endl ; } ;
                             return ;
                         }
                     }
                 }
+                if ( global_logging_info == global_true ) { log_out << "[tie in STAR voting cannot be resolved]" << std::endl ; } ;
+                global_winner_of_elimination_rounds = 0 ;
+                put_next_result_info_number( global_elimination_result_type ) ;
+                put_next_result_info_number( global_winner_of_elimination_rounds ) ;
+                return ;
             }
 
 
