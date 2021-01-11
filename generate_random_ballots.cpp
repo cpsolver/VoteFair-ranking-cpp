@@ -79,21 +79,43 @@
 
 
 // -----------------------------------------------
-//  Specify which test to run.
+//  Change these values as needed to specify the
+//  number of ballots and the number of choices.
 
-const int global_test_matches_with_votefair_ranking = 1 ;
-int global_test_type = global_test_matches_with_votefair_ranking ;
-const int global_test_irrelevant_alternatives = 2 ;
-// int global_test_type = global_test_irrelevant_alternatives ;
+const int global_maximum_case_count = 400 ;
+const int global_maximum_ballot_number = 17 ;
+const int global_maximum_choice_number = 7 ;
 
 
 // -----------------------------------------------
-//  Specify the number of ballots and the number
-//  of choices.
+//  Assign a number to each kind of test.
+//  (Do not change these numbers.)
 
-const int global_maximum_case_count = 4000 ;
-const int global_maximum_ballot_number = 17 ;
-const int global_maximum_choice_number = 7 ;
+const int global_test_matches_with_votefair_ranking = 1 ;
+const int global_test_irrelevant_alternatives = 2 ;
+const int global_test_clone_independence = 3 ;
+
+
+// -----------------------------------------------
+//  Change this value to specify which test to run.
+
+// const int global_test_type = global_test_matches_with_votefair_ranking ;
+const int global_test_type = global_test_irrelevant_alternatives ;
+// const int global_test_type = global_test_clone_independence ;
+
+
+// -----------------------------------------------
+//  Ensure that the case numbers have the same
+//  number of digits.  This number can be changed.
+
+const int global_minimum_case_id = 100000 ;
+
+
+// -----------------------------------------------
+//  Specify constants.
+//  (Do not change these numbers.)
+
+const int global_question_number = 1 ;
 
 
 // -----------------------------------------------
@@ -108,45 +130,56 @@ const int global_true = 1 ;
 //  Declare global variables.
 
 int global_case_id = 0 ;
-int global_count_of_ipe_cases_that_agree = 0 ;
-int global_count_of_ipe_cases_that_disagree = 0 ;
-int global_count_of_ipe_cases_tied = 0 ;
-int global_count_of_ipe_cases_fail_irrel_alt = 0 ;
-int global_count_of_irmpl_cases_that_agree = 0 ;
-int global_count_of_irmpl_cases_that_disagree = 0 ;
-int global_count_of_irmpl_cases_tied = 0 ;
-int global_count_of_irmpl_cases_fail_irrel_alt = 0 ;
-int global_count_of_irv_cases_that_agree = 0 ;
-int global_count_of_irv_cases_that_disagree = 0 ;
-int global_count_of_irv_cases_tied = 0 ;
-int global_count_of_irv_cases_fail_irrel_alt = 0 ;
-int global_count_of_star_cases_that_agree = 0 ;
-int global_count_of_star_cases_that_disagree = 0 ;
-int global_count_of_star_cases_tied = 0 ;
-int global_count_of_star_cases_fail_irrel_alt = 0 ;
-int global_count_of_ple_cases_that_agree = 0 ;
-int global_count_of_ple_cases_that_disagree = 0 ;
-int global_count_of_ple_cases_tied = 0 ;
-int global_count_of_ple_cases_fail_irrel_alt = 0 ;
-int global_count_of_votefair_group_failures_irrel_alt = 0 ;
-int global_count_of_ipe_group_failures_irrel_alt = 0 ;
-int global_count_of_irmpl_group_failures_irrel_alt = 0 ;
-int global_count_of_star_group_failures_irrel_alt = 0 ;
-int global_count_of_irv_group_failures_irrel_alt = 0 ;
-int global_count_of_ple_group_failures_irrel_alt = 0 ;
-int global_count_of_votefair_cases_fail_irrel_alt = 0 ;
+int global_count_of_tests = 0 ;
+int global_choice_count_case_specific = 0 ;
+int global_choice_omitted = 0 ;
+
 int global_count_of_votefair_single_winner = 0 ;
 int global_count_of_votefair_no_single_winner = 0 ;
-int global_choice_count_case_specific = 0 ;
-int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
-int global_choice_omitted = 0 ;
+
 int global_choice_winner_from_votefair_ranking_all_choices = 0 ;
+int global_count_of_votefair_cases_that_match = 0 ;
+int global_count_of_votefair_cases_that_fail_match = 0 ;
+int global_count_of_votefair_cases_tied = 0 ;
+int global_count_of_votefair_group_failures = 0 ;
+
 int global_choice_winner_from_ipe_all_choices = 0 ;
+int global_count_of_ipe_cases_that_match = 0 ;
+int global_count_of_ipe_cases_that_fail_match = 0 ;
+int global_count_of_ipe_cases_tied = 0 ;
+int global_count_of_ipe_group_failures = 0 ;
+
 int global_choice_winner_from_irmpl_all_choices = 0 ;
-int global_choice_winner_from_star_all_choices = 0 ;
+int global_count_of_irmpl_cases_that_match = 0 ;
+int global_count_of_irmpl_cases_that_fail_match = 0 ;
+int global_count_of_irmpl_cases_tied = 0 ;
+int global_count_of_irmpl_group_failures = 0 ;
+
 int global_choice_winner_from_irv_all_choices = 0 ;
+int global_count_of_irv_cases_that_match = 0 ;
+int global_count_of_irv_cases_that_fail_match = 0 ;
+int global_count_of_irv_cases_tied = 0 ;
+int global_count_of_irv_group_failures = 0 ;
+
+int global_choice_winner_from_star_all_choices = 0 ;
+int global_count_of_star_cases_that_match = 0 ;
+int global_count_of_star_cases_that_fail_match = 0 ;
+int global_count_of_star_cases_tied = 0 ;
+int global_count_of_star_group_failures = 0 ;
+
 int global_choice_winner_from_ple_all_choices = 0 ;
-int global_count_of_irrel_alt_tests = 0 ;
+int global_count_of_ple_cases_that_match = 0 ;
+int global_count_of_ple_cases_that_fail_match = 0 ;
+int global_count_of_ple_cases_tied = 0 ;
+int global_count_of_ple_group_failures = 0 ;
+
+
+// -----------------------------------------------
+//  Declare the needed arrays.
+
+int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
+int global_choice_number_at_position[ 99 ] ;
+int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
 
 
 // -----------------------------------------------
@@ -201,21 +234,6 @@ std::default_random_engine generator ( seed ) ;
 
 
 // -----------------------------------------------
-//  Declare the needed arrays.
-
-int global_choice_number_at_position[ 99 ] ;
-int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
-
-
-// -----------------------------------------------
-//  Specify constants.
-
-const int global_question_number = 1 ;
-const int global_minimum_case_id = 100000 ;
-const int global_maximum_case_id = 999999 ;
-
-
-// -----------------------------------------------
 //  convert_text_to_integer
 //
 //  This function is used instead of "std::to_string"
@@ -257,7 +275,9 @@ void generate_preferences( ) {
     int ranking_level = 0 ;
     int position_number = 0 ;
     int pointer_number = 0 ;
+    int count_for_ranking_level = 0 ;
     int count_of_choices_not_yet_ranked = 0 ;
+    int count_of_choices_need_to_rank = 0 ;
 
     for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
     {
@@ -285,38 +305,75 @@ void generate_preferences( ) {
         {
             global_choice_number_at_position[ choice_number ] = choice_number ;
         }
-        count_of_choices_not_yet_ranked = global_maximum_choice_number ;
+
+
+// -----------------------------------------------
+//  If clone independence is being tested, hide
+//  the last choice, which will be inserted
+//  immediately after choice one.
+
+        count_of_choices_need_to_rank = global_maximum_choice_number ;
+        if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_omitted > 0 ) )
+        {
+            count_of_choices_need_to_rank = global_maximum_choice_number - 1 ;
+        }
 
 
 // -----------------------------------------------
 //  Begin a loop that handles one ranking level.
 
-        for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
+        ranking_level = 1 ;
+        count_of_choices_not_yet_ranked = count_of_choices_need_to_rank ;
+        for ( count_for_ranking_level = 1 ; count_for_ranking_level <= count_of_choices_need_to_rank ; count_for_ranking_level ++ )
         {
 
 
 // -----------------------------------------------
-//  Randomly choose a choice number for this ranking
-//  level.  Do not repeat any choice number already used
-//  at a previous ranking level.
-//  Also keep track of usage to verify randomness.
+//  Randomly choose a choice number for this
+//  ranking level.  Do not repeat any choice number
+//  already used at a previous ranking level.
 
             std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked );
-            position_number = distribution( generator );  
+            position_number = distribution( generator );
             choice_number = global_choice_number_at_position[ position_number ] ;
             global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] = choice_number ;
+
+
+// -----------------------------------------------
+//  If clone independence is being tested, and a
+//  ranking level was just assigned to choice one,
+//  insert the clone immediately below choice one.
+
+            if ( ( global_test_type == global_test_clone_independence ) && ( choice_number == 1 ) )
+            {
+                ranking_level ++ ;
+                global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] = global_maximum_choice_number ;
+            }
+
+
+// -----------------------------------------------
+//  Update the list of which choices still need to
+//  be assigned to a ranking level.
+
             for ( pointer_number = position_number ; pointer_number <= count_of_choices_not_yet_ranked - 1 ; pointer_number ++ )
             {
                 global_choice_number_at_position[ pointer_number ] = global_choice_number_at_position[ pointer_number + 1 ] ;
             }
-            count_of_choices_not_yet_ranked -- ;
-            global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] ++ ;
 //            log_out << choice_number << " " ;
+
+
+// -----------------------------------------------
+//  Keep track of choice number usage to allow
+//  verifying randomness.
+
+            global_usage_count_for_choice_and_rank[ choice_number ][ ranking_level ] ++ ;
 
 
 // -----------------------------------------------
 //  Repeat the loop that handles one ranking level.
 
+            count_of_choices_not_yet_ranked -- ;
+            ranking_level ++ ;
         }
 
 
@@ -503,14 +560,16 @@ void handle_calculated_results( )
 
 
 // -----------------------------------------------
-//  For IPE, IVR, PL+IRV methods, count the number
-//  of cases that agree with, and disagree with,
-//  the winner according to VoteFair popularity
-//  ranking.  Also count ties separately.
+//  If testing for matches against VoteFair
+//  ranking, count the number of cases that match,
+//  or fail to match, the winner according to
+//  VoteFair popularity ranking.
+//  Also count ties, but do not count a tie as
+//  either a match or a failure to match.
 //  If the tie occurs in VoteFair popularity
 //  ranking, the case is ignored.
 
-    if ( global_choice_count_case_specific == global_maximum_choice_number )
+    if ( global_test_type == global_test_matches_with_votefair_ranking )
     {
         if ( choice_winner_from_votefair_ranking > 0 )
         {
@@ -518,10 +577,10 @@ void handle_calculated_results( )
 
             if ( choice_winner_from_ipe == choice_winner_from_votefair_ranking )
             {
-                global_count_of_ipe_cases_that_agree ++ ;
+                global_count_of_ipe_cases_that_match ++ ;
             } else if ( choice_winner_from_ipe > 0 )
             {
-                global_count_of_ipe_cases_that_disagree ++ ;
+                global_count_of_ipe_cases_that_fail_match ++ ;
             } else
             {
                 global_count_of_ipe_cases_tied ++ ;
@@ -529,10 +588,10 @@ void handle_calculated_results( )
 
             if ( choice_winner_from_irmpl == choice_winner_from_votefair_ranking )
             {
-                global_count_of_irmpl_cases_that_agree ++ ;
+                global_count_of_irmpl_cases_that_match ++ ;
             } else if ( choice_winner_from_irmpl > 0 )
             {
-                global_count_of_irmpl_cases_that_disagree ++ ;
+                global_count_of_irmpl_cases_that_fail_match ++ ;
             } else
             {
                 global_count_of_irmpl_cases_tied ++ ;
@@ -540,10 +599,10 @@ void handle_calculated_results( )
 
             if ( choice_winner_from_irv == choice_winner_from_votefair_ranking )
             {
-                global_count_of_irv_cases_that_agree ++ ;
+                global_count_of_irv_cases_that_match ++ ;
             } else if ( choice_winner_from_irv > 0 )
             {
-                global_count_of_irv_cases_that_disagree ++ ;
+                global_count_of_irv_cases_that_fail_match ++ ;
             } else
             {
                 global_count_of_irv_cases_tied ++ ;
@@ -551,10 +610,10 @@ void handle_calculated_results( )
 
             if ( choice_winner_from_star == choice_winner_from_votefair_ranking )
             {
-                global_count_of_star_cases_that_agree ++ ;
+                global_count_of_star_cases_that_match ++ ;
             } else if ( choice_winner_from_star > 0 )
             {
-                global_count_of_star_cases_that_disagree ++ ;
+                global_count_of_star_cases_that_fail_match ++ ;
             } else
             {
                 global_count_of_star_cases_tied ++ ;
@@ -562,10 +621,10 @@ void handle_calculated_results( )
 
             if ( choice_winner_from_ple == choice_winner_from_votefair_ranking )
             {
-                global_count_of_ple_cases_that_agree ++ ;
+                global_count_of_ple_cases_that_match ++ ;
             } else if ( choice_winner_from_ple > 0 )
             {
-                global_count_of_ple_cases_that_disagree ++ ;
+                global_count_of_ple_cases_that_fail_match ++ ;
             } else
             {
                 global_count_of_ple_cases_tied ++ ;
@@ -579,13 +638,8 @@ void handle_calculated_results( )
 
 
 // -----------------------------------------------
-//  If this case omits a non-winning choice,
-//  determine whether the winner is different from
-//  the case with all the choices.  If so, count
-//  it as a failure for the counting method.
-//  This tests for cases in which the presence of
-//  a non-winning choice (candidate) changes which
-//  choice wins.
+//  If this case included all the choices, save
+//  the winner based on each method.
 
     if ( global_choice_count_case_specific == global_maximum_choice_number )
     {
@@ -595,8 +649,18 @@ void handle_calculated_results( )
         global_choice_winner_from_star_all_choices = choice_winner_from_star ;
         global_choice_winner_from_irv_all_choices = choice_winner_from_irv ;
         global_choice_winner_from_ple_all_choices = choice_winner_from_ple ;
+    }
 
-    } else
+
+// -----------------------------------------------
+//  If testing independence of irrelevant
+//  alternatives or clone independence, determine
+//  whether the winner is the same as the case
+//  with all the choices.  If not, and if the
+//  omitted choice is a non-winning choice, count
+//  it as a failure for the counting method.
+
+    if ( ( ( global_test_type == global_test_irrelevant_alternatives ) || ( global_test_type == global_test_clone_independence ) ) && ( global_choice_count_case_specific < global_maximum_choice_number ) )
     {
 
         if ( ( choice_winner_from_votefair_ranking > 0 ) && ( global_choice_winner_from_votefair_ranking_all_choices > 0 ) && ( global_choice_omitted != global_choice_winner_from_votefair_ranking_all_choices ) )
@@ -608,8 +672,8 @@ void handle_calculated_results( )
             }
             if ( choice_winner_from_votefair_ranking + choice_number_adjustment != global_choice_winner_from_votefair_ranking_all_choices )
             {
-                global_count_of_votefair_group_failures_irrel_alt ++ ;
-                log_out << "[vf_irrel]" ;
+                global_count_of_votefair_group_failures ++ ;
+                log_out << "[vf_fail]" ;
             }
         }
 
@@ -622,8 +686,8 @@ void handle_calculated_results( )
             }
             if ( choice_winner_from_ipe + choice_number_adjustment != global_choice_winner_from_ipe_all_choices )
             {
-                global_count_of_ipe_group_failures_irrel_alt ++ ;
-                log_out << "[ipe_irrel]" ;
+                global_count_of_ipe_group_failures ++ ;
+                log_out << "[ipe_fail]" ;
             }
         }
 
@@ -636,8 +700,8 @@ void handle_calculated_results( )
             }
             if ( choice_winner_from_irmpl + choice_number_adjustment != global_choice_winner_from_irmpl_all_choices )
             {
-                global_count_of_irmpl_group_failures_irrel_alt ++ ;
-                log_out << "[irmpl_irrel]" ;
+                global_count_of_irmpl_group_failures ++ ;
+                log_out << "[irmpl_fail]" ;
             }
         }
 
@@ -650,8 +714,8 @@ void handle_calculated_results( )
             }
             if ( choice_winner_from_star + choice_number_adjustment != global_choice_winner_from_star_all_choices )
             {
-                global_count_of_star_group_failures_irrel_alt ++ ;
-                log_out << "[star_irrel]" ;
+                global_count_of_star_group_failures ++ ;
+                log_out << "[star_fail]" ;
             }
         }
 
@@ -664,8 +728,8 @@ void handle_calculated_results( )
             }
             if ( choice_winner_from_irv + choice_number_adjustment != global_choice_winner_from_irv_all_choices )
             {
-                global_count_of_irv_group_failures_irrel_alt ++ ;
-                log_out << "[irv_irrel]" ;
+                global_count_of_irv_group_failures ++ ;
+                log_out << "[irv_fail]" ;
             }
         }
 
@@ -678,36 +742,36 @@ void handle_calculated_results( )
             }
             if ( choice_winner_from_ple + choice_number_adjustment != global_choice_winner_from_ple_all_choices )
             {
-                global_count_of_ple_group_failures_irrel_alt ++ ;
-                log_out << "[ple_irrel]" ;
+                global_count_of_ple_group_failures ++ ;
+                log_out << "[ple_fail]" ;
             }
         }
 
         if ( global_choice_omitted == global_maximum_choice_number )
         {
-            if ( global_count_of_votefair_group_failures_irrel_alt > 0 )
+            if ( global_count_of_votefair_group_failures > 0 )
             {
-                global_count_of_votefair_cases_fail_irrel_alt ++ ;
+                global_count_of_votefair_cases_that_fail_match ++ ;
             }
-            if ( global_count_of_ipe_group_failures_irrel_alt > 0 )
+            if ( global_count_of_ipe_group_failures > 0 )
             {
-                global_count_of_ipe_cases_fail_irrel_alt ++ ;
+                global_count_of_ipe_cases_that_fail_match ++ ;
             }
-            if ( global_count_of_irmpl_group_failures_irrel_alt > 0 )
+            if ( global_count_of_irmpl_group_failures > 0 )
             {
-                global_count_of_irmpl_cases_fail_irrel_alt ++ ;
+                global_count_of_irmpl_cases_that_fail_match ++ ;
             }
-            if ( global_count_of_star_group_failures_irrel_alt > 0 )
+            if ( global_count_of_star_group_failures > 0 )
             {
-                global_count_of_star_cases_fail_irrel_alt ++ ;
+                global_count_of_star_cases_that_fail_match ++ ;
             }
-            if ( global_count_of_irv_group_failures_irrel_alt > 0 )
+            if ( global_count_of_irv_group_failures > 0 )
             {
-                global_count_of_irv_cases_fail_irrel_alt ++ ;
+                global_count_of_irv_cases_that_fail_match ++ ;
             }
-            if ( global_count_of_ple_group_failures_irrel_alt > 0 )
+            if ( global_count_of_ple_group_failures > 0 )
             {
-                global_count_of_ple_cases_fail_irrel_alt ++ ;
+                global_count_of_ple_cases_that_fail_match ++ ;
             }
         }
     }
@@ -747,6 +811,12 @@ int main( ) {
 
 
 // -----------------------------------------------
+//  Initialization.
+
+    global_choice_count_case_specific = global_maximum_choice_number ;
+
+
+// -----------------------------------------------
 //  Open the output log file.
 
     log_out.open ( "temp_log_from_generate_random_ballots.txt" , std::ios::out ) ;
@@ -763,27 +833,60 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  For use when testing irrelevant alternatives,
-//  update the global_choice_omitted counter.
-//  It equals zero when all choices are used, and
-//  otherwise it equals the choice to omit.
+//  When needed, reset the global_choice_omitted
+//  pointer when it has cycled through all the
+//  choices.  It equals zero when all choices are
+//  used, and otherwise it equals the choice to omit.
+//  Also reset the group counts.
+//  And count the number of tests, which is less
+//  than the number of cases if testing IIA or
+//  clone independence.
 
         if ( global_choice_omitted > global_maximum_choice_number )
         {
             global_choice_omitted = 0 ;
-            global_count_of_votefair_group_failures_irrel_alt = 0 ;
-            global_count_of_irrel_alt_tests ++ ;
+            global_count_of_tests ++ ;
+            global_count_of_votefair_group_failures = 0 ;
+            global_count_of_ipe_group_failures = 0 ;
+            global_count_of_irmpl_group_failures = 0 ;
+            global_count_of_star_group_failures = 0 ;
+            global_count_of_irv_group_failures = 0 ;
+            global_count_of_ple_group_failures = 0 ;
         }
 
 
 // -----------------------------------------------
-//  If the test for irrelevant alternatives is
-//  being done and one of the choices is being
-//  omitted, specify one less than the usual
-//  number of choices.
+//  When testing clone independence, update the
+//  global_choice_omitted pointer.  It equals zero
+//  when all choices are used, otherwise it equals
+//  the full number of choices.
+
+        if ( global_test_type == global_test_clone_independence )
+        {
+            if ( global_choice_omitted > 0 )
+            {
+                global_choice_omitted = global_maximum_choice_number ;
+            } else
+            {
+                global_choice_omitted = 0 ;
+                global_count_of_tests ++ ;
+                global_count_of_votefair_group_failures = 0 ;
+                global_count_of_ipe_group_failures = 0 ;
+                global_count_of_irmpl_group_failures = 0 ;
+                global_count_of_star_group_failures = 0 ;
+                global_count_of_irv_group_failures = 0 ;
+                global_count_of_ple_group_failures = 0 ;
+            }
+        }
+
+
+// -----------------------------------------------
+//  If  one of the choices is being omitted,
+//  specify one less than the usual number of
+//  choices.
 
         global_choice_count_case_specific = global_maximum_choice_number ;
-        if ( ( global_test_type == global_test_irrelevant_alternatives ) && ( global_choice_omitted > 0 ) )
+        if ( ( global_test_type != global_test_matches_with_votefair_ranking ) && ( global_choice_omitted > 0 ) )
         {
             global_choice_count_case_specific = global_maximum_choice_number - 1 ;
         }
@@ -838,19 +941,13 @@ int main( ) {
 //  number if needed.
 
                 choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
-                if ( global_choice_count_case_specific == global_maximum_choice_number )
+                if ( ( global_choice_count_case_specific != global_maximum_choice_number ) && ( choice_number > global_choice_omitted ) )
+                {
+                    choice_number -- ;
+                }
+                if ( ( global_choice_count_case_specific == global_maximum_choice_number ) || ( choice_number != global_choice_omitted ) )
                 {
                     outfile << choice_number << std::endl ;
-                } else
-                {
-                    if ( choice_number < global_choice_omitted )
-                    {
-                        outfile << choice_number << std::endl ;
-                    } else if ( choice_number > global_choice_omitted )
-                    {
-                        choice_number -- ;
-                        outfile << choice_number << std::endl ;
-                    }
                 }
 
 
@@ -904,7 +1001,7 @@ int main( ) {
 // -----------------------------------------------
 //  Open the calculated-results file for reading,
 //  then read the calculated results, and count the
-//  number of correct, incorrect, and tied
+//  number of matches, match failures, and tied
 //  calculated results.
 
         calc_results.open ( "temp_votefair_ranking_output.txt" , std::ios::in ) ;
@@ -927,67 +1024,93 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Write the results.
+//  Begin to write the results.
 
     log_out << std::endl << std::endl << std::endl ;
+
+    if ( global_test_type == global_test_matches_with_votefair_ranking )
+    {
+        log_out << "[test type: Matches with VoteFair ranking results]" << std::endl ;
+    } else if ( global_test_type == global_test_irrelevant_alternatives )
+    {
+        log_out << "[test type: Independence of Irrelevant Alternatives (IIA)]" << std::endl ;
+    } else if ( global_test_type == global_test_clone_independence )
+    {
+        log_out << "[test type: Clone Independence]" << std::endl ;
+    } else
+    {
+        log_out << "[error: test type invalid]" << std::endl ;
+    }
+
     log_out << "[number of cases: " << global_maximum_case_count << "]" << std::endl ;
     log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
     log_out << "[number of choices: " << global_maximum_choice_number << "]" << std::endl ;
 
+
+// -----------------------------------------------
+//  If testing comparisons with VoteFair ranking,
+//  calculate and write those results.
+
     if ( global_test_type == global_test_matches_with_votefair_ranking )
     {
 
-        count_of_cases_agree_plus_disagree = global_count_of_ipe_cases_that_agree + global_count_of_ipe_cases_that_disagree ;
-        calculated_result_agree = int( ( 1000 * global_count_of_ipe_cases_that_agree ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_ipe_cases_that_disagree ) / count_of_cases_agree_plus_disagree ) ;
+        count_of_cases_agree_plus_disagree = global_count_of_ipe_cases_that_match + global_count_of_ipe_cases_that_fail_match ;
+        calculated_result_agree = int( ( 1000 * global_count_of_ipe_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
+        calculated_result_disagree = int( ( 1000 * global_count_of_ipe_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
         calculated_result_tied = global_count_of_ipe_cases_tied ;
         log_out << "[IPE agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
 
-        count_of_cases_agree_plus_disagree = global_count_of_irmpl_cases_that_agree + global_count_of_irmpl_cases_that_disagree ;
-        calculated_result_agree = int( ( 1000 * global_count_of_irmpl_cases_that_agree ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_irmpl_cases_that_disagree ) / count_of_cases_agree_plus_disagree ) ;
+        count_of_cases_agree_plus_disagree = global_count_of_irmpl_cases_that_match + global_count_of_irmpl_cases_that_fail_match ;
+        calculated_result_agree = int( ( 1000 * global_count_of_irmpl_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
+        calculated_result_disagree = int( ( 1000 * global_count_of_irmpl_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
         calculated_result_tied = global_count_of_irmpl_cases_tied ;
         log_out << "[IRMPL agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
 
-        count_of_cases_agree_plus_disagree = global_count_of_star_cases_that_agree + global_count_of_star_cases_that_disagree ;
-        calculated_result_agree = int( ( 1000 * global_count_of_star_cases_that_agree ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_star_cases_that_disagree ) / count_of_cases_agree_plus_disagree ) ;
+        count_of_cases_agree_plus_disagree = global_count_of_star_cases_that_match + global_count_of_star_cases_that_fail_match ;
+        calculated_result_agree = int( ( 1000 * global_count_of_star_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
+        calculated_result_disagree = int( ( 1000 * global_count_of_star_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
         calculated_result_tied = global_count_of_star_cases_tied ;
         log_out << "[STAR agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
 
-        count_of_cases_agree_plus_disagree = global_count_of_irv_cases_that_agree + global_count_of_irv_cases_that_disagree ;
-        calculated_result_agree = int( ( 1000 * global_count_of_irv_cases_that_agree ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_irv_cases_that_disagree ) / count_of_cases_agree_plus_disagree ) ;
+        count_of_cases_agree_plus_disagree = global_count_of_irv_cases_that_match + global_count_of_irv_cases_that_fail_match ;
+        calculated_result_agree = int( ( 1000 * global_count_of_irv_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
+        calculated_result_disagree = int( ( 1000 * global_count_of_irv_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
         calculated_result_tied = global_count_of_irv_cases_tied ;
         log_out << "[IRV agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
 
-        count_of_cases_agree_plus_disagree = global_count_of_ple_cases_that_agree + global_count_of_ple_cases_that_disagree ;
-        calculated_result_agree = int( ( 1000 * global_count_of_ple_cases_that_agree ) / count_of_cases_agree_plus_disagree ) ;
-        calculated_result_disagree = int( ( 1000 * global_count_of_ple_cases_that_disagree ) / count_of_cases_agree_plus_disagree ) ;
+        count_of_cases_agree_plus_disagree = global_count_of_ple_cases_that_match + global_count_of_ple_cases_that_fail_match ;
+        calculated_result_agree = int( ( 1000 * global_count_of_ple_cases_that_match ) / count_of_cases_agree_plus_disagree ) ;
+        calculated_result_disagree = int( ( 1000 * global_count_of_ple_cases_that_fail_match ) / count_of_cases_agree_plus_disagree ) ;
         calculated_result_tied = global_count_of_ple_cases_tied ;
         log_out << "[PLE agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
     }
 
-    if ( global_test_type == global_test_irrelevant_alternatives )
+
+// -----------------------------------------------
+//  If testing independence of irrelevant
+//  alternatives, or clone independence, calculate
+//  and write those results.
+
+    if ( ( global_test_type == global_test_irrelevant_alternatives ) || ( global_test_type == global_test_clone_independence ) )
     {
 
-        calculated_result_failures = int( ( 1000 *  global_count_of_votefair_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[VF irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        calculated_result_failures = int( ( 1000 *  global_count_of_votefair_cases_that_fail_match ) / global_count_of_tests ) ;
+        log_out << "[VF failures per k: " << calculated_result_failures << "]" << std::endl ;
 
-        calculated_result_failures = int( ( 1000 *  global_count_of_ipe_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[IPE irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        calculated_result_failures = int( ( 1000 *  global_count_of_ipe_cases_that_fail_match ) / global_count_of_tests ) ;
+        log_out << "[IPE failures per k: " << calculated_result_failures << "]" << std::endl ;
 
-        calculated_result_failures = int( ( 1000 *  global_count_of_irmpl_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[IRMPL irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        calculated_result_failures = int( ( 1000 *  global_count_of_irmpl_cases_that_fail_match ) / global_count_of_tests ) ;
+        log_out << "[IRMPL failures per k: " << calculated_result_failures << "]" << std::endl ;
 
-        calculated_result_failures = int( ( 1000 *  global_count_of_star_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[STAR irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        calculated_result_failures = int( ( 1000 *  global_count_of_star_cases_that_fail_match ) / global_count_of_tests ) ;
+        log_out << "[STAR failures per k: " << calculated_result_failures << "]" << std::endl ;
 
-        calculated_result_failures = int( ( 1000 *  global_count_of_irv_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[IRV irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        calculated_result_failures = int( ( 1000 *  global_count_of_irv_cases_that_fail_match ) / global_count_of_tests ) ;
+        log_out << "[IRV failures per k: " << calculated_result_failures << "]" << std::endl ;
 
-        calculated_result_failures = int( ( 1000 *  global_count_of_ple_cases_fail_irrel_alt ) / global_count_of_irrel_alt_tests ) ;
-        log_out << "[PLE irrel alt failures per k: " << calculated_result_failures << "]" << std::endl ;
+        calculated_result_failures = int( ( 1000 *  global_count_of_ple_cases_that_fail_match ) / global_count_of_tests ) ;
+        log_out << "[PLE failures per k: " << calculated_result_failures << "]" << std::endl ;
 
     }
 
