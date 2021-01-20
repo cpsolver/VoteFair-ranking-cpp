@@ -8834,7 +8834,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  Begin a loop that handles each choice that has
 //  not yet been eliminated.
 
-            smallest_first_choice_count = 0 ;
+            smallest_first_choice_count = -1 ;
             count_of_choices_with_smallest_first_choice_count = 0 ;
             sum_of_all_first_choice_counts = 0 ;
             for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
@@ -8873,7 +8873,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  first-choice count.  Allow for the possibility
 //  of a tie.
 
-                if ( ( smallest_first_choice_count == 0 ) || ( global_first_choice_count_for_choice[ actual_choice ] < smallest_first_choice_count ) )
+                if ( ( smallest_first_choice_count < 0 ) || ( global_first_choice_count_for_choice[ actual_choice ] < smallest_first_choice_count ) )
                 {
                     count_of_choices_with_smallest_first_choice_count = 1 ;
                     smallest_first_choice_count = global_first_choice_count_for_choice[ actual_choice ] ;
