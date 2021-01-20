@@ -2,13 +2,14 @@
 //
 //  This program generates random ballots for use with the
 //  votefair_ranking.cpp code.
+//  See the ABOUT section for details.
 //
 //
 // -----------------------------------------------
 //
 //  COPYRIGHT & LICENSE
 //
-//  (c) Copyright 2020 by Richard Fobes at www.VoteFair.org.
+//  (c) Copyright 2021 by Richard Fobes at www.VoteFair.org.
 //  You can redistribute and/or modify this VoteFairRanking software
 //  under the MIT software license terms that appear
 //  in the "license" file.
@@ -21,7 +22,7 @@
 //
 //  VERSION
 //
-//  Version 1.01
+//  Version 1.21
 //
 //
 // -----------------------------------------------
@@ -31,9 +32,10 @@
 //  This program generates random ballots for use with the
 //  votefair_ranking.cpp code.
 //
-//  The following sample code executes this software under a typical
-//  Windows environment with the g++ compiler and the mingw32 library
-//  already installed.
+//  The following sample code compiles and then executes
+//  this software under a typical Windows environment
+//  with the g++ compiler and the mingw32 library already
+//  installed.
 //
 //      path=C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin\
 //
@@ -47,7 +49,24 @@
 //  ABOUT
 //
 //  This software generates random ballots for the
-//  votefair_ranking.cpp code.
+//  votefair_ranking.cpp code and then calculates
+//  results for the following three tests:
+//
+//  * Calculates how often each method yields the
+//    same winner as the Condorcet-Kemeny method
+//    (which deeply looks into ALL the ballot
+//    information).
+//
+//  * Calculates how often each method yields a
+//    different winner if any one of the other
+//    non-winning candidates did not enter the
+//    race.  Such failures fail the "independence
+//    of irrelevant alternatives" (IIA) criterion.
+//
+//  * Calculates how often each method yields a
+//    different winner if a clone candidate enters
+//    the race.  Such failures fail the
+//    "independence of clones" criterion.
 //
 //
 // -----------------------------------------------
@@ -83,13 +102,13 @@
 //  number of ballots and the number of choices.
 
 const int global_maximum_case_count = 400 ;
-const int global_maximum_ballot_number = 17 ;
-const int global_maximum_choice_number = 7 ;
+const int global_maximum_ballot_number = 5 ;
+const int global_maximum_choice_number = 4 ;
 
 
 // -----------------------------------------------
-//  Assign a number to each kind of test.
 //  (Do not change these numbers.)
+//  Assign a number to each kind of test.
 
 const int global_test_matches_with_votefair_ranking = 1 ;
 const int global_test_irrelevant_alternatives = 2 ;
@@ -99,8 +118,8 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-// const int global_test_type = global_test_matches_with_votefair_ranking ;
-const int global_test_type = global_test_irrelevant_alternatives ;
+const int global_test_type = global_test_matches_with_votefair_ranking ;
+// const int global_test_type = global_test_irrelevant_alternatives ;
 // const int global_test_type = global_test_clone_independence ;
 
 
@@ -109,13 +128,6 @@ const int global_test_type = global_test_irrelevant_alternatives ;
 //  number of digits.  This number can be changed.
 
 const int global_minimum_case_id = 100000 ;
-
-
-// -----------------------------------------------
-//  Specify constants.
-//  (Do not change these numbers.)
-
-const int global_question_number = 1 ;
 
 
 // -----------------------------------------------
@@ -137,6 +149,13 @@ std::string global_name_for_method_irmpl = "IRMPL" ;
 std::string global_name_for_method_star = "STAR" ;
 std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_ple = "PLE" ;
+
+
+// -----------------------------------------------
+//  (Do not change these numbers.)
+//  Specify constants.
+
+const int global_question_number = 1 ;
 
 
 // -----------------------------------------------
@@ -287,7 +306,6 @@ void generate_preferences( ) {
 
     for ( ballot_number = 1 ; ballot_number <= global_maximum_ballot_number ; ballot_number ++ )
     {
-//        log_out << "[" ;
 
 
 // -----------------------------------------------
@@ -353,7 +371,6 @@ void generate_preferences( ) {
             {
                 global_choice_number_at_position[ pointer_number ] = global_choice_number_at_position[ pointer_number + 1 ] ;
             }
-//            log_out << choice_number << " " ;
 
 
 // -----------------------------------------------
@@ -374,13 +391,15 @@ void generate_preferences( ) {
 // -----------------------------------------------
 //  Repeat the loop that handles one ballot.
 
-//        log_out << "]" << std::endl ;
     }
 
 
 // -----------------------------------------------
-//  Optionally verify that the preference info is
-//  really random.
+//  If desired, write to a file the counts that
+//  can be looked at to verify that the preference
+//  info is really random.
+//  Use either "1 == 1" or "1 == 0" to generate or
+//  omit this output file.
 
     if ( 1 == 1 )
     {
@@ -443,7 +462,7 @@ void handle_calculated_results( )
 //  Begin loop to handle one line from the input file
 //  that contains the calculated results.
 
-    log_out << std::endl << "[" << global_choice_count_case_specific << " choices]" ;
+    log_out << std::endl << "[" << global_case_id << "]" << "[ch " << global_choice_count_case_specific << "]" ;
     count_position_at_start_of_votefair_popularity_sequence = -10 ;
     count_position_at_choice_number = -10 ;
     for ( std::string input_line ; std::getline( calc_results , input_line ) ; )
@@ -485,7 +504,6 @@ void handle_calculated_results( )
             try
             {
                 current_result_code = convert_text_to_integer( pointer_to_word ) ;
-//                log_out << "[" << current_result_code << "]  " ;
             }
             catch( ... )
             {
@@ -499,12 +517,15 @@ void handle_calculated_results( )
 //  Handle the supplied vote-info number.
 
 //            log_out << "[" << current_result_code << "]" ;
+
             if ( current_result_code == global_voteinfo_code_for_start_of_votefair_popularity_ranking_sequence_results )
             {
                 count_position_at_start_of_votefair_popularity_sequence = count_of_result_codes ;
+
             } else if ( current_result_code == global_voteinfo_code_for_choice )
             {
                 count_position_at_choice_number = count_of_result_codes ;
+
             } else if ( ( count_of_result_codes == count_position_at_start_of_votefair_popularity_sequence + 2 ) && ( count_of_result_codes == count_position_at_choice_number + 1 ) )
             {
                 for ( method_id = 2 ; method_id <= global_number_of_methods ; method_id ++ )
@@ -513,30 +534,37 @@ void handle_calculated_results( )
                 }
                 global_choice_winner_from_method[ global_method_votefair ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_votefair ] << " " << global_choice_winner_from_method[ global_method_votefair ] << "]" ;
+
             } else if ( ( current_result_code == global_voteinfo_code_for_tie ) && ( count_of_result_codes == count_position_at_start_of_votefair_popularity_sequence + 3 ) )
             {
                 global_choice_winner_from_method[ global_method_votefair ] = 0 ;
                 log_out << "[" << global_name_for_method[ global_method_votefair ] << "_tie]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_pairwise_elimination )
             {
                 global_choice_winner_from_method[ global_method_ipe ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_ipe ] << " " << global_choice_winner_from_method[ global_method_ipe ] << "]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_minus_pairwise_losers )
             {
                 global_choice_winner_from_method[ global_method_irmpl ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_irmpl ] << " " << global_choice_winner_from_method[ global_method_irmpl ] << "]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
             {
                 global_choice_winner_from_method[ global_method_irv ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_irv ] << " " << global_choice_winner_from_method[ global_method_irv ] << "]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_star_voting )
             {
                 global_choice_winner_from_method[ global_method_star ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_star ] << " " << global_choice_winner_from_method[ global_method_star ] << "]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_pairwise_loser_elimination )
             {
                 global_choice_winner_from_method[ global_method_ple ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_ple ] << " " << global_choice_winner_from_method[ global_method_ple ] << "]" ;
+
             }
 
 
@@ -588,6 +616,15 @@ void handle_calculated_results( )
         {
             global_count_of_votefair_no_single_winner ++ ;
         }
+    }
+
+
+// -----------------------------------------------
+//  Identify interesting cases:
+
+    if ( ( global_choice_winner_from_method[ global_method_ple ] < 0 ) && ( global_choice_winner_from_method[ global_method_irmpl ] > 0 ) && ( global_choice_winner_from_method[ global_method_ipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_irv ] > 0 ) && ( global_choice_winner_from_method[ global_method_votefair ] == global_choice_winner_from_method[ global_method_irmpl ] ) && ( global_choice_winner_from_method[ global_method_irmpl ] != global_choice_winner_from_method[ global_method_irv ] ) )
+    {
+        log_out << "[****]" ;
     }
 
 
@@ -736,10 +773,7 @@ int main( ) {
 
         if ( global_test_type == global_test_clone_independence )
         {
-            if ( global_choice_omitted > 0 )
-            {
-                global_choice_omitted = global_maximum_choice_number ;
-            } else
+            if ( global_choice_omitted > global_maximum_choice_number )
             {
                 global_choice_omitted = 0 ;
                 global_count_of_tests ++ ;
@@ -747,6 +781,9 @@ int main( ) {
                 {
                     global_count_of_group_failures_for_method[ method_id ] = 0 ;
                 }
+            } else
+            {
+                global_choice_omitted = global_maximum_choice_number ;
             }
         }
 
@@ -791,6 +828,7 @@ int main( ) {
 
 // -----------------------------------------------
 //  Begin a loop that handles one ballot.
+//  Write the beginning of the info for this ballot.
 
         for ( ballot_number = 1 ; ballot_number <= global_maximum_ballot_number ; ballot_number ++ )
         {
@@ -829,7 +867,7 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Indicate the end of this ballot.
+//  Write the code that terminates this ballot.
 
             outfile << global_voteinfo_code_for_end_of_ballot << std::endl ;
 
@@ -855,6 +893,7 @@ int main( ) {
 
 // -----------------------------------------------
 //  Run the VoteFair-ranking-cpp program.
+//  It uses as input the file that was just written.
 //
 //  documentation:  https://cplusplus.com/reference/cstdlib/system/
 
@@ -916,6 +955,7 @@ int main( ) {
     log_out << "[number of cases: " << global_maximum_case_count << "]" << std::endl ;
     log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
     log_out << "[number of choices: " << global_maximum_choice_number << "]" << std::endl ;
+    log_out << "[note: " << '"' << "per k" << '"' << " means per thousand, so divide by 10 to get percentage]" << std::endl ;
 
 
 // -----------------------------------------------
@@ -930,7 +970,7 @@ int main( ) {
             calculated_result_agree = int( ( 1000 * global_count_of_cases_that_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
             calculated_result_disagree = int( ( 1000 * global_count_of_cases_that_fail_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
             calculated_result_tied = global_count_of_cases_tied_for_method[ method_id ] ;
-            log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
+            log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree per k: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
         }
     }
 
@@ -996,7 +1036,7 @@ int main( ) {
 //
 //  COPYRIGHT & LICENSE
 //
-//  (c) Copyright 2020 by Richard Fobes at www.VoteFair.org.
+//  (c) Copyright 2021 by Richard Fobes at www.VoteFair.org.
 //  You can redistribute and/or modify this VoteFairRanking software
 //  under the MIT software license terms as explained in the
 //  LICENSE file.)
