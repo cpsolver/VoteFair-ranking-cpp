@@ -101,8 +101,8 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 400 ;
-const int global_maximum_ballot_number = 5 ;
+const int global_maximum_case_count = 30 ;
+const int global_maximum_ballot_number = 9 ;
 const int global_maximum_choice_number = 4 ;
 
 
@@ -138,17 +138,17 @@ const int global_minimum_case_id = 100000 ;
 int global_number_of_methods = 6 ;
 const int global_method_votefair = 1 ;
 const int global_method_ipe = 2 ;
-const int global_method_irmpl = 3 ;
-const int global_method_star = 4 ;
+const int global_method_rcipe = 3 ;
+const int global_method_ple = 4 ;
 const int global_method_irv = 5 ;
-const int global_method_ple = 6 ;
+const int global_method_star = 6 ;
 
 std::string global_name_for_method_votefair = "VF" ;
 std::string global_name_for_method_ipe = "IPE" ;
-std::string global_name_for_method_irmpl = "IRMPL" ;
-std::string global_name_for_method_star = "STAR" ;
-std::string global_name_for_method_irv = "IRV" ;
+std::string global_name_for_method_rcipe = "RCIPE" ;
 std::string global_name_for_method_ple = "PLE" ;
+std::string global_name_for_method_irv = "IRV" ;
+std::string global_name_for_method_star = "STAR" ;
 
 
 // -----------------------------------------------
@@ -547,8 +547,8 @@ void handle_calculated_results( )
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_minus_pairwise_losers )
             {
-                global_choice_winner_from_method[ global_method_irmpl ] = current_result_code ;
-                log_out << "[" << global_name_for_method[ global_method_irmpl ] << " " << global_choice_winner_from_method[ global_method_irmpl ] << "]" ;
+                global_choice_winner_from_method[ global_method_rcipe ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_rcipe ] << " " << global_choice_winner_from_method[ global_method_rcipe ] << "]" ;
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
             {
@@ -622,7 +622,7 @@ void handle_calculated_results( )
 // -----------------------------------------------
 //  Identify interesting cases:
 
-    if ( ( global_choice_winner_from_method[ global_method_ple ] < 0 ) && ( global_choice_winner_from_method[ global_method_irmpl ] > 0 ) && ( global_choice_winner_from_method[ global_method_ipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_irv ] > 0 ) && ( global_choice_winner_from_method[ global_method_votefair ] == global_choice_winner_from_method[ global_method_irmpl ] ) && ( global_choice_winner_from_method[ global_method_irmpl ] != global_choice_winner_from_method[ global_method_irv ] ) )
+    if ( ( global_choice_winner_from_method[ global_method_ple ] < 0 ) && ( global_choice_winner_from_method[ global_method_rcipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_ipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_irv ] > 0 ) && ( global_choice_winner_from_method[ global_method_votefair ] == global_choice_winner_from_method[ global_method_rcipe ] ) && ( global_choice_winner_from_method[ global_method_rcipe ] != global_choice_winner_from_method[ global_method_irv ] ) )
     {
         log_out << "[****]" ;
     }
@@ -722,7 +722,7 @@ int main( ) {
     global_choice_count_case_specific = global_maximum_choice_number ;
     global_name_for_method[ global_method_votefair ] = global_name_for_method_votefair ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
-    global_name_for_method[ global_method_irmpl ] = global_name_for_method_irmpl ;
+    global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
     global_name_for_method[ global_method_star ] = global_name_for_method_star ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
     global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
@@ -967,10 +967,16 @@ int main( ) {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             count_of_cases_agree_plus_disagree = global_count_of_cases_that_match_for_method[ method_id ] + global_count_of_cases_that_fail_match_for_method[ method_id ] ;
-            calculated_result_agree = int( ( 1000 * global_count_of_cases_that_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
-            calculated_result_disagree = int( ( 1000 * global_count_of_cases_that_fail_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
-            calculated_result_tied = global_count_of_cases_tied_for_method[ method_id ] ;
-            log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree per k: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
+            if ( count_of_cases_agree_plus_disagree > 0 )
+            {
+                calculated_result_agree = int( ( 1000 * global_count_of_cases_that_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
+                calculated_result_disagree = int( ( 1000 * global_count_of_cases_that_fail_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
+                calculated_result_tied = global_count_of_cases_tied_for_method[ method_id ] ;
+                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree per k: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
+            } else
+            {
+                log_out << "[" << global_name_for_method[ method_id ] << " has zero case count]" << std::endl ;
+            }
         }
     }
 
