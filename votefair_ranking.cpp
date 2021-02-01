@@ -9128,7 +9128,7 @@ void elim_find_fewest_first_choice( )
         {
             pointer_to_vote_info ++ ;
             preference_level = global_vote_info_list[ pointer_to_vote_info ] ;
-            if ( global_logging_info == global_true ) { log_out << "[preference level is " << preference_level << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[preference level is " << preference_level << "]" << std::endl ; } ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_tie )
         {
             preference_level -- ;
@@ -9137,7 +9137,7 @@ void elim_find_fewest_first_choice( )
                 choice_count_at_top_preference_level ++ ;
                 choice_at_top_preference_level = 0 ;
             }
-            if ( global_logging_info == global_true ) { log_out << "[preference level is still " << preference_level << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[preference level is still " << preference_level << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -9156,23 +9156,20 @@ void elim_find_fewest_first_choice( )
                     global_list_of_top_ranked_choices[ count_of_top_ranked_continuing_choices ] = actual_choice ;
                 } else
                 {
-                    if ( top_ranked_continuing_preference_level == preference_level )
+                    if ( preference_level == top_ranked_continuing_preference_level  )
                     {
                         count_of_top_ranked_continuing_choices ++ ;
                         global_list_of_top_ranked_choices[ count_of_top_ranked_continuing_choices ] = actual_choice ;
+                        if ( global_logging_info == global_true ) { log_out << "[update, count of top-ranked choices is " << count_of_top_ranked_continuing_choices << "]" << std::endl ; } ;
                     }
                 }
-                if ( count_of_top_ranked_continuing_choices > 1 )
-                {
-                    if ( global_logging_info == global_true ) { log_out << "[count of top-ranked choices is " << count_of_top_ranked_continuing_choices << "]" << std::endl ; } ;
-                }
+//                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
                 if ( global_true_or_false_calc_star_voting == global_true )
                 {
                     global_star_score_count_for_choice[ actual_choice ] += global_ballot_info_repeat_count * ( global_full_choice_count - preference_level );
                     if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has score of " << global_star_score_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                 }
             }
-//                    if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
             preference_level ++ ;
 
 
@@ -9181,6 +9178,7 @@ void elim_find_fewest_first_choice( )
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_end_of_ballot )
         {
+//            if ( global_logging_info == global_true ) { log_out << "[count_of_top_ranked_continuing_choices = " << count_of_top_ranked_continuing_choices << "]" << std::endl ; } ;
             if ( count_of_top_ranked_continuing_choices == 1 )
             {
                 top_ranked_continuing_choice = global_list_of_top_ranked_choices[ count_of_top_ranked_continuing_choices ] ;
@@ -9202,7 +9200,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
                 }
             } else
             {
-                if ( global_logging_info == global_true ) { log_out << "[error: count_of_top_ranked_continuing_choices equals zero ]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[error: not all the choice numbers are used in this ballot ]" << std::endl ; } ;
                 return ;
             }
             preference_level = 1 ;
@@ -9303,12 +9301,13 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 
 
 // -----------------------------------------------
-//  Verify that all the votes are accounted for.
+//  Log a message if all the votes are not
+//  accounted for.  This happens when fractions
+//  round down.
 
     if ( sum_of_all_first_choice_counts + count_of_ballots_ignored_this_elimination_round != global_current_total_vote_count )
     {
-        if ( global_logging_info == global_true ) { log_out << "[error: counts done during first-choice elimination do not sum to total ballot count]" << std::endl ; } ;
-        return ;
+        if ( global_logging_info == global_true ) { log_out << "[error: counts done during first-choice elimination (" << ( sum_of_all_first_choice_counts + count_of_ballots_ignored_this_elimination_round ) << ") do not sum to total ballot count (" << global_current_total_vote_count << ")]" << std::endl ; } ;
     }
 
 
@@ -9358,7 +9357,6 @@ void method_ranked_choice_including_pairwise_elimination( )
 // -----------------------------------------------
 //  Do initialization.
 
-    if ( global_logging_info == global_true ) { log_out << "\n[doing elimination method RCIPE]" << std::endl ; } ;
     global_elimination_type_requested = "RCIPE" ;
     global_elimination_result_type = global_voteinfo_code_for_winner_irv_minus_pairwise_losers ;
     elim_initialize( ) ;
@@ -9554,6 +9552,10 @@ void method_instant_runoff_voting( )
         actual_choice = elim_if_just_one_then_winner( ) ;
         if ( actual_choice > 0 )
         {
+        	if ( actual_choice != global_actual_choice_at_top_of_full_popularity_ranking )
+        	{
+                if ( global_logging_info == global_true ) { log_out << "\n[IRV disagrees with VoteFair ranking]" << std::endl ; } ;
+        	}
             return ;
         }
 
