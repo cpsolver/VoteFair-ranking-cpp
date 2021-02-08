@@ -101,7 +101,7 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 1000 ;
+const int global_maximum_case_count = 10000 ;
 const int global_maximum_ballot_number = 17 ;
 const int global_maximum_choice_number = 7 ;
 
@@ -118,9 +118,9 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-// const int global_test_type = global_test_matches_with_votefair_ranking ;
+const int global_test_type = global_test_matches_with_votefair_ranking ;
 // const int global_test_type = global_test_irrelevant_alternatives ;
-const int global_test_type = global_test_clone_independence ;
+// const int global_test_type = global_test_clone_independence ;
 
 
 // -----------------------------------------------
@@ -970,7 +970,14 @@ int main( ) {
         log_out << "[error: test type invalid]" << std::endl ;
     }
 
-    log_out << "[number of cases: " << global_maximum_case_count << "]" << std::endl ;
+    if ( global_test_type == global_test_matches_with_votefair_ranking )
+    {
+        log_out << "[number of cases attempted: " << global_maximum_case_count << "]" << std::endl ;
+    } else
+    {
+        log_out << "[number of cases: " << global_count_of_tests << "]" << std::endl ;
+    }
+
     log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
     log_out << "[number of choices: " << global_maximum_choice_number << "]" << std::endl ;
     log_out << "[note: " << '"' << "per k" << '"' << " means per thousand, so divide by 10 to get percentage]" << std::endl ;
