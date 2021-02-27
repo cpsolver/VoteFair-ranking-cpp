@@ -515,7 +515,6 @@ int global_true_or_false_request_instant_runoff_minus_pairwise_losers ;
 int global_true_or_false_request_instant_runoff_voting ;
 int global_true_or_false_request_star_voting ;
 int global_true_or_false_request_pairwise_loser_elimination ;
-int global_true_or_false_calc_star_voting ;
 
 int global_first_choice_count_for_choice[ 99 ] ;
 int global_true_or_false_continuing_for_choice[ 99 ] ;
@@ -825,7 +824,6 @@ void do_initialization( )
     global_true_or_false_request_instant_runoff_voting = global_false ;
     global_true_or_false_request_star_voting = global_false ;
     global_true_or_false_request_pairwise_loser_elimination = global_false ;
-    global_true_or_false_calc_star_voting = global_false ;
 
 
 // -----------------------------------------------
@@ -8636,7 +8634,7 @@ void method_pairwise_loser_elimination( )
             if ( global_logging_info == global_true ) { log_out << "[eliminating pairwise loser, choice " << pairwise_loser << "]" << std::endl ; } ;
         } else
         {
-        	break ;
+            break ;
         }
 
 
@@ -8974,7 +8972,7 @@ void method_instant_pairwise_elimination( )
         elim_find_largest_pairwise_opposition( ) ;
         if ( global_count_of_choices_at_largest_pairwise_opposition_count == 1 )
         {
-        	continue ;
+            continue ;
         }
 
 
@@ -9005,7 +9003,7 @@ void method_instant_pairwise_elimination( )
         elim_find_smallest_pairwise_support( ) ;
         if ( global_count_of_choices_at_smallest_pairwise_support_count == 1 )
         {
-        	continue ;
+            continue ;
         }
 
 
@@ -9180,7 +9178,8 @@ void elim_find_fewest_first_choice( )
                     }
                 }
 //                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
-                if ( global_true_or_false_calc_star_voting == global_true )
+
+                if ( global_elimination_result_type == global_voteinfo_code_for_winner_star_voting )
                 {
                     global_star_score_count_for_choice[ actual_choice ] += global_ballot_info_repeat_count * ( global_full_choice_count - preference_level );
                     if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has score of " << global_star_score_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
@@ -9244,7 +9243,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  If only need "score" values for STAR voting,
 //  return.
 
-    if ( global_true_or_false_calc_star_voting == global_true )
+    if ( global_elimination_result_type == global_voteinfo_code_for_winner_star_voting )
     {
         if ( global_logging_info == global_true ) { log_out << "[have score counts needed for STAR method]" << std::endl ; } ;
         return ;
@@ -9398,7 +9397,7 @@ void method_ranked_choice_including_pairwise_elimination( )
         if ( actual_choice > 0 )
         {
             if ( global_logging_info == global_true ) { log_out << "\n[" << global_elimination_type_requested << " ch " << global_full_choice_count << " bal " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
-        	return ;
+            return ;
         }
 
 
@@ -9423,7 +9422,7 @@ void method_ranked_choice_including_pairwise_elimination( )
         elim_find_fewest_first_choice( ) ;
         if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
         {
-        	continue ;
+            continue ;
         }
 
 
@@ -9455,7 +9454,7 @@ void method_ranked_choice_including_pairwise_elimination( )
         elim_find_largest_pairwise_opposition( ) ;
         if ( global_count_of_choices_at_largest_pairwise_opposition_count == 1 )
         {
-        	continue ;
+            continue ;
         }
 
 
@@ -9572,10 +9571,10 @@ void method_instant_runoff_voting( )
         actual_choice = elim_if_just_one_then_winner( ) ;
         if ( actual_choice > 0 )
         {
-        	if ( actual_choice != global_actual_choice_at_top_of_full_popularity_ranking )
-        	{
+            if ( actual_choice != global_actual_choice_at_top_of_full_popularity_ranking )
+            {
                 if ( global_logging_info == global_true ) { log_out << "\n[IRV disagrees with VoteFair ranking]" << std::endl ; } ;
-        	}
+            }
             return ;
         }
 
@@ -9588,7 +9587,7 @@ void method_instant_runoff_voting( )
         elim_find_fewest_first_choice( ) ;
         if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
         {
-        	continue ;
+            continue ;
         }
 
 
@@ -9663,9 +9662,7 @@ void method_star_voting( )
 // -----------------------------------------------
 //  Calculate "score" counts.
 
-    global_true_or_false_calc_star_voting = global_true ;
     elim_find_fewest_first_choice( ) ;
-    global_true_or_false_calc_star_voting = global_false ;
 
 
 // -----------------------------------------------
@@ -9701,8 +9698,8 @@ void method_star_voting( )
         if ( global_logging_info == global_true ) { log_out << "[there are multiple choices with the top score]" << std::endl ; } ;
     for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
-    	if ( global_star_score_count_for_choice[ actual_choice ] < largest_score )
-    	{
+        if ( global_star_score_count_for_choice[ actual_choice ] < largest_score )
+        {
             global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
             if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << actual_choice << "]" << std::endl ; } ;
             }
@@ -9723,8 +9720,8 @@ void method_star_voting( )
     count_of_choices_with_second_largest_score_count = 0 ;
     for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
-    	if ( actual_choice != choice_with_largest_score )
-    	{
+        if ( actual_choice != choice_with_largest_score )
+        {
             if ( global_star_score_count_for_choice[ actual_choice ] > second_largest_score )
             {
                 second_largest_score = global_star_score_count_for_choice[ actual_choice ] ;
@@ -9752,8 +9749,8 @@ void method_star_voting( )
     {
         for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
-        	if ( actual_choice != choice_with_largest_score )
-        	{
+            if ( actual_choice != choice_with_largest_score )
+            {
                 global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
             }
         }
@@ -9882,7 +9879,7 @@ void calc_eliminate_methods() {
 
     if ( global_true_or_false_request_instant_pairwise_elimination == global_true )
     {
-    	method_instant_pairwise_elimination( ) ;
+        method_instant_pairwise_elimination( ) ;
     }
 
 
