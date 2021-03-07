@@ -101,8 +101,8 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 100 ;
-const int global_maximum_ballot_number = 9 ;
+const int global_maximum_case_count = 5 ;
+const int global_maximum_ballot_number = 12 ;
 const int global_maximum_choice_number = 4 ;
 
 
@@ -118,9 +118,9 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-// const int global_test_type = global_test_matches_with_votefair_ranking ;
+const int global_test_type = global_test_matches_with_votefair_ranking ;
 // const int global_test_type = global_test_irrelevant_alternatives ;
-const int global_test_type = global_test_clone_independence ;
+// const int global_test_type = global_test_clone_independence ;
 
 
 // -----------------------------------------------
@@ -149,7 +149,7 @@ std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
 std::string global_name_for_method_ple = "PLE" ;
 std::string global_name_for_method_irv = "IRV" ;
-std::string global_name_for_method_star = "STAR" ;
+std::string global_name_for_method_star = "STAR/NT" ;
 std::string global_name_for_method_plurality = "PLUR" ;
 
 
