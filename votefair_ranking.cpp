@@ -528,7 +528,7 @@ int global_list_of_choices_with_largest_pairwise_opposition[ 99 ] ;
 int global_list_of_choices_with_smallest_pairwise_support[ 99 ] ;
 int global_star_score_count_for_choice[ 99 ] ;
 
-int const global_maximum_fraction_denominator = 10 ;
+const int global_maximum_fraction_denominator = 10 ;
 
 int global_fractional_count_for_choice_and_denominator[ 99 ][ 10 ] ;
 
@@ -8540,6 +8540,9 @@ int elim_find_pairwise_loser( )
         {
             global_loss_count_for_choice[ actual_second_choice ] ++ ;
             if ( global_logging_info == global_true ) { log_out << "[vote counts for choice " << actual_first_choice << " over choice " << actual_second_choice << " are " << global_tally_first_over_second_in_pair[ pair_counter ] << " versus " << global_tally_second_over_first_in_pair[ pair_counter ] << "]" << std::endl ; } ;
+        } else
+        {
+            if ( global_logging_info == global_true ) { log_out << "[vote counts for choice " << actual_first_choice << " and choice " << actual_second_choice << " are " << global_tally_first_over_second_in_pair[ pair_counter ] << " and " << global_tally_second_over_first_in_pair[ pair_counter ] << "]" << std::endl ; } ;
         }
     }
 
@@ -9859,6 +9862,19 @@ void method_star_voting( )
 
 void calc_eliminate_methods() {
 
+    int winner_ple = 0 ;
+    int winner_rcipe = 0 ;
+    int winner_ipe = 0 ;
+    int winner_irv = 0 ;
+    int winner_plurality = 0 ;
+    int actual_choice ;
+    int pair_counter ;
+    int adjusted_first_choice ;
+    int adjusted_second_choice ;
+    int actual_first_choice ;
+    int actual_second_choice ;
+    int pairwise_difference ;
+
 
 // -----------------------------------------------
 //  If anything other than VoteFair popularity
@@ -9880,6 +9896,7 @@ void calc_eliminate_methods() {
     if ( global_true_or_false_request_instant_pairwise_elimination == global_true )
     {
         method_instant_pairwise_elimination( ) ;
+        winner_ipe = global_output_results[ global_pointer_to_output_results - 1 ] ;
     }
 
 
@@ -9891,6 +9908,7 @@ void calc_eliminate_methods() {
     if ( global_true_or_false_request_instant_runoff_minus_pairwise_losers == global_true )
     {
         method_ranked_choice_including_pairwise_elimination( ) ;
+        winner_rcipe = global_output_results[ global_pointer_to_output_results - 1 ] ;
     }
 
 
@@ -9902,6 +9920,7 @@ void calc_eliminate_methods() {
     if ( global_true_or_false_request_pairwise_loser_elimination == global_true )
     {
         method_pairwise_loser_elimination( ) ;
+        winner_ple = global_output_results[ global_pointer_to_output_results - 1 ] ;
     }
 
 
@@ -9912,6 +9931,7 @@ void calc_eliminate_methods() {
     if ( global_true_or_false_request_instant_runoff_voting == global_true )
     {
         method_instant_runoff_voting( ) ;
+        winner_irv = global_output_results[ global_pointer_to_output_results - 1 ] ;
     }
 
 
@@ -9922,6 +9942,44 @@ void calc_eliminate_methods() {
     if ( global_true_or_false_request_star_voting == global_true )
     {
         method_star_voting( ) ;
+    }
+
+
+// -----------------------------------------------
+//  Identify interesting cases:
+
+    for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+    {
+        adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
+        adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
+        actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
+        actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
+        if ( ( actual_first_choice != global_actual_choice_at_top_of_full_popularity_ranking ) && ( actual_second_choice != global_actual_choice_at_top_of_full_popularity_ranking ) )
+        {
+            continue ;
+        }
+        if ( ( actual_first_choice != winner_irv ) && ( actual_second_choice != winner_irv ) )
+        {
+            continue ;
+        }
+        if ( global_logging_info == global_true ) { log_out << "[pairwise " << actual_first_choice << " over " << actual_second_choice << " is " << global_tally_first_over_second_in_pair[ pair_counter ] << "]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[pairwise " << actual_second_choice << " over " << actual_first_choice << " is " << global_tally_second_over_first_in_pair[ pair_counter ] << "]" << std::endl ; } ;
+        pairwise_difference = global_tally_first_over_second_in_pair[ pair_counter ] - global_tally_second_over_first_in_pair[ pair_counter ] ;
+        if ( pairwise_difference < 0 )
+        {
+        	pairwise_difference = 0 - pairwise_difference ;
+        }
+        if ( global_logging_info == global_true ) { log_out << "[pairwise diff is " << pairwise_difference << "]" << std::endl ; } ;
+    }
+    if ( global_logging_info == global_true ) { log_out << "[win_vf = " << global_actual_choice_at_top_of_full_popularity_ranking << " ; win_ple = " << winner_ple << " ; win_rcipe = " << winner_rcipe << " ; win_ipe = " << winner_ipe << " ; win_irv = " << winner_irv << " ; plurality:" ; } ;
+    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    {
+        if ( global_logging_info == global_true ) { log_out << " " << global_plurality_count_for_actual_choice[ actual_choice ] ; } ;
+    }
+    if ( global_logging_info == global_true ) { log_out << "]" << std::endl ; } ;
+    if ( ( winner_ple < 0 ) && ( winner_rcipe > 0 ) && ( winner_ipe > 0 ) && ( winner_irv > 0 ) && ( global_actual_choice_at_top_of_full_popularity_ranking == winner_rcipe ) && ( winner_rcipe != winner_irv ) && ( pairwise_difference > 1 ) )
+    {
+        if ( global_logging_info == global_true ) { log_out << "[interesting_case]" << std::endl ; } ;
     }
 
 
