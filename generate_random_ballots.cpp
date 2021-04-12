@@ -718,10 +718,14 @@ void handle_calculated_results( )
                         log_out << "[" << global_name_for_method[ method_id ] << "_fail]" ;
                         if ( global_choice_winner_from_method[ method_id ] == global_maximum_choice_number )
                         {
-                            global_count_of_group_clone_help_for_method[ method_id ] ++ ;
+                            global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
+                            if ( method_id == global_method_rcipe )
+                            {
+                                log_out << "[+++]" ;
+                            }
                         } else
                         {
-                            global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
+                            global_count_of_group_clone_help_for_method[ method_id ] ++ ;
                         }
                     }
                 }
@@ -787,6 +791,7 @@ int main( ) {
     int calculated_result_ties = 0 ;
     int calculated_result_clone_help = 0 ;
     int calculated_result_clone_hurt = 0 ;
+    int choice_number_before_adjusted = 0 ;
 
 
 // -----------------------------------------------
@@ -936,11 +941,15 @@ int main( ) {
 //  number if needed.
 
                 choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
-                if ( ( global_choice_count_case_specific != global_maximum_choice_number ) && ( choice_number > global_choice_omitted ) )
+                choice_number_before_adjusted = choice_number ;
+                if ( ( global_choice_count_case_specific != global_maximum_choice_number ) && ( global_choice_omitted > 0 ) && ( choice_number > global_choice_omitted ) )
                 {
                     choice_number -- ;
                 }
-                if ( ( global_choice_count_case_specific == global_maximum_choice_number ) || ( choice_number != global_choice_omitted ) )
+
+// todo: fix bug here:
+
+                if ( ( global_choice_count_case_specific == global_maximum_choice_number ) || ( ( global_choice_omitted > 0 ) && ( choice_number_before_adjusted != global_choice_omitted ) ) )
                 {
                     outfile << choice_number << std::endl ;
                 }
