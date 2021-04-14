@@ -101,9 +101,9 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 50 ;
+const int global_maximum_case_count = 200 ;
 const int global_maximum_ballot_number = 12 ;
-const int global_maximum_choice_number = 4 ;
+const int global_maximum_choice_number = 7 ;
 
 
 // -----------------------------------------------
@@ -118,9 +118,9 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-// const int global_test_type = global_test_matches_with_votefair_ranking ;
+const int global_test_type = global_test_matches_with_votefair_ranking ;
 // const int global_test_type = global_test_irrelevant_alternatives ;
-const int global_test_type = global_test_clone_independence ;
+// const int global_test_type = global_test_clone_independence ;
 
 
 // -----------------------------------------------
@@ -172,11 +172,24 @@ const int global_true = 1 ;
 //  Declare global variables.
 
 int global_case_id ;
-int global_count_of_tests ;
+int global_count_of_cases ;
 int global_choice_count_case_specific ;
 int global_choice_omitted ;
 int global_count_of_votefair_single_winner ;
 int global_count_of_votefair_no_single_winner ;
+
+
+// -----------------------------------------------
+//  Declare frequently used variable names,
+//  but these are not intended to convey data
+//  between functions.
+
+int method_id = 1 ;
+int ballot_number = 0 ;
+int choice_number = 0 ;
+int ranking_level = 0 ;
+int position_number = 0 ;
+int pointer_number = 0 ;
 
 
 // -----------------------------------------------
@@ -188,17 +201,19 @@ int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
 
+int global_test_count_for_method[ 20 ] ;
 int global_choice_winner_all_choices_for_method[ 20 ] ;
-int global_count_of_cases_that_match_for_method[ 20 ] ;
-int global_count_of_cases_that_fail_match_for_method[ 20 ] ;
-int global_count_of_cases_tied_for_method[ 20 ] ;
-int global_count_of_cases_clone_help_for_method[ 20 ] ;
-int global_count_of_cases_clone_hurt_for_method[ 20 ] ;
-int global_count_of_group_failures_for_method[ 20 ] ;
-int global_count_of_group_ties_for_method[ 20 ] ;
-int global_count_of_group_clone_help_for_method[ 20 ] ;
-int global_count_of_group_clone_hurt_for_method[ 20 ] ;
 int global_choice_winner_from_method[ 20 ] ;
+int global_count_of_tests_match_for_method[ 20 ] ;
+int global_count_of_group_match_for_method[ 20 ] ;
+int global_count_of_tests_fail_match_for_method[ 20 ] ;
+int global_count_of_group_fail_match_for_method[ 20 ] ;
+int global_count_of_tests_tied_for_method[ 20 ] ;
+int global_count_of_group_tied_for_method[ 20 ] ;
+int global_count_of_tests_clone_help_for_method[ 20 ] ;
+int global_count_of_group_clone_help_for_method[ 20 ] ;
+int global_count_of_tests_clone_hurt_for_method[ 20 ] ;
+int global_count_of_group_clone_hurt_for_method[ 20 ] ;
 
 
 // -----------------------------------------------
@@ -293,14 +308,9 @@ void generate_preferences( ) {
 // -----------------------------------------------
 //  Initialization.
 
-    int ballot_number = 0 ;
-    int choice_number = 0 ;
-    int ranking_level = 0 ;
-    int position_number = 0 ;
-    int pointer_number = 0 ;
-    int count_for_ranking_level = 0 ;
-    int count_of_choices_not_yet_ranked = 0 ;
-    int count_of_choices_need_to_rank = 0 ;
+    int count_for_ranking_level ;
+    int count_of_choices_not_yet_ranked ;
+    int count_of_choices_need_to_rank ;
 
     for ( choice_number = 1 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
     {
@@ -330,19 +340,22 @@ void generate_preferences( ) {
 
 
 // -----------------------------------------------
-//  If clone independence is being tested, hide
-//  the last choice, which will be inserted
-//  immediately after choice one.
+//  Specify the number of choices that need to be
+//  randomly assigned to a ranking level.  If
+//  clone independence is being measured, the
+//  clone's ranking is just after choice number
+//  one so it is assigned, but not randomly.
 
         count_of_choices_need_to_rank = global_maximum_choice_number ;
-        if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_omitted > 0 ) )
+        if ( global_test_type == global_test_clone_independence )
         {
             count_of_choices_need_to_rank = global_maximum_choice_number - 1 ;
         }
+//        log_out << "{" ;
 
 
 // -----------------------------------------------
-//  Begin a loop that handles one ranking level.
+//  Begin a loop that handles each ranking level.
 
         ranking_level = 1 ;
         count_of_choices_not_yet_ranked = count_of_choices_need_to_rank ;
@@ -355,32 +368,11 @@ void generate_preferences( ) {
 //  ranking level.  Do not repeat any choice number
 //  already used at a previous ranking level.
 
-            std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked );
-            position_number = distribution( generator );
+            std::uniform_int_distribution<int> distribution( 1 , count_of_choices_not_yet_ranked ) ;
+            position_number = distribution( generator ) ;
             choice_number = global_choice_number_at_position[ position_number ] ;
             global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] = choice_number ;
-
-
-// -----------------------------------------------
-//  If clone independence is being tested, and a
-//  ranking level was just assigned to choice one,
-//  insert the clone immediately below choice one.
-
-            if ( ( global_test_type == global_test_clone_independence ) && ( choice_number == 1 ) )
-            {
-                ranking_level ++ ;
-                global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] = global_maximum_choice_number ;
-            }
-
-
-// -----------------------------------------------
-//  Update the list of which choices still need to
-//  be assigned to a ranking level.
-
-            for ( pointer_number = position_number ; pointer_number <= count_of_choices_not_yet_ranked - 1 ; pointer_number ++ )
-            {
-                global_choice_number_at_position[ pointer_number ] = global_choice_number_at_position[ pointer_number + 1 ] ;
-            }
+//            log_out << choice_number ;
 
 
 // -----------------------------------------------
@@ -391,11 +383,42 @@ void generate_preferences( ) {
 
 
 // -----------------------------------------------
+//  If clone independence is being measured, and
+//  choice number one was just ranked, rank the
+//  highest choice number next.
+
+        if ( ( global_test_type == global_test_clone_independence ) && ( choice_number == 1 ) )
+        {
+            ranking_level ++ ;
+            global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] = global_maximum_choice_number ;
+//            log_out << global_maximum_choice_number ;
+        }
+
+
+// -----------------------------------------------
+//  Update the list of which choices still need to
+//  be assigned to a ranking level.
+
+//            log_out << " " << position_number << ":" ;
+            if ( position_number < count_of_choices_not_yet_ranked )
+            {
+                for ( pointer_number = position_number ; pointer_number <= ( global_maximum_choice_number - 1 ) ; pointer_number ++ )
+                {
+                    global_choice_number_at_position[ pointer_number ] = global_choice_number_at_position[ pointer_number + 1 ] ;
+//                    log_out << global_choice_number_at_position[ pointer_number ] ;
+                }
+            }
+//            log_out << ":" << " " ;
+
+
+// -----------------------------------------------
 //  Repeat the loop that handles one ranking level.
 
-            count_of_choices_not_yet_ranked -- ;
             ranking_level ++ ;
+            count_of_choices_not_yet_ranked -- ;
         }
+
+//        log_out << "}" ;
 
 
 // -----------------------------------------------
@@ -646,13 +669,13 @@ void handle_calculated_results( )
             {
                 if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method[ global_method_votefair ] )
                 {
-                    global_count_of_cases_that_match_for_method[ method_id ] ++ ;
+                    global_count_of_tests_match_for_method[ method_id ] ++ ;
                 } else if ( global_choice_winner_from_method[ method_id ] > 0 )
                 {
-                    global_count_of_cases_that_fail_match_for_method[ method_id ] ++ ;
+                    global_count_of_tests_fail_match_for_method[ method_id ] ++ ;
                 } else
                 {
-                    global_count_of_cases_tied_for_method[ method_id ] ++ ;
+                    global_count_of_tests_tied_for_method[ method_id ] ++ ;
                 }
             }
         } else
@@ -705,23 +728,27 @@ void handle_calculated_results( )
         {
             if ( ( global_choice_winner_from_method[ method_id ] > 0 ) && ( global_choice_winner_all_choices_for_method[ method_id ] > 0 ) )
             {
+                global_test_count_for_method[ method_id ] ++ ;
                 if ( global_choice_omitted != global_choice_winner_all_choices_for_method[ method_id ] )
                 {
                     choice_number_adjustment = 0 ;
-                    if ( global_choice_winner_all_choices_for_method[ method_id ] > global_choice_omitted )
+                    if ( ( global_test_type == global_test_irrelevant_alternatives ) && ( global_choice_winner_all_choices_for_method[ method_id ] > global_choice_omitted ) )
                     {
                         choice_number_adjustment = 1 ;
                     }
-                    if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment != global_choice_winner_all_choices_for_method[ method_id ] )
+                    if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == global_choice_winner_all_choices_for_method[ method_id ] )
                     {
-                        global_count_of_group_failures_for_method[ method_id ] ++ ;
+                        global_count_of_group_match_for_method[ method_id ] ++ ;
+                    } else if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment != global_choice_winner_all_choices_for_method[ method_id ] )
+                    {
+                        global_count_of_group_fail_match_for_method[ method_id ] ++ ;
                         log_out << "[" << global_name_for_method[ method_id ] << "_fail]" ;
                         if ( global_choice_winner_from_method[ method_id ] == global_maximum_choice_number )
                         {
                             global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
                             if ( method_id == global_method_rcipe )
                             {
-                                log_out << "[+++]" ;
+                                log_out << "[HURT]" ;
                             }
                         } else
                         {
@@ -731,7 +758,7 @@ void handle_calculated_results( )
                 }
             } else
             {
-                global_count_of_group_ties_for_method[ method_id ] ++ ;
+                global_count_of_group_tied_for_method[ method_id ] ++ ;
             }
         }
 
@@ -739,17 +766,21 @@ void handle_calculated_results( )
         {
             for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
-                if ( global_count_of_group_failures_for_method[ method_id ] > 0 )
+                if ( global_count_of_group_match_for_method[ method_id ] > 0 )
                 {
-                    global_count_of_cases_that_fail_match_for_method[ method_id ] ++ ;
+                    global_count_of_tests_match_for_method[ method_id ] ++ ;
+                }
+                if ( global_count_of_group_fail_match_for_method[ method_id ] > 0 )
+                {
+                    global_count_of_tests_fail_match_for_method[ method_id ] ++ ;
                 }
                 if ( global_count_of_group_clone_help_for_method[ method_id ] > 0 )
                 {
-                    global_count_of_cases_clone_help_for_method[ method_id ] ++ ;
+                    global_count_of_tests_clone_help_for_method[ method_id ] ++ ;
                 }
                 if ( global_count_of_group_clone_hurt_for_method[ method_id ] > 0 )
                 {
-                    global_count_of_cases_clone_hurt_for_method[ method_id ] ++ ;
+                    global_count_of_tests_clone_hurt_for_method[ method_id ] ++ ;
                 }
             }
         }
@@ -774,31 +805,23 @@ int main( ) {
 // -----------------------------------------------
 //  Declare integer variables.
 
-    int method_id = 1 ;
-    int case_count = 0 ;
-    int ballot_number = 0 ;
-    int choice_number = 0 ;
-    int ranking_level = 0 ;
-    int position_number = 0 ;
-    int pointer_number = 0 ;
-    int count_of_choices_not_yet_ranked = 0 ;
     int integer_from_system_call = 0 ;
-    int calculated_result_agree = 0 ;
-    int calculated_result_disagree = 0 ;
+    int calculated_result_match = 0 ;
+    int calculated_result_fail_match = 0 ;
     int calculated_result_tied = 0 ;
+    int calculated_result_matches = 0 ;
     int calculated_result_failures = 0 ;
-    int count_of_cases_agree_plus_disagree = 0 ;
+    int count_of_cases_all = 0 ;
     int calculated_result_ties = 0 ;
     int calculated_result_clone_help = 0 ;
     int calculated_result_clone_hurt = 0 ;
-    int choice_number_before_adjusted = 0 ;
 
 
 // -----------------------------------------------
 //  Initialization.
 
     global_case_id = 0 ;
-    global_count_of_tests = 0 ;
+    global_count_of_cases = 0 ;
     global_choice_count_case_specific = 0 ;
     global_choice_omitted = 0 ;
     global_count_of_votefair_single_winner = 0 ;
@@ -813,7 +836,7 @@ int main( ) {
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
-        global_count_of_group_ties_for_method[ method_id ] = 0 ;
+        global_count_of_group_tied_for_method[ method_id ] = 0 ;
     }
 
 
@@ -828,6 +851,7 @@ int main( ) {
 
     global_case_id = global_minimum_case_id ;
     global_choice_omitted = global_maximum_choice_number + 99 ;
+    int case_count ;
     for ( case_count = 1 ; case_count <= global_maximum_case_count ; case_count ++ )
     {
         std::cout << "." ;
@@ -844,10 +868,11 @@ int main( ) {
             if ( global_choice_omitted > global_maximum_choice_number )
             {
                 global_choice_omitted = 0 ;
-                global_count_of_tests ++ ;
+                global_count_of_cases ++ ;
                 for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
                 {
-                    global_count_of_group_failures_for_method[ method_id ] = 0 ;
+                    global_test_count_for_method[ method_id] ++ ;
+                    global_count_of_group_fail_match_for_method[ method_id ] = 0 ;
                     global_count_of_group_clone_help_for_method[ method_id ] = 0 ;
                     global_count_of_group_clone_hurt_for_method[ method_id ] = 0 ;
                 }
@@ -871,16 +896,16 @@ int main( ) {
         if ( global_choice_omitted > global_maximum_choice_number )
         {
             global_choice_omitted = 0 ;
-            global_count_of_tests ++ ;
+            global_count_of_cases ++ ;
             for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
-                global_count_of_group_failures_for_method[ method_id ] = 0 ;
+                global_count_of_group_fail_match_for_method[ method_id ] = 0 ;
             }
         }
 
 
 // -----------------------------------------------
-//  If  one of the choices is being omitted,
+//  If one of the choices is being omitted,
 //  specify one less than the usual number of
 //  choices.
 
@@ -921,6 +946,7 @@ int main( ) {
 //  Begin a loop that handles one ballot.
 //  Write the beginning of the info for this ballot.
 
+//        log_out << std::endl ;
         for ( ballot_number = 1 ; ballot_number <= global_maximum_ballot_number ; ballot_number ++ )
         {
             outfile << global_string_voteinfo_code_for_ballot_count << " 1" << std::endl ;
@@ -930,28 +956,21 @@ int main( ) {
 // -----------------------------------------------
 //  Begin a loop that handles one ranking level.
 
-            for ( ranking_level = 1 ; ranking_level <= global_choice_count_case_specific ; ranking_level ++ )
+//            log_out << "{" ;
+            for ( ranking_level = 1 ; ranking_level <= global_maximum_choice_number ; ranking_level ++ )
             {
 
 
 // -----------------------------------------------
 //  Write the choice number that is at the
 //  next-lower preference level.  But not if it
-//  is an omitted choice.  Also, adjust the choice
-//  number if needed.
+//  is an omitted choice.
 
                 choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
-                choice_number_before_adjusted = choice_number ;
-                if ( ( global_choice_count_case_specific != global_maximum_choice_number ) && ( global_choice_omitted > 0 ) && ( choice_number > global_choice_omitted ) )
-                {
-                    choice_number -- ;
-                }
-
-// todo: fix bug here:
-
-                if ( ( global_choice_count_case_specific == global_maximum_choice_number ) || ( ( global_choice_omitted > 0 ) && ( choice_number_before_adjusted != global_choice_omitted ) ) )
+                if ( ( global_choice_count_case_specific == global_maximum_choice_number ) || ( ( choice_number > 0 ) && ( choice_number != global_choice_omitted ) ) )
                 {
                     outfile << choice_number << std::endl ;
+//                    log_out << choice_number ;
                 }
 
 
@@ -959,6 +978,7 @@ int main( ) {
 //  Repeat the loop that handles one preference ranking.
 
             }
+//            log_out << "}" ;
 
 
 // -----------------------------------------------
@@ -1038,10 +1058,10 @@ int main( ) {
         log_out << "[test type: Matches with VoteFair ranking results]" << std::endl ;
     } else if ( global_test_type == global_test_irrelevant_alternatives )
     {
-        log_out << "[test type: Independence of Irrelevant Alternatives (IIA)]" << std::endl ;
+        log_out << "[test type: Independence of Irrelevant Alternatives (IIA)] (REVISED, NOT YET DEBUGGED)" << std::endl ;
     } else if ( global_test_type == global_test_clone_independence )
     {
-        log_out << "[test type: Clone Independence]" << std::endl ;
+        log_out << "[test type: Clone Independence] (REVISED, NOT YET DEBUGGED)" << std::endl ;
     } else
     {
         log_out << "[error: test type invalid]" << std::endl ;
@@ -1052,7 +1072,7 @@ int main( ) {
         log_out << "[number of cases attempted: " << global_maximum_case_count << "]" << std::endl ;
     } else
     {
-        log_out << "[number of cases: " << global_count_of_tests << "]" << std::endl ;
+        log_out << "[number of cases: " << global_count_of_cases << "]" << std::endl ;
     }
 
     log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
@@ -1069,13 +1089,13 @@ int main( ) {
     {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            count_of_cases_agree_plus_disagree = global_count_of_cases_that_match_for_method[ method_id ] + global_count_of_cases_that_fail_match_for_method[ method_id ] ;
-            if ( count_of_cases_agree_plus_disagree > 0 )
+            count_of_cases_all = global_count_of_tests_match_for_method[ method_id ] + global_count_of_tests_fail_match_for_method[ method_id ] + global_count_of_tests_tied_for_method[ method_id ] ;
+            if ( count_of_cases_all > 0 )
             {
-                calculated_result_agree = int( ( 1000 * global_count_of_cases_that_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
-                calculated_result_disagree = int( ( 1000 * global_count_of_cases_that_fail_match_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
-                calculated_result_tied = int( ( 1000 * global_count_of_cases_tied_for_method[ method_id ] ) / count_of_cases_agree_plus_disagree ) ;
-                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree: " << calculated_result_agree << "  " << calculated_result_disagree << "  (" << calculated_result_tied << " ties)]" << std::endl ;
+                calculated_result_match = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / count_of_cases_all ) ;
+                calculated_result_fail_match = int( ( 1000 * global_count_of_tests_fail_match_for_method[ method_id ] ) / count_of_cases_all ) ;
+                calculated_result_tied = int( ( 1000 * global_count_of_tests_tied_for_method[ method_id ] ) / count_of_cases_all ) ;
+                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tied: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_tied << "]" << std::endl ;
             } else
             {
                 log_out << "[" << global_name_for_method[ method_id ] << " has zero case count]" << std::endl ;
@@ -1093,17 +1113,28 @@ int main( ) {
     {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            calculated_result_failures = int( ( 1000 *  global_count_of_cases_that_fail_match_for_method[ method_id ] ) / global_count_of_tests ) ;
-            calculated_result_ties = int( ( 1000 *  global_count_of_group_ties_for_method[ method_id ] ) / global_count_of_tests ) ;
-            calculated_result_clone_help = int( ( 1000 *  global_count_of_cases_clone_help_for_method[ method_id ] ) / global_count_of_tests ) ;
-            calculated_result_clone_hurt = int( ( 1000 *  global_count_of_cases_clone_hurt_for_method[ method_id ] ) / global_count_of_tests ) ;
-            log_out << "[" << global_name_for_method[ method_id ] << " failures: " << calculated_result_failures << " (ties: " << calculated_result_ties << ")" ;
-            if ( global_test_type == global_test_clone_independence )
+            if ( global_test_count_for_method[ method_id ] > 0 )
             {
-                log_out << " (clone_help: " << calculated_result_clone_help << ")" ;
-                log_out << " (clone_hurt: " << calculated_result_clone_hurt << ")" ;
+                calculated_result_match = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+                calculated_result_fail_match = int( ( 1000 *  global_count_of_tests_fail_match_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+                calculated_result_ties = int( ( 1000 *  global_count_of_group_tied_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+//                log_out << "[counts " << global_count_of_tests_match_for_method[ method_id ] << "  " << global_count_of_tests_fail_match_for_method[ method_id ] << "  " << global_count_of_group_tied_for_method[ method_id ] << "  " << global_test_count_for_method[ method_id ] << "]" << std::endl ;
+                if ( global_test_type == global_test_clone_independence )
+                {
+                    calculated_result_clone_help = int( ( 1000 *  global_count_of_tests_clone_help_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+                    calculated_result_clone_hurt = int( ( 1000 *  global_count_of_tests_clone_hurt_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+                }
+                if ( global_test_type == global_test_irrelevant_alternatives )
+                {
+                    log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tie: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_ties << "]" << std::endl ;
+                } else if ( global_test_type == global_test_clone_independence )
+                {
+                    log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/help/hurt/tie: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_clone_help << "  " << calculated_result_clone_hurt << "  " << calculated_result_ties << "]" << std::endl ;
+                }
+            } else
+            {
+                log_out << "[" << global_name_for_method[ method_id ] << " has zero test count]" ;
             }
-            log_out << "]" << std::endl ;
         }
     }
 
