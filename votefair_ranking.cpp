@@ -9,6 +9,32 @@
 //
 //  * VoteFair party ranking  
 //
+//  It does not calculate VoteFair
+//  partial-proportional ranking because that
+//  requires additional information and can be
+//  calculated using a spreadsheet.
+//
+//  It does not calculate VoteFair Negotiation
+//  Ranking (for use among legistators in a
+//  legislature) because that method must be done
+//  interactively.
+//
+//  For use when voters want a simple
+//  single-winner method that can be counted
+//  using stacks of printed ballots, this
+//  application also calculates:
+//
+//  * Ranked Choice Including Pairwise Elimination (RCIPE)
+//
+//  For comparison purposes only it also calculates:
+//
+//  * Instant-Runoff Voting (IRV) (which some people
+//    misleadingly refer to as "ranked choice voting")
+//
+//  For comparison purposes it simulates non-tactical
+//  voting using:
+//
+//  * Score Then Automatic Runoff (STAR)
 //
 // -----------------------------------------------
 //
@@ -510,6 +536,7 @@ std::string global_string_diff = "different" ;
 std::string global_string_tied = "tied_unknown" ;
 
 int global_elimination_result_type ;
+int global_choice_to_eliminate ;
 int global_true_or_false_request_instant_pairwise_elimination ;
 int global_true_or_false_request_instant_runoff_minus_pairwise_losers ;
 int global_true_or_false_request_instant_runoff_voting ;
@@ -8398,6 +8425,35 @@ void elim_initialize( )
 
 // -----------------------------------------------
 // -----------------------------------------------
+//        elim_choice_to_eliminate
+//
+//  This function eliminates the choice specified
+//  in global_choice_to_eliminate.
+//
+// -----------------------------------------------
+// -----------------------------------------------
+
+void elim_choice_to_eliminate( )
+{
+
+
+// -----------------------------------------------
+//  Eliminate the specified choice.
+
+    global_true_or_false_continuing_for_choice[ global_choice_to_eliminate ] = global_false ;
+    if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << global_choice_to_eliminate << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  End of function elim_choice_to_eliminate.
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
 //        elim_if_just_one_then_winner
 //
 //  This function counts the number of
@@ -8476,25 +8532,15 @@ int elim_if_just_one_then_winner( )
 
 // -----------------------------------------------
 // -----------------------------------------------
-//        elim_find_pairwise_loser
+//        elim_count_pairwise_losses
 //
-//  This function identifies which choice, if
-//  any, loses all its pairwise contests.  The array
-//  "global_true_or_false_continuing_for_choice"
-//  specifies which choices are not yet eliminated.
-//  This function's return value equals the actual
-//  choice number of the pairwise loser, or else
-//  equals zero to indicate that no pairwise
-//  loser was found.
-//  In academic literature the pairwise loser is
-//  referred to as the Condorcet loser.
-//  Also this function is used to count the number
-//  of pairwise losses for each choice.
+//  This function counts the number of pairwise
+//  losses for each choice.
 //
 // -----------------------------------------------
 // -----------------------------------------------
 
-int elim_find_pairwise_loser( )
+int elim_count_pairwise_losses( )
 {
 
     int pair_counter ;
@@ -8545,6 +8591,46 @@ int elim_find_pairwise_loser( )
             if ( global_logging_info == global_true ) { log_out << "[vote counts for choice " << actual_first_choice << " and choice " << actual_second_choice << " are " << global_tally_first_over_second_in_pair[ pair_counter ] << " and " << global_tally_second_over_first_in_pair[ pair_counter ] << "]" << std::endl ; } ;
         }
     }
+
+
+// -----------------------------------------------
+//  End of function elim_count_pairwise_losses.
+
+    return 0 ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
+//        elim_find_pairwise_loser
+//
+//  This function identifies which choice, if
+//  any, loses all its pairwise contests.  The array
+//  "global_true_or_false_continuing_for_choice"
+//  specifies which choices are not yet eliminated.
+//  This function's return value equals the actual
+//  choice number of the pairwise loser, or else
+//  equals zero to indicate that no pairwise
+//  loser was found.
+//  In academic literature the pairwise loser is
+//  referred to as the Condorcet loser.
+//
+// -----------------------------------------------
+// -----------------------------------------------
+
+int elim_find_pairwise_loser( )
+{
+
+    int pair_counter ;
+    int actual_choice ;
+
+
+// -----------------------------------------------
+//  Count the number of pairwise loses for each
+//  choice.
+
+    elim_count_pairwise_losses( ) ;
 
 
 // -----------------------------------------------
@@ -8633,8 +8719,9 @@ void method_pairwise_loser_elimination( )
         pairwise_loser = elim_find_pairwise_loser( ) ;
         if ( pairwise_loser > 0 )
         {
-            global_true_or_false_continuing_for_choice[ pairwise_loser ] = global_false ;
-            if ( global_logging_info == global_true ) { log_out << "[eliminating pairwise loser, choice " << pairwise_loser << "]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[found pairwise loser, choice " << pairwise_loser << "]" << std::endl ; } ;
+        	global_choice_to_eliminate = pairwise_loser ;
+            elim_choice_to_eliminate( ) ;
         } else
         {
             break ;
@@ -8770,8 +8857,9 @@ void elim_find_largest_pairwise_opposition( )
     if ( global_count_of_choices_at_largest_pairwise_opposition_count == 1 )
     {
         actual_choice = global_list_of_choices_with_largest_pairwise_opposition[ 1 ] ;
-        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
-        if ( global_logging_info == global_true ) { log_out << "[eliminated choice " << actual_choice << " because it has the single largest pairwise opposition count]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has the single largest pairwise opposition count]" << std::endl ; } ;
+        global_choice_to_eliminate = actual_choice ;
+        elim_choice_to_eliminate( ) ;
     }
 
 
@@ -8864,7 +8952,7 @@ void elim_find_smallest_pairwise_support( )
             continue ;
         }
         if ( global_logging_info == global_true ) { log_out << "[pairwise support count for choice " << actual_choice << " is " << global_pairwise_support_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
-        if ( ( smallest_pairwise_support_count < 0 ) || ( global_pairwise_support_count_for_choice[ actual_choice ] > smallest_pairwise_support_count ) )
+        if ( ( smallest_pairwise_support_count < 0 ) || ( global_pairwise_support_count_for_choice[ actual_choice ] < smallest_pairwise_support_count ) )
         {
             smallest_pairwise_support_count = global_pairwise_support_count_for_choice[ actual_choice ] ;
             global_count_of_choices_at_smallest_pairwise_support_count = 1 ;
@@ -8885,8 +8973,9 @@ void elim_find_smallest_pairwise_support( )
     if ( global_count_of_choices_at_smallest_pairwise_support_count == 1 )
     {
         actual_choice = global_list_of_choices_with_smallest_pairwise_support[ 1 ] ;
-        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
-        if ( global_logging_info == global_true ) { log_out << "[eliminated choice " << actual_choice << " because it has the single smallest pairwise support count]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has the single smallest pairwise support count]" << std::endl ; } ;
+        global_choice_to_eliminate = actual_choice ;
+        elim_choice_to_eliminate( ) ;
     }
 
 
@@ -9337,8 +9426,9 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
     if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
     {
         actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] ;
-        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
-        if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << actual_choice << " as having the smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+        global_choice_to_eliminate = actual_choice ;
+        elim_choice_to_eliminate( ) ;
     } else
     {
         if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
@@ -9410,8 +9500,9 @@ void method_ranked_choice_including_pairwise_elimination( )
         pairwise_loser = elim_find_pairwise_loser( ) ;
         if ( pairwise_loser > 0 )
         {
-            global_true_or_false_continuing_for_choice[ pairwise_loser ] = global_false ;
-            if ( global_logging_info == global_true ) { log_out << "[eliminating pairwise loser, choice " << pairwise_loser << "]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[choice " << pairwise_loser << " is pairwise loser]" << std::endl ; } ;
+            global_choice_to_eliminate = pairwise_loser ;
+            elim_choice_to_eliminate( ) ;
             continue ;
         }
         if ( global_logging_info == global_true ) { log_out << "[pairwise loser not found]" << std::endl ; } ;
@@ -9595,18 +9686,27 @@ void method_instant_runoff_voting( )
 
 
 // -----------------------------------------------
-//  There is a tie, so indicate which choices are
-//  tied, indicate a tie, and return.
+//  There is a tie.  If the number of tied choices
+//  is less than the number of remaining choices,
+//  eliminate the tied choices.  Otherwise indicate
+//  an overall tie.
 
-        for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= global_count_of_choices_with_smallest_first_choice_count ; pointer_to_list_of_tied_choices ++ )
+        if ( global_count_of_choices_with_smallest_first_choice_count < global_count_of_continuing_choices )
         {
-            actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ pointer_to_list_of_tied_choices ] ;
-            if ( global_logging_info == global_true ) { log_out << "[one of the tied choices is choice " << actual_choice << "]" << std::endl ; } ;
+            for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= global_count_of_choices_with_smallest_first_choice_count ; pointer_to_list_of_tied_choices ++ )
+            {
+                actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ pointer_to_list_of_tied_choices ] ;
+                if ( global_logging_info == global_true ) { log_out << "[one of the tied choices is choice " << actual_choice << "]" << std::endl ; } ;
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
+            }
+        } else
+        {
+            put_next_result_info_number( global_elimination_result_type ) ;
+            put_next_result_info_number( global_voteinfo_code_for_tie ) ;
+            winner_of_elimination_rounds = 0 ;
+            return ;
         }
-        put_next_result_info_number( global_elimination_result_type ) ;
-        put_next_result_info_number( global_voteinfo_code_for_tie ) ;
-        winner_of_elimination_rounds = 0 ;
-        return ;
 
 
 // -----------------------------------------------
@@ -9698,13 +9798,13 @@ void method_star_voting( )
 
     if ( count_of_choices_with_largest_score_count > 1 )
     {
-        if ( global_logging_info == global_true ) { log_out << "[there are multiple choices with the top score]" << std::endl ; } ;
-    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
-    {
-        if ( global_star_score_count_for_choice[ actual_choice ] < largest_score )
+        if ( global_logging_info == global_true ) { log_out << "[there are multiple choices with same top score]" << std::endl ; } ;
+        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
-            global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
-            if ( global_logging_info == global_true ) { log_out << "[eliminating choice " << actual_choice << "]" << std::endl ; } ;
+            if ( global_star_score_count_for_choice[ actual_choice ] < largest_score )
+            {
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
             }
         }
         if ( global_logging_info == global_true ) { log_out << "[there is a tie at top score]" << std::endl ; } ;
@@ -9750,11 +9850,13 @@ void method_star_voting( )
 
     if ( count_of_choices_with_second_largest_score_count > 1 )
     {
+        if ( global_logging_info == global_true ) { log_out << "[more than two choices tied with same second-top score]" << std::endl ; } ;
         for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
         {
             if ( actual_choice != choice_with_largest_score )
             {
-                global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
             }
         }
         if ( global_logging_info == global_true ) { log_out << "[winner is " << choice_with_largest_score << "]" << std::endl ; } ;
@@ -9790,11 +9892,13 @@ void method_star_voting( )
             }
         }
     }
+    if ( global_logging_info == global_true ) { log_out << "[pairwise runoff winner is choice " << winner_of_elimination_rounds << "]" << std::endl ; } ;
     for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( actual_choice != winner_of_elimination_rounds )
         {
-            global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+            global_choice_to_eliminate = actual_choice ;
+            elim_choice_to_eliminate( ) ;
         }
     }
     if ( global_logging_info == global_true ) { log_out << "[star winner is " << winner_of_elimination_rounds << "]" << std::endl ; } ;
@@ -9817,14 +9921,12 @@ void method_star_voting( )
 //  choice with fewest pairwise losses.
 
     if ( global_logging_info == global_true ) { log_out << "[resolving tie in STAR voting]" << std::endl ; } ;
-    pairwise_loser = elim_find_pairwise_loser( ) ;
+    elim_count_pairwise_losses( ) ;
     for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
         {
-
             if ( global_loss_count_for_choice[ actual_choice ] == 0 )
-
             {
                 winner_of_elimination_rounds = actual_choice ;
                 put_next_result_info_number( global_elimination_result_type ) ;
