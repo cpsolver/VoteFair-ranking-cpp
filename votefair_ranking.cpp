@@ -11,30 +11,43 @@
 //
 //  It does not calculate VoteFair
 //  partial-proportional ranking because that
-//  requires additional information and can be
-//  calculated using a spreadsheet.
+//  requires additional information, and the method
+//  is simple enough to do using a spreadsheet.
 //
 //  It does not calculate VoteFair Negotiation
-//  Ranking (for use among legistators in a
-//  legislature) because that method must be done
-//  interactively.
+//  Ranking (for use among legislators in a
+//  legislature or parliament) because that method
+//  must be done interactively.
 //
 //  For use when voters want a simple
-//  single-winner method that can be counted
+//  single-winner method that can be demonstrated
 //  using stacks of printed ballots, this
 //  application also calculates:
 //
 //  * Ranked Choice Including Pairwise Elimination (RCIPE)
 //
+//  For use when voters want a simple
+//  single-winner method that is better than RCIPE
+//  but not as good as VoteFair popularity ranking,
+//  this application also calculates:
+//
+//  * Instant Pairwise Elimination (IPE)
+//
 //  For comparison purposes only it also calculates:
 //
-//  * Instant-Runoff Voting (IRV) (which some people
-//    misleadingly refer to as "ranked choice voting")
+//  * Instant-Runoff Voting (IRV) -- which some people
+//    misleadingly refer to as "ranked choice voting,"
+//    and which is not suitable for use in any election
 //
 //  For comparison purposes it simulates non-tactical
 //  voting using:
 //
-//  * Score Then Automatic Runoff (STAR)
+//  * Score Then Automatic Runoff (STAR) -- which is
+//    suitable for simple voting in a community among
+//    members who want to collaborate, but which is
+//    not suitable for use in general elections or where
+//    voters are likely to vote tactically instead of
+//    sincerely.
 //
 // -----------------------------------------------
 //
@@ -9105,12 +9118,30 @@ void method_instant_pairwise_elimination( )
 //  checked, then repeat the loop to check again
 //  using the fewer now-tied choices.
 
-//  todo: write this code (if this is possible)
+//  todo: write this code
 
 
 // -----------------------------------------------
 //  There is more than one choice with the
-//  smallest pairwise support count, so list the
+//  smallest pairwise support count, so if they
+//  are not all the choices, eliminate these
+//  tied choices.
+
+        if ( global_count_of_choices_at_smallest_pairwise_support_count < global_count_of_continuing_choices )
+        {
+            for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= global_count_of_choices_at_smallest_pairwise_support_count ; pointer_to_list_of_tied_choices ++ )
+            {
+                actual_choice = global_list_of_choices_with_smallest_pairwise_support[ pointer_to_list_of_tied_choices ] ;
+                if ( global_logging_info == global_true ) { log_out << "[one of the tied choices to eliminate is choice " << actual_choice << "]" << std::endl ; } ;
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
+            }
+            continue ;
+        }
+
+
+// -----------------------------------------------
+//  The tie cannot be resolved, so list the
 //  tied choices in the log file without trying to
 //  further resolve this tie.
 
@@ -9581,16 +9612,35 @@ void method_ranked_choice_including_pairwise_elimination( )
 
 
 // -----------------------------------------------
-//  There is more than one choice with the
-//  smallest pairwise support count, so list the
-//  tied choices in the log file without trying to
-//  resolve this tie.
-//
 //  Future refinement: If there are now fewer tied
 //  choices compared to when the pairwise
 //  opposition counts were checked, then repeat the
 //  elimination round with this fewer number of
 //  choices.
+
+
+// -----------------------------------------------
+//  There is more than one choice with the
+//  smallest pairwise support count, so if they
+//  are not all the choices, eliminate these
+//  tied choices.
+
+        if ( global_count_of_choices_at_smallest_pairwise_support_count < global_count_of_continuing_choices )
+        {
+            for ( pointer_to_list_of_tied_choices = 1 ; pointer_to_list_of_tied_choices <= global_count_of_choices_at_smallest_pairwise_support_count ; pointer_to_list_of_tied_choices ++ )
+            {
+                actual_choice = global_list_of_choices_with_smallest_pairwise_support[ pointer_to_list_of_tied_choices ] ;
+                if ( global_logging_info == global_true ) { log_out << "[one of the tied choices to eliminate is choice " << actual_choice << "]" << std::endl ; } ;
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
+            }
+            continue ;
+        }
+
+
+// -----------------------------------------------
+//  List the tied choices in the log file without
+//  trying to resolve this tie.
 
         put_next_result_info_number( global_elimination_result_type ) ;
         put_next_result_info_number( global_voteinfo_code_for_tie ) ;
@@ -9731,6 +9781,11 @@ void method_instant_runoff_voting( )
 //  This function calculates results using the
 //  STAR -- Score Then Automatic Runoff -- method.
 //
+//  However, instead of using 6 preference levels
+//  (zero through five), it uses whatever number
+//  of preference levels is specified in the
+//  ballot information.
+//
 // -----------------------------------------------
 // -----------------------------------------------
 
@@ -9809,7 +9864,7 @@ void method_star_voting( )
         }
         if ( global_logging_info == global_true ) { log_out << "[there is a tie at top score]" << std::endl ; } ;
 
-//  todo: need code here?
+//  todo: need code here or revisions below ...
 
     }
 
@@ -9860,9 +9915,7 @@ void method_star_voting( )
             }
         }
         if ( global_logging_info == global_true ) { log_out << "[winner is " << choice_with_largest_score << "]" << std::endl ; } ;
-
-//  todo: need code here?
-
+        elim_if_just_one_then_winner( ) ;
     }
 
 
