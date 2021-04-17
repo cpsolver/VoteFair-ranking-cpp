@@ -118,9 +118,9 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-// const int global_test_type = global_test_matches_with_votefair_ranking ;
+const int global_test_type = global_test_matches_with_votefair_ranking ;
 // const int global_test_type = global_test_irrelevant_alternatives ;
-const int global_test_type = global_test_clone_independence ;
+// const int global_test_type = global_test_clone_independence ;
 
 
 // -----------------------------------------------
@@ -140,16 +140,16 @@ const int global_method_votefair = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
 const int global_method_ple = 4 ;
-const int global_method_irv = 5 ;
-const int global_method_star = 6 ;
+const int global_method_star = 5 ;
+const int global_method_irv = 6 ;
 const int global_method_plurality = 7 ;
 
 std::string global_name_for_method_votefair = "VF" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
 std::string global_name_for_method_ple = "PLE" ;
-std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_star = "STAR/NT" ;
+std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_plurality = "PLUR" ;
 
 
@@ -1095,7 +1095,7 @@ int main( ) {
                 calculated_result_fail_match = int( ( 1000 * global_count_of_tests_fail_match_for_method[ method_id ] ) / count_of_cases_all ) ;
                 calculated_result_tied = int( ( 1000 * global_count_of_tests_tied_for_method[ method_id ] ) / count_of_cases_all ) ;
                 calculated_result_match_no_ties = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / ( global_count_of_tests_match_for_method[ method_id ] + global_count_of_tests_fail_match_for_method[ method_id ] ) ) ;
-                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tied/match_no_ties: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_tied << "  " << calculated_result_match_no_ties << "]" << std::endl ;
+                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tied/agree_no_ties: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_tied << "  " << calculated_result_match_no_ties << "]" << std::endl ;
             } else
             {
                 log_out << "[" << global_name_for_method[ method_id ] << " has zero case count]" << std::endl ;
