@@ -102,7 +102,7 @@
 //  number of ballots and the number of choices.
 
 const int global_maximum_case_count = 200 ;
-const int global_maximum_ballot_number = 12 ;
+const int global_maximum_ballot_number = 11 ;
 const int global_maximum_choice_number = 7 ;
 
 
@@ -118,9 +118,9 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-const int global_test_type = global_test_matches_with_votefair_ranking ;
+// const int global_test_type = global_test_matches_with_votefair_ranking ;
 // const int global_test_type = global_test_irrelevant_alternatives ;
-// const int global_test_type = global_test_clone_independence ;
+const int global_test_type = global_test_clone_independence ;
 
 
 // -----------------------------------------------
@@ -172,7 +172,6 @@ const int global_true = 1 ;
 //  Declare global variables.
 
 int global_case_id ;
-int global_count_of_cases ;
 int global_choice_count_case_specific ;
 int global_choice_omitted ;
 int global_count_of_votefair_single_winner ;
@@ -728,7 +727,6 @@ void handle_calculated_results( )
         {
             if ( ( global_choice_winner_from_method[ method_id ] > 0 ) && ( global_choice_winner_all_choices_for_method[ method_id ] > 0 ) )
             {
-                global_test_count_for_method[ method_id ] ++ ;
                 if ( global_choice_omitted != global_choice_winner_all_choices_for_method[ method_id ] )
                 {
                     choice_number_adjustment = 0 ;
@@ -809,6 +807,7 @@ int main( ) {
     int calculated_result_match = 0 ;
     int calculated_result_fail_match = 0 ;
     int calculated_result_tied = 0 ;
+    int calculated_result_match_no_ties = 0 ;
     int calculated_result_matches = 0 ;
     int calculated_result_failures = 0 ;
     int count_of_cases_all = 0 ;
@@ -821,7 +820,6 @@ int main( ) {
 //  Initialization.
 
     global_case_id = 0 ;
-    global_count_of_cases = 0 ;
     global_choice_count_case_specific = 0 ;
     global_choice_omitted = 0 ;
     global_count_of_votefair_single_winner = 0 ;
@@ -861,14 +859,14 @@ int main( ) {
 //  When testing clone independence, update the
 //  global_choice_omitted pointer.  It equals zero
 //  when all choices are used, otherwise it equals
-//  the full number of choices.
+//  the full number of choices because the last
+//  choice is used for the clone.
 
         if ( global_test_type == global_test_clone_independence )
         {
             if ( global_choice_omitted > global_maximum_choice_number )
             {
                 global_choice_omitted = 0 ;
-                global_count_of_cases ++ ;
                 for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
                 {
                     global_test_count_for_method[ method_id] ++ ;
@@ -889,16 +887,13 @@ int main( ) {
 //  choices.  It equals zero when all choices are
 //  used, and otherwise it equals the choice to omit.
 //  Also reset the group counts.
-//  And count the number of tests, which is less
-//  than the number of cases if testing IIA or
-//  clone independence.
 
         if ( global_choice_omitted > global_maximum_choice_number )
         {
             global_choice_omitted = 0 ;
-            global_count_of_cases ++ ;
             for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
+                global_test_count_for_method[ method_id] ++ ;
                 global_count_of_group_fail_match_for_method[ method_id ] = 0 ;
             }
         }
@@ -967,10 +962,21 @@ int main( ) {
 //  is an omitted choice.
 
                 choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
-                if ( ( global_choice_count_case_specific == global_maximum_choice_number ) || ( ( choice_number > 0 ) && ( choice_number != global_choice_omitted ) ) )
+                if ( global_choice_count_case_specific == global_maximum_choice_number )
                 {
                     outfile << choice_number << std::endl ;
 //                    log_out << choice_number ;
+                } else if ( ( choice_number > 0 ) && ( choice_number != global_choice_omitted ) )
+                {
+                    if ( choice_number < global_choice_omitted )
+                    {
+                        outfile << choice_number << std::endl ;
+//                        log_out << choice_number ;
+                    } else
+                    {
+                        outfile << ( choice_number - 1 ) << std::endl ;
+//                        log_out << choice_number ;
+                    }
                 }
 
 
@@ -1058,7 +1064,7 @@ int main( ) {
         log_out << "[test type: Matches with VoteFair ranking results]" << std::endl ;
     } else if ( global_test_type == global_test_irrelevant_alternatives )
     {
-        log_out << "[test type: Independence of Irrelevant Alternatives (IIA)] (REVISED, NOT YET DEBUGGED)" << std::endl ;
+        log_out << "[test type: Independence of Irrelevant Alternatives (IIA)]" << std::endl ;
     } else if ( global_test_type == global_test_clone_independence )
     {
         log_out << "[test type: Clone Independence] (REVISED, NOT YET DEBUGGED)" << std::endl ;
@@ -1067,14 +1073,7 @@ int main( ) {
         log_out << "[error: test type invalid]" << std::endl ;
     }
 
-    if ( global_test_type == global_test_matches_with_votefair_ranking )
-    {
-        log_out << "[number of cases attempted: " << global_maximum_case_count << "]" << std::endl ;
-    } else
-    {
-        log_out << "[number of cases: " << global_count_of_cases << "]" << std::endl ;
-    }
-
+    log_out << "[number of cases limit: " << global_maximum_case_count << "]" << std::endl ;
     log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
     log_out << "[number of choices: " << global_maximum_choice_number << "]" << std::endl ;
 
@@ -1090,12 +1089,13 @@ int main( ) {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             count_of_cases_all = global_count_of_tests_match_for_method[ method_id ] + global_count_of_tests_fail_match_for_method[ method_id ] + global_count_of_tests_tied_for_method[ method_id ] ;
-            if ( count_of_cases_all > 0 )
+            if ( ( count_of_cases_all > 0 ) && ( ( global_count_of_tests_match_for_method[ method_id ] + global_count_of_tests_fail_match_for_method[ method_id ] ) > 0 ) )
             {
                 calculated_result_match = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / count_of_cases_all ) ;
                 calculated_result_fail_match = int( ( 1000 * global_count_of_tests_fail_match_for_method[ method_id ] ) / count_of_cases_all ) ;
                 calculated_result_tied = int( ( 1000 * global_count_of_tests_tied_for_method[ method_id ] ) / count_of_cases_all ) ;
-                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tied: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_tied << "]" << std::endl ;
+                calculated_result_match_no_ties = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / ( global_count_of_tests_match_for_method[ method_id ] + global_count_of_tests_fail_match_for_method[ method_id ] ) ) ;
+                log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tied/match_no_ties: " << calculated_result_match << "  " << calculated_result_fail_match << "  " << calculated_result_tied << "  " << calculated_result_match_no_ties << "]" << std::endl ;
             } else
             {
                 log_out << "[" << global_name_for_method[ method_id ] << " has zero case count]" << std::endl ;
@@ -1113,11 +1113,12 @@ int main( ) {
     {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
+//            log_out << "[test count: " << global_test_count_for_method[ method_id ] << "]" << std::endl ;
             if ( global_test_count_for_method[ method_id ] > 0 )
             {
-                calculated_result_match = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+                calculated_result_match = int( ( 1000 * ( global_test_count_for_method[ method_id ] - global_count_of_tests_fail_match_for_method[ method_id ] - global_count_of_tests_tied_for_method[ method_id ] ) ) / global_test_count_for_method[ method_id ] ) ;
                 calculated_result_fail_match = int( ( 1000 *  global_count_of_tests_fail_match_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
-                calculated_result_ties = int( ( 1000 *  global_count_of_group_tied_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
+                calculated_result_ties = int( ( 1000 *  global_count_of_tests_tied_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
 //                log_out << "[counts " << global_count_of_tests_match_for_method[ method_id ] << "  " << global_count_of_tests_fail_match_for_method[ method_id ] << "  " << global_count_of_group_tied_for_method[ method_id ] << "  " << global_test_count_for_method[ method_id ] << "]" << std::endl ;
                 if ( global_test_type == global_test_clone_independence )
                 {
