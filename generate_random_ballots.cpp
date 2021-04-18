@@ -101,7 +101,7 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 200 ;
+const int global_maximum_case_count = 700 ;
 const int global_maximum_ballot_number = 11 ;
 const int global_maximum_choice_number = 7 ;
 
@@ -118,8 +118,8 @@ const int global_test_clone_independence = 3 ;
 // -----------------------------------------------
 //  Change this value to specify which test to run.
 
-const int global_test_type = global_test_matches_with_votefair_ranking ;
-// const int global_test_type = global_test_irrelevant_alternatives ;
+// const int global_test_type = global_test_matches_with_votefair_ranking ;
+const int global_test_type = global_test_irrelevant_alternatives ;
 // const int global_test_type = global_test_clone_independence ;
 
 
@@ -764,6 +764,7 @@ void handle_calculated_results( )
         {
             for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
+                global_test_count_for_method[ method_id ] ++ ;
                 if ( global_count_of_group_match_for_method[ method_id ] > 0 )
                 {
                     global_count_of_tests_match_for_method[ method_id ] ++ ;
@@ -779,6 +780,10 @@ void handle_calculated_results( )
                 if ( global_count_of_group_clone_hurt_for_method[ method_id ] > 0 )
                 {
                     global_count_of_tests_clone_hurt_for_method[ method_id ] ++ ;
+                }
+                if ( global_count_of_group_tied_for_method[ method_id ] > 0 )
+                {
+                    global_count_of_tests_tied_for_method[ method_id ] ++ ;
                 }
             }
         }
@@ -832,10 +837,6 @@ int main( ) {
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
     global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
-    for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
-    {
-        global_count_of_group_tied_for_method[ method_id ] = 0 ;
-    }
 
 
 // -----------------------------------------------
@@ -869,10 +870,11 @@ int main( ) {
                 global_choice_omitted = 0 ;
                 for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
                 {
-                    global_test_count_for_method[ method_id] ++ ;
+                    global_count_of_group_match_for_method[ method_id ] = 0 ;
                     global_count_of_group_fail_match_for_method[ method_id ] = 0 ;
                     global_count_of_group_clone_help_for_method[ method_id ] = 0 ;
                     global_count_of_group_clone_hurt_for_method[ method_id ] = 0 ;
+                    global_count_of_group_tied_for_method[ method_id ] = 0 ;
                 }
             } else
             {
@@ -893,8 +895,11 @@ int main( ) {
             global_choice_omitted = 0 ;
             for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
-                global_test_count_for_method[ method_id] ++ ;
+                global_count_of_group_match_for_method[ method_id ] = 0 ;
                 global_count_of_group_fail_match_for_method[ method_id ] = 0 ;
+                global_count_of_group_clone_help_for_method[ method_id ] = 0 ;
+                global_count_of_group_clone_hurt_for_method[ method_id ] = 0 ;
+                global_count_of_group_tied_for_method[ method_id ] = 0 ;
             }
         }
 
@@ -1067,7 +1072,7 @@ int main( ) {
         log_out << "[test type: Independence of Irrelevant Alternatives (IIA)]" << std::endl ;
     } else if ( global_test_type == global_test_clone_independence )
     {
-        log_out << "[test type: Clone Independence] (REVISED, NOT YET DEBUGGED)" << std::endl ;
+        log_out << "[test type: Clone Independence]" << std::endl ;
     } else
     {
         log_out << "[error: test type invalid]" << std::endl ;
@@ -1076,6 +1081,11 @@ int main( ) {
     log_out << "[number of cases limit: " << global_maximum_case_count << "]" << std::endl ;
     log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
     log_out << "[number of choices: " << global_maximum_choice_number << "]" << std::endl ;
+
+    if ( global_test_type == global_test_clone_independence )
+    {
+        log_out << "(PLUR method ignores all but first-ranked choice)" << std::endl ;
+    }
 
     log_out << "[numbers below are PER THOUSAND, so divide by 10 to get percentage]" << std::endl ;
 
@@ -1116,10 +1126,9 @@ int main( ) {
 //            log_out << "[test count: " << global_test_count_for_method[ method_id ] << "]" << std::endl ;
             if ( global_test_count_for_method[ method_id ] > 0 )
             {
-                calculated_result_match = int( ( 1000 * ( global_test_count_for_method[ method_id ] - global_count_of_tests_fail_match_for_method[ method_id ] - global_count_of_tests_tied_for_method[ method_id ] ) ) / global_test_count_for_method[ method_id ] ) ;
+                calculated_result_match = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
                 calculated_result_fail_match = int( ( 1000 *  global_count_of_tests_fail_match_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
                 calculated_result_ties = int( ( 1000 *  global_count_of_tests_tied_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
-//                log_out << "[counts " << global_count_of_tests_match_for_method[ method_id ] << "  " << global_count_of_tests_fail_match_for_method[ method_id ] << "  " << global_count_of_group_tied_for_method[ method_id ] << "  " << global_test_count_for_method[ method_id ] << "]" << std::endl ;
                 if ( global_test_type == global_test_clone_independence )
                 {
                     calculated_result_clone_help = int( ( 1000 *  global_count_of_tests_clone_help_for_method[ method_id ] ) / global_test_count_for_method[ method_id ] ) ;
