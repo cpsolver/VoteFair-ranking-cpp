@@ -101,7 +101,7 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 700 ;
+const int global_maximum_case_count = 20 ;
 const int global_maximum_ballot_number = 11 ;
 const int global_maximum_choice_number = 7 ;
 
@@ -119,8 +119,8 @@ const int global_test_clone_independence = 3 ;
 //  Change this value to specify which test to run.
 
 // const int global_test_type = global_test_matches_with_votefair_ranking ;
-const int global_test_type = global_test_irrelevant_alternatives ;
-// const int global_test_type = global_test_clone_independence ;
+// const int global_test_type = global_test_irrelevant_alternatives ;
+const int global_test_type = global_test_clone_independence ;
 
 
 // -----------------------------------------------
@@ -737,21 +737,20 @@ void handle_calculated_results( )
                     if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == global_choice_winner_all_choices_for_method[ method_id ] )
                     {
                         global_count_of_group_match_for_method[ method_id ] ++ ;
-                    } else if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment != global_choice_winner_all_choices_for_method[ method_id ] )
+                    } else if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == 1 ) )
+                    {
+                        global_count_of_group_clone_help_for_method[ method_id ] ++ ;
+                    } else if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_winner_all_choices_for_method[ method_id ] == 1 ) )
+                    {
+                        global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
+                        if ( method_id == global_method_rcipe )
+                        {
+                            log_out << "[HURT]" ;
+                        }
+                    } else
                     {
                         global_count_of_group_fail_match_for_method[ method_id ] ++ ;
                         log_out << "[" << global_name_for_method[ method_id ] << "_fail]" ;
-                        if ( global_choice_winner_from_method[ method_id ] == global_maximum_choice_number )
-                        {
-                            global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
-                            if ( method_id == global_method_rcipe )
-                            {
-                                log_out << "[HURT]" ;
-                            }
-                        } else
-                        {
-                            global_count_of_group_clone_help_for_method[ method_id ] ++ ;
-                        }
                     }
                 }
             } else
@@ -759,6 +758,11 @@ void handle_calculated_results( )
                 global_count_of_group_tied_for_method[ method_id ] ++ ;
             }
         }
+
+
+// -----------------------------------------------
+//  When the test is done, update the counts that
+//  will be reported.
 
         if ( global_choice_omitted == global_maximum_choice_number )
         {
@@ -819,6 +823,7 @@ int main( ) {
     int calculated_result_ties = 0 ;
     int calculated_result_clone_help = 0 ;
     int calculated_result_clone_hurt = 0 ;
+    int true_or_false_swap_clone_rankings = 0 ;
 
 
 // -----------------------------------------------
@@ -847,6 +852,11 @@ int main( ) {
 
 // -----------------------------------------------
 //  Begin a loop that handles one case.
+//  Some tests require multiple cases for each test.
+//  Each case sends ballot information to the
+//  software that reads the ballot information and
+//  identifies who deserves to win according to
+//  different vote-counting methods.
 
     global_case_id = global_minimum_case_id ;
     global_choice_omitted = global_maximum_choice_number + 99 ;
@@ -947,6 +957,7 @@ int main( ) {
 //  Write the beginning of the info for this ballot.
 
 //        log_out << std::endl ;
+        true_or_false_swap_clone_rankings = global_true ;
         for ( ballot_number = 1 ; ballot_number <= global_maximum_ballot_number ; ballot_number ++ )
         {
             outfile << global_string_voteinfo_code_for_ballot_count << " 1" << std::endl ;
@@ -962,11 +973,37 @@ int main( ) {
 
 
 // -----------------------------------------------
+//  Get the choice number at the current ranking
+//  level.
+
+                choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
+
+
+// -----------------------------------------------
+//  If clone independence is being tested, and if
+//  this case includes both of the clone choices,
+//  and if requested by an alternating flag,
+//  and if the current choice is one of the two
+//  clones, swap the ranking levels of the two
+//  clone choices.
+
+                if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_count_case_specific == global_maximum_choice_number ) && ( true_or_false_swap_clone_rankings == global_true ) )
+                {
+                    if ( choice_number == 1 )
+                    {
+                        choice_number = global_maximum_choice_number ;
+                    } else if ( choice_number == global_maximum_choice_number )
+                    {
+                        choice_number = 1 ;
+                    }
+                }
+
+
+// -----------------------------------------------
 //  Write the choice number that is at the
 //  next-lower preference level.  But not if it
 //  is an omitted choice.
 
-                choice_number = global_choice_on_ballot_at_ranking_level[ ballot_number ][ ranking_level ] ;
                 if ( global_choice_count_case_specific == global_maximum_choice_number )
                 {
                     outfile << choice_number << std::endl ;
@@ -996,6 +1033,22 @@ int main( ) {
 //  Write the code that terminates this ballot.
 
             outfile << global_string_voteinfo_code_for_end_of_ballot << std::endl ;
+
+
+// -----------------------------------------------
+//  For each ballot, alternate a flag that chooses
+//  which clone to rank higher than the other.
+//  This is only used when clone independence is
+//  being tested and both clones are included
+//  as choices on the ballot.
+
+            if ( true_or_false_swap_clone_rankings != global_true )
+            {
+                true_or_false_swap_clone_rankings = global_true ;
+            } else
+            {
+                true_or_false_swap_clone_rankings = global_false ;
+            }
 
 
 // -----------------------------------------------
