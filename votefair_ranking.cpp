@@ -9382,7 +9382,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 
 
 // -----------------------------------------------
-//  Identify the choice that has the smallest
+//  Identify which choice has the smallest
 //  first-choice count.  Allow for the possibility
 //  of a tie.
 
@@ -9400,8 +9400,8 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 
 
 // -----------------------------------------------
-//  Repeat the loop that handles each
-//  non-eliminated choice.
+//  Repeat the loop that combines fractional
+//  counts with integer counts.
 
     }
 
@@ -9414,26 +9414,6 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
     if ( sum_of_all_first_choice_counts + count_of_ballots_ignored_this_elimination_round != global_current_total_vote_count )
     {
         if ( global_logging_info == global_true ) { log_out << "[error: counts done during first-choice elimination (" << ( sum_of_all_first_choice_counts + count_of_ballots_ignored_this_elimination_round ) << ") do not sum to total ballot count (" << global_current_total_vote_count << ")]" << std::endl ; } ;
-    }
-
-
-// -----------------------------------------------
-//  Eliminate the choice with the smallest
-//  first-choice count.  If there is more than one
-//  such choice, keep track of which choices are
-//  tied.
-
-//  todo: do not eliminate here, do in calling subroutine
-
-    if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
-    {
-        actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] ;
-        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
-        global_choice_to_eliminate = actual_choice ;
-        elim_choice_to_eliminate( ) ;
-    } else
-    {
-        if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
     }
 
 
@@ -9511,17 +9491,20 @@ void method_ranked_choice_including_pairwise_elimination( )
 
 
 // -----------------------------------------------
-//  Find the choice with the fewest first-choice
-//  votes.  If there is no tie, eliminate that
-//  choice and repeat the elimination loop.
-
-//  todo: eliminate here, not in subroutine
+//  Eliminate the choice with the fewest
+//  first-choice votes, then repeat the elimination
+//  loop.
 
         elim_find_fewest_first_choice( ) ;
         if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
         {
+            actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] ;
+            if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+            global_choice_to_eliminate = actual_choice ;
+            elim_choice_to_eliminate( ) ;
             continue ;
         }
+        if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -9708,17 +9691,20 @@ void method_instant_runoff_voting( )
 
 
 // -----------------------------------------------
-//  Find the choice with the fewest first-choice
-//  votes.  If there is no tie, eliminate that
-//  choice and repeat the elimination loop.
-
-//  todo: eliminate here, not in subroutine
+//  Eliminate the choice with the fewest
+//  first-choice votes, then repeat the elimination
+//  loop.
 
         elim_find_fewest_first_choice( ) ;
         if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
         {
+            actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] ;
+            if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+            global_choice_to_eliminate = actual_choice ;
+            elim_choice_to_eliminate( ) ;
             continue ;
         }
+        if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
 
 
 // -----------------------------------------------
