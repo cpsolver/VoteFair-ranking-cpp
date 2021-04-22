@@ -556,6 +556,7 @@ int global_true_or_false_request_star_voting ;
 int global_true_or_false_request_pairwise_loser_elimination ;
 int global_true_or_false_find_largest_not_smallest ;
 int global_true_or_false_find_pairwise_opposition_not_support ;
+int global_true_or_false_request_irv_with_bottom_two_runoff ;
 
 int global_integer_count_for_choice[ 99 ] ;
 int global_list_of_choices_with_largest_or_smallest_count[ 99 ] ;
@@ -8772,6 +8773,7 @@ void method_pairwise_loser_elimination( )
 // -----------------------------------------------
 //        elim_find_largest
 //        elim_find_smallest
+//        (elim_find_largest_or_smallest)
 //
 //  These functions find the largest or smallest
 //  integer from among the choice-specific numbers
@@ -8782,10 +8784,11 @@ void method_pairwise_loser_elimination( )
 //  (Negative numbers are used to indicate ignored
 //  integers.)
 //
-//  It returns the value:
-//    count_of_choices_at_largest_or_smallest_count
+//  It returns the count of how many choices have
+//  the largest, or smallest, count.
 //
-//  And the choice numbers are in the list:
+//  Upon return, the choice numbers that have the
+//  largest, or smallest, count are in the list:
 //    global_list_of_choices_with_largest_or_smallest_count[ ]
 //
 //  If there is no tie, the list of choices will
@@ -9169,6 +9172,7 @@ void elim_find_fewest_first_choice( )
 {
 
     int actual_choice ;
+    int choice_counter ;
     int preference_level ;
     int count_of_ballots_ignored_this_elimination_round ;
     int top_ranked_continuing_preference_level ;
@@ -9343,8 +9347,9 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 
 
 // -----------------------------------------------
-//  Begin a loop that handles each choice that has
-//  not yet been eliminated.
+//  Begin a loop that combines fractional ballot
+//  counts with integer ballot counts, but skip
+//  the already-eliminated choices.
 
     if ( global_logging_info == global_true ) { log_out << "[looking at first choice counts]" << std::endl ; } ;
     smallest_first_choice_count = -1 ;
@@ -9354,6 +9359,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
     {
         if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_false )
         {
+            global_integer_count_for_choice[ actual_choice ] = -1 ;
             continue ;
         }
 
@@ -9379,6 +9385,15 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
             }
         }
         sum_of_all_first_choice_counts +=global_first_choice_count_for_choice[ actual_choice ] ;
+        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+        global_integer_count_for_choice[ actual_choice ] = global_first_choice_count_for_choice[ actual_choice ] ;
+
+
+// -----------------------------------------------
+//  Repeat the loop that combines fractional
+//  counts with integer counts.
+
+    }
 
 
 // -----------------------------------------------
@@ -9386,23 +9401,10 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  first-choice count.  Allow for the possibility
 //  of a tie.
 
-        if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
-        if ( ( smallest_first_choice_count < 0 ) || ( global_first_choice_count_for_choice[ actual_choice ] < smallest_first_choice_count ) )
-        {
-            global_count_of_choices_with_smallest_first_choice_count = 1 ;
-            smallest_first_choice_count = global_first_choice_count_for_choice[ actual_choice ] ;
-            global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] = actual_choice ;
-        } else if ( global_first_choice_count_for_choice[ actual_choice ] == smallest_first_choice_count )
-        {
-            global_count_of_choices_with_smallest_first_choice_count ++ ;
-            global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] = actual_choice ;
-        }
-
-
-// -----------------------------------------------
-//  Repeat the loop that combines fractional
-//  counts with integer counts.
-
+    global_count_of_choices_with_smallest_first_choice_count = elim_find_smallest( ) ;
+    for ( choice_counter = 1 ; choice_counter <= global_count_of_choices_with_smallest_first_choice_count ; choice_counter ++ )
+    {
+        global_list_of_choices_with_fewest_first_choice_counts[ choice_counter ] = global_list_of_choices_with_largest_or_smallest_count[ choice_counter ] ;
     }
 
 
@@ -9643,6 +9645,14 @@ void method_ranked_choice_including_pairwise_elimination( )
 //  This function calculates results using the
 //  method named Instant Runoff Voting (IRV).
 //
+//  This function also calculates the variation
+//  named Instant Runoff Voting With Bottom Two
+//  Runoff (IRV-BTR).  This method does a pairwise
+//  comparison between the two choices that have
+//  the fewest first-choice votes, and eliminates
+//  the pairwise loser (even if the other choice
+//  has a smaller first-choice count).
+//
 // -----------------------------------------------
 // -----------------------------------------------
 
@@ -9655,6 +9665,9 @@ void method_instant_runoff_voting( )
     int sum_of_all_first_choice_counts ;
     int pointer_to_list_of_tied_choices ;
     int winner_of_elimination_rounds ;
+    int choice_with_fewest_first_choice_votes ;
+    int choice_with_second_fewest_first_choice_votes ;
+    int count_of_choices_at_largest_or_smallest_count ;
 
 
 // -----------------------------------------------
@@ -9663,6 +9676,10 @@ void method_instant_runoff_voting( )
     global_elimination_type_requested = "IRV" ;
     global_elimination_result_type = global_voteinfo_code_for_winner_instant_runoff_voting ;
     elim_initialize( ) ;
+    if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_true )
+    {
+        if ( global_logging_info == global_true ) { log_out << "[actually doing IRV_BTR method during this pass through IRV method code]" << std::endl ; } ;
+    }
 
 
 // -----------------------------------------------
@@ -9686,25 +9703,100 @@ void method_instant_runoff_voting( )
             {
                 if ( global_logging_info == global_true ) { log_out << "\n[IRV disagrees with VoteFair ranking]" << std::endl ; } ;
             }
+            if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_true )
+            {
+                if ( global_logging_info == global_true ) { log_out << "[actually did IRV_BTR method during this pass through IRV method code]" << std::endl ; } ;
+            }
             return ;
         }
 
 
 // -----------------------------------------------
-//  Eliminate the choice with the fewest
-//  first-choice votes, then repeat the elimination
-//  loop.
+//  Count the number of first-choice votes for
+//  each choice, and find the choice that has the
+//  fewest of those first-choice votes.
 
         elim_find_fewest_first_choice( ) ;
-        if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
+
+
+// -----------------------------------------------
+//  For simple IRV, eliminate the choice with the
+//  fewest first-choice votes, then repeat the
+//  elimination loop.
+
+        if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_false )
         {
-            actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] ;
-            if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
-            global_choice_to_eliminate = actual_choice ;
-            elim_choice_to_eliminate( ) ;
-            continue ;
+            if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
+            {
+                actual_choice = global_list_of_choices_with_fewest_first_choice_counts[ global_count_of_choices_with_smallest_first_choice_count ] ;
+                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has smallest first-choice count of " << global_first_choice_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
+                continue ;
+            }
+            if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
         }
-        if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  For IRV-BTR, find the choice with the
+//  second-fewest first-choice votes, then
+//  eliminate the pairwise loser.
+//  This code assumes that the list
+//  global_integer_count_for_choice is still filled
+//  with the first-choice vote counts.
+//  If there is a tie for the second-smallest
+//  count, eliminate the choice with the smallest
+//  count.
+
+        if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_true )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[doing bottom-two runoff, for IRV_BTR method]" << std::endl ; } ;
+            if ( global_count_of_choices_with_smallest_first_choice_count == 1 )
+            {
+                choice_with_fewest_first_choice_votes = global_list_of_choices_with_fewest_first_choice_counts[ 1 ] ;
+                if ( global_logging_info == global_true ) { log_out << "[choice " << choice_with_fewest_first_choice_votes << " has smallest first-choice count]" << std::endl ; } ;
+                global_integer_count_for_choice[ choice_with_fewest_first_choice_votes ] = -1 ;
+                count_of_choices_at_largest_or_smallest_count = elim_find_smallest( ) ;
+                if ( count_of_choices_at_largest_or_smallest_count == 1 )
+                {
+                    choice_with_second_fewest_first_choice_votes = global_list_of_choices_with_largest_or_smallest_count[ 1 ] ;
+                    if ( global_logging_info == global_true ) { log_out << "[choice " << choice_with_second_fewest_first_choice_votes << " has the second-smallest first-choice count]" << std::endl ; } ;
+                    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                    {
+                        global_true_or_false_continuing_subset_includes_choice[ actual_choice ] = global_true_or_false_continuing_for_choice[ actual_choice ] ;
+                        global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
+                    }
+                    global_true_or_false_continuing_for_choice[ choice_with_fewest_first_choice_votes ] = global_true ;
+                    global_true_or_false_continuing_for_choice[ choice_with_second_fewest_first_choice_votes ] = global_true ;
+                    elim_count_pairwise_losses( ) ;
+                    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+                    {
+                        global_true_or_false_continuing_for_choice[ actual_choice ] = global_true_or_false_continuing_subset_includes_choice[ actual_choice ] ;
+                    }
+                    if ( global_loss_count_for_choice[ choice_with_fewest_first_choice_votes ] == 1 )
+                    {
+                        global_choice_to_eliminate = choice_with_fewest_first_choice_votes ;
+                        if ( global_logging_info == global_true ) { log_out << "[choice " << global_choice_to_eliminate << " lost bottom-two runoff against choice " << choice_with_second_fewest_first_choice_votes << "]" << std::endl ; } ;
+                        elim_choice_to_eliminate( ) ;
+                        continue ;
+                    } else if ( global_loss_count_for_choice[ choice_with_second_fewest_first_choice_votes ] == 1 )
+                    {
+                        global_choice_to_eliminate = choice_with_second_fewest_first_choice_votes ;
+                        if ( global_logging_info == global_true ) { log_out << "[choice " << global_choice_to_eliminate << " lost bottom-two runoff against choice " << choice_with_fewest_first_choice_votes << "]" << std::endl ; } ;
+                        elim_choice_to_eliminate( ) ;
+                        continue ;
+                    }
+                } else
+                {
+                    global_choice_to_eliminate = choice_with_fewest_first_choice_votes ;
+                    if ( global_logging_info == global_true ) { log_out << "[tie for second-smallest first-choice count, so choice with smallest first-choice count, choice " << global_choice_to_eliminate << ", will be eliminated]" << std::endl ; } ;
+                    elim_choice_to_eliminate( ) ;
+                    continue ;
+                }
+            }
+            if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
+        }
 
 
 // -----------------------------------------------
@@ -10053,12 +10145,17 @@ void calc_eliminate_methods() {
 
 // -----------------------------------------------
 //  If requested, find the winner according to
-//  Instant Runoff Voting (IRV).
+//  Instant Runoff Voting (IRV), and also
+//  Instant Runoff Voting With Bottom Two Runoff
+//  (IRV-BTR).
 
     if ( global_true_or_false_request_instant_runoff_voting == global_true )
     {
+        global_true_or_false_request_irv_with_bottom_two_runoff = global_false ;
         method_instant_runoff_voting( ) ;
         winner_irv = global_output_results[ global_pointer_to_output_results - 1 ] ;
+        global_true_or_false_request_irv_with_bottom_two_runoff = global_true ;
+        method_instant_runoff_voting( ) ;
     }
 
 
