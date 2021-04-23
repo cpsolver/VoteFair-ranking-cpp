@@ -101,7 +101,7 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 20 ;
+const int global_maximum_case_count = 200 ;
 const int global_maximum_ballot_number = 11 ;
 const int global_maximum_choice_number = 7 ;
 
@@ -135,22 +135,24 @@ const int global_minimum_case_id = 100000 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 7 ;
+int global_number_of_methods = 8 ;
 const int global_method_votefair = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
-const int global_method_ple = 4 ;
+const int global_method_irvbtr = 4 ;
 const int global_method_star = 5 ;
 const int global_method_irv = 6 ;
 const int global_method_plurality = 7 ;
+const int global_method_ple = 8 ;
 
 std::string global_name_for_method_votefair = "VF" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
-std::string global_name_for_method_ple = "PLE" ;
+std::string global_name_for_method_irvbtr = "IRV_BTR" ;
 std::string global_name_for_method_star = "STAR/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_plurality = "PLUR" ;
+std::string global_name_for_method_ple = "PLE" ;
 
 
 // -----------------------------------------------
@@ -248,6 +250,7 @@ const int global_voteinfo_code_for_winner_instant_pairwise_elimination = -54 ;
 const int global_voteinfo_code_for_winner_irv_minus_pairwise_losers = -55 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
 const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
+const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 
 
 // -----------------------------------------------
@@ -595,6 +598,11 @@ void handle_calculated_results( )
                 global_choice_winner_from_method[ global_method_irv ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_irv ] << " " << global_choice_winner_from_method[ global_method_irv ] << "]" ;
 
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_bottom_two_runoff )
+            {
+                global_choice_winner_from_method[ global_method_irvbtr ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_irvbtr ] << " " << global_choice_winner_from_method[ global_method_irvbtr ] << "]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_star_voting )
             {
                 global_choice_winner_from_method[ global_method_star ] = current_result_code ;
@@ -840,6 +848,7 @@ int main( ) {
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
     global_name_for_method[ global_method_star ] = global_name_for_method_star ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
+    global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
     global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
 

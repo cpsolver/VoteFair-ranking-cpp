@@ -416,6 +416,7 @@ const int global_voteinfo_code_for_request_star_voting = -56 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
 const int global_voteinfo_code_for_request_pairwise_loser_elimination = -58 ;
 const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
+const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -9673,12 +9674,18 @@ void method_instant_runoff_voting( )
 // -----------------------------------------------
 //  Do initialization.
 
-    global_elimination_type_requested = "IRV" ;
-    global_elimination_result_type = global_voteinfo_code_for_winner_instant_runoff_voting ;
-    elim_initialize( ) ;
-    if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_true )
+    if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_false )
+    {
+        if ( global_logging_info == global_true ) { log_out << "[doing IRV method during this pass through IRV method code]" << std::endl ; } ;
+        global_elimination_type_requested = "IRV" ;
+        global_elimination_result_type = global_voteinfo_code_for_winner_instant_runoff_voting ;
+        elim_initialize( ) ;
+    } else
     {
         if ( global_logging_info == global_true ) { log_out << "[actually doing IRV_BTR method during this pass through IRV method code]" << std::endl ; } ;
+       global_elimination_type_requested = "IRV_BTR" ;
+       global_elimination_result_type = global_voteinfo_code_for_winner_irv_bottom_two_runoff ;
+       elim_initialize( ) ;
     }
 
 
