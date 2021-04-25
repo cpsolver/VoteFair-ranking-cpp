@@ -9360,7 +9360,6 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
     {
         if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_false )
         {
-            global_integer_count_for_choice[ actual_choice ] = -1 ;
             continue ;
         }
 
@@ -9402,6 +9401,16 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //  first-choice count.  Allow for the possibility
 //  of a tie.
 
+    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    {
+        if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
+        {
+            global_integer_count_for_choice[ actual_choice ] = global_first_choice_count_for_choice[ actual_choice ] ;
+        } else
+        {
+            global_integer_count_for_choice[ actual_choice ] = -1 ;
+        }
+    }
     global_count_of_choices_with_smallest_first_choice_count = elim_find_smallest( ) ;
     for ( choice_counter = 1 ; choice_counter <= global_count_of_choices_with_smallest_first_choice_count ; choice_counter ++ )
     {
