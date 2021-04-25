@@ -101,8 +101,8 @@
 //  Change these values as needed to specify the
 //  number of ballots and the number of choices.
 
-const int global_maximum_case_count = 200 ;
-const int global_maximum_ballot_number = 11 ;
+const int global_maximum_case_count = 100 ;
+const int global_maximum_ballot_number = 15 ;
 const int global_maximum_choice_number = 7 ;
 
 
@@ -711,7 +711,6 @@ void handle_calculated_results( )
 
     if ( global_choice_count_case_specific == global_maximum_choice_number )
     {
-        global_choice_winner_all_choices_for_method[ global_method_votefair ] = global_choice_winner_from_method[ global_method_votefair ] ;
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             global_choice_winner_all_choices_for_method[ method_id ] = global_choice_winner_from_method[ method_id ] ;
@@ -729,37 +728,34 @@ void handle_calculated_results( )
 //  Also track whether the added choice helps
 //  or hurts the similar choice.
 
-    if ( ( ( global_test_type == global_test_irrelevant_alternatives ) || ( global_test_type == global_test_clone_independence ) ) && ( global_choice_count_case_specific < global_maximum_choice_number ) )
+    if ( ( ( global_test_type == global_test_irrelevant_alternatives ) || ( global_test_type == global_test_clone_independence ) ) && ( global_choice_count_case_specific < global_maximum_choice_number ) && ( global_choice_omitted > 0 ) )
     {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             if ( ( global_choice_winner_from_method[ method_id ] > 0 ) && ( global_choice_winner_all_choices_for_method[ method_id ] > 0 ) )
             {
-                if ( global_choice_omitted != global_choice_winner_all_choices_for_method[ method_id ] )
+                choice_number_adjustment = 0 ;
+                if ( ( global_choice_winner_from_method[ method_id ] >= global_choice_omitted ) )
                 {
-                    choice_number_adjustment = 0 ;
-                    if ( ( global_test_type == global_test_irrelevant_alternatives ) && ( global_choice_winner_all_choices_for_method[ method_id ] > global_choice_omitted ) )
+                    choice_number_adjustment = 1 ;
+                }
+                if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == global_choice_winner_all_choices_for_method[ method_id ] )
+                {
+                    global_count_of_group_match_for_method[ method_id ] ++ ;
+                } else if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == 1 ) )
+                {
+                    global_count_of_group_clone_help_for_method[ method_id ] ++ ;
+                } else if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_winner_all_choices_for_method[ method_id ] == 1 ) )
+                {
+                    global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
+                    if ( method_id == global_method_rcipe )
                     {
-                        choice_number_adjustment = 1 ;
+                        log_out << "[HURT]" ;
                     }
-                    if ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == global_choice_winner_all_choices_for_method[ method_id ] )
-                    {
-                        global_count_of_group_match_for_method[ method_id ] ++ ;
-                    } else if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_winner_from_method[ method_id ] + choice_number_adjustment == 1 ) )
-                    {
-                        global_count_of_group_clone_help_for_method[ method_id ] ++ ;
-                    } else if ( ( global_test_type == global_test_clone_independence ) && ( global_choice_winner_all_choices_for_method[ method_id ] == 1 ) )
-                    {
-                        global_count_of_group_clone_hurt_for_method[ method_id ] ++ ;
-                        if ( method_id == global_method_rcipe )
-                        {
-                            log_out << "[HURT]" ;
-                        }
-                    } else
-                    {
-                        global_count_of_group_fail_match_for_method[ method_id ] ++ ;
-                        log_out << "[" << global_name_for_method[ method_id ] << "_fail]" ;
-                    }
+                } else
+                {
+                    global_count_of_group_fail_match_for_method[ method_id ] ++ ;
+                    log_out << "[" << global_name_for_method[ method_id ] << "_fail]" ;
                 }
             } else
             {
