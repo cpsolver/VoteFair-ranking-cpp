@@ -106,7 +106,7 @@
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-const int global_maximum_case_count_per_test_type = 200 ;
+const int global_maximum_case_count_per_test_type = 400 ;
 const int global_maximum_ballot_number = 11 ;
 const int global_maximum_choice_number = 7 ;
 const int global_number_of_clones = 2 ;
@@ -134,21 +134,23 @@ const int global_test_clone_independence = 3 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 8 ;
+int global_number_of_methods = 9 ;
 const int global_method_votefair = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
 const int global_method_irvbtr = 4 ;
 const int global_method_star = 5 ;
-const int global_method_irv = 6 ;
-const int global_method_plurality = 7 ;
-const int global_method_ple = 8 ;
+const int global_method_borda = 6 ;
+const int global_method_irv = 7 ;
+const int global_method_plurality = 8 ;
+const int global_method_ple = 9 ;
 
 std::string global_name_for_method_votefair = "VF" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
 std::string global_name_for_method_irvbtr = "IRV_BTR" ;
 std::string global_name_for_method_star = "STAR/NT" ;
+std::string global_name_for_method_borda = "Borda/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_plurality = "PLUR" ;
 std::string global_name_for_method_ple = "PLE" ;
@@ -259,6 +261,7 @@ const int global_voteinfo_code_for_winner_irv_minus_pairwise_losers = -55 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
 const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
+const int global_voteinfo_code_for_winner_borda_count = -61 ;
 
 
 // -----------------------------------------------
@@ -595,6 +598,11 @@ void handle_calculated_results( )
                 global_choice_winner_from_method[ global_method_irvbtr ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_irvbtr ] << " " << global_choice_winner_from_method[ global_method_irvbtr ] << "]" ;
 
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_borda_count )
+            {
+                global_choice_winner_from_method[ global_method_borda ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_borda ] << " " << global_choice_winner_from_method[ global_method_borda ] << "]" ;
+
             } else if ( previous_result_code == global_voteinfo_code_for_winner_star_voting )
             {
                 global_choice_winner_from_method[ global_method_star ] = current_result_code ;
@@ -885,8 +893,6 @@ void write_test_results( )
         log_out << "(PLUR method ignores all but first-ranked choice)" << std::endl ;
     }
 
-    log_out << "[numbers below are PER THOUSAND, so divide by 10 to get percentage]" << std::endl ;
-
 
 // -----------------------------------------------
 //  If testing comparisons with VoteFair ranking,
@@ -923,13 +929,13 @@ void write_test_results( )
         {
             if ( global_test_count > 0 )
             {
-                calculated_result_match = int( ( 1000 * global_count_of_tests_match_for_method[ method_id ] ) / global_test_count ) ;
-                calculated_result_fail_match = int( ( 1000 *  global_count_of_tests_fail_match_for_method[ method_id ] ) / global_test_count ) ;
-                calculated_result_ties = int( ( 1000 *  global_count_of_tests_tied_for_method[ method_id ] ) / global_test_count ) ;
+                calculated_result_match = int( ( 100 * global_count_of_tests_match_for_method[ method_id ] ) / global_test_count ) ;
+                calculated_result_fail_match = int( ( 100 *  global_count_of_tests_fail_match_for_method[ method_id ] ) / global_test_count ) ;
+                calculated_result_ties = int( ( 100 *  global_count_of_tests_tied_for_method[ method_id ] ) / global_test_count ) ;
                 if ( global_test_type == global_test_clone_independence )
                 {
-                    calculated_result_clone_help = int( ( 1000 *  global_count_of_tests_clone_help_for_method[ method_id ] ) / global_test_count ) ;
-                    calculated_result_clone_hurt = int( ( 1000 *  global_count_of_tests_clone_hurt_for_method[ method_id ] ) / global_test_count ) ;
+                    calculated_result_clone_help = int( ( 100 *  global_count_of_tests_clone_help_for_method[ method_id ] ) / global_test_count ) ;
+                    calculated_result_clone_hurt = int( ( 100 *  global_count_of_tests_clone_hurt_for_method[ method_id ] ) / global_test_count ) ;
                 }
                 if ( global_test_type == global_test_irrelevant_alternatives )
                 {
@@ -1318,6 +1324,7 @@ int main( ) {
     global_name_for_method[ global_method_star ] = global_name_for_method_star ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
     global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
+    global_name_for_method[ global_method_borda ] = global_name_for_method_borda ;
     global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
 
