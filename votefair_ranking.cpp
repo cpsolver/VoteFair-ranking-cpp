@@ -417,6 +417,7 @@ const int global_voteinfo_code_for_winner_star_voting = -57 ;
 const int global_voteinfo_code_for_request_pairwise_loser_elimination = -58 ;
 const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
+const int global_voteinfo_code_for_winner_borda_count = -61 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -8736,7 +8737,7 @@ void method_pairwise_loser_elimination( )
         if ( pairwise_loser > 0 )
         {
             if ( global_logging_info == global_true ) { log_out << "[found pairwise loser, choice " << pairwise_loser << "]" << std::endl ; } ;
-        	global_choice_to_eliminate = pairwise_loser ;
+            global_choice_to_eliminate = pairwise_loser ;
             elim_choice_to_eliminate( ) ;
         } else
         {
@@ -9927,6 +9928,24 @@ void method_star_voting( )
 
 
 // -----------------------------------------------
+//  The choice with the highest score is the
+//  winner of the Borda count method.  Write this
+//  result to allow this method to be compared.
+
+//  todo: debug this new code
+
+    if ( count_of_choices_with_largest_score_count == 1 )
+    {
+        put_next_result_info_number( global_voteinfo_code_for_winner_borda_count ) ;
+        put_next_result_info_number( choice_with_largest_score ) ;
+        if ( global_logging_info == global_true ) { log_out << "[Borda count winner is choice " << convert_integer_to_text( choice_with_largest_score ) << "]" << std::endl ; } ;
+    } else
+    {
+        if ( global_logging_info == global_true ) { log_out << "[Borda count has tied result]" << std::endl ; } ;
+    }
+
+
+// -----------------------------------------------
 //  If there are more than two choices tied with
 //  the largest score, eliminate all the other
 //  choices.
@@ -10128,6 +10147,8 @@ void calc_eliminate_methods() {
 //  If requested, find the winner according to instant
 //  pairwise elimination (IPE).
 
+    if ( global_logging_info == global_true ) { log_out << "\n[doing requested elimination methods for case " << global_case_number << "]" << std::endl ; } ;
+
     if ( global_true_or_false_request_instant_pairwise_elimination == global_true )
     {
         method_instant_pairwise_elimination( ) ;
@@ -10207,7 +10228,7 @@ void calc_eliminate_methods() {
         pairwise_difference = global_tally_first_over_second_in_pair[ pair_counter ] - global_tally_second_over_first_in_pair[ pair_counter ] ;
         if ( pairwise_difference < 0 )
         {
-        	pairwise_difference = 0 - pairwise_difference ;
+            pairwise_difference = 0 - pairwise_difference ;
         }
         if ( global_logging_info == global_true ) { log_out << "[pairwise diff is " << pairwise_difference << "]" << std::endl ; } ;
     }
