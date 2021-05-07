@@ -1,3 +1,53 @@
+CONDITIONS:
+number of choices: 7
+number of ballots: 11
+number of clones (excluding original): 3
+number of VF-match tests: 11
+number of IIA tests: 11
+number of clone independence tests: 11
+number of cases limit: 100
+number of cases dismissed because of tied result: 1
+PLUR method ignores all but first-ranked choice
+
+
+Match with VoteFair popularity ranking result?
+VF agree/disagree/tied: 100  0  0
+IPE agree/disagree/tied: 81  9  9
+RCIPE agree/disagree/tied: 81  18  0
+IRV_BTR agree/disagree/tied: 81  18  0
+STAR/NT agree/disagree/tied: 90  9  0
+Borda/NT agree/disagree/tied: 45  27  27
+IRV agree/disagree/tied: 81  18  0
+PLUR agree/disagree/tied: 72  27  0
+PLE agree/disagree/tied: 27  0  72
+
+
+Independence of Irrelevant Alternatives (IIA) success and failure rates:
+VF agree/disagree/tie: 81  18  0
+IPE agree/disagree/tie: 81  18  0
+RCIPE agree/disagree/tie: 81  18  0
+IRV_BTR agree/disagree/tie: 81  18  0
+STAR/NT agree/disagree/tie: 72  27  0
+Borda/NT agree/disagree/tie: 63  36  0
+IRV agree/disagree/tie: 81  18  0
+PLUR agree/disagree/tie: 100  0  0
+PLE agree/disagree/tie: 72  27  0
+
+
+Clone Independence success and failure rates:
+VF agree/disagree/tie (help) (hurt): 72  18  9  (0)  (18)
+IPE agree/disagree/tie (help) (hurt): 90  0  9  (0)  (0)
+RCIPE agree/disagree/tie (help) (hurt): 90  9  0  (0)  (9)
+IRV_BTR agree/disagree/tie (help) (hurt): 90  9  0  (0)  (9)
+STAR/NT agree/disagree/tie (help) (hurt): 63  36  0  (0)  (27)
+Borda/NT agree/disagree/tie (help) (hurt): 45  54  0  (0)  (18)
+IRV agree/disagree/tie (help) (hurt): 90  9  0  (0)  (9)
+PLUR agree/disagree/tie (help) (hurt): 81  0  18  (0)  (0)
+PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
+
+
+OLDER RESULTS:
+
 [number of ballots: 11]
 [number of choices: 7]
 [number of clones (excluding original): 3]
@@ -7,7 +57,6 @@
 [number of cases limit: 400]
 [number of cases dismissed because of tied result: 22]
 [PLUR method ignores all but first-ranked choice]
-
 
 [test type: Matches with VoteFair ranking results]
 [VF agree/disagree/tied: 100  0  0]
@@ -20,7 +69,6 @@
 [PLUR agree/disagree/tied: 64  35  0]
 [PLE agree/disagree/tied: 23  0  76]
 
-
 [test type: Independence of Irrelevant Alternatives (IIA)]
 [VF agree/disagree/tie: 85  14  0]
 [IPE agree/disagree/tie: 80  19  0]
@@ -31,7 +79,6 @@
 [IRV agree/disagree/tie: 64  35  0]
 [PLUR agree/disagree/tie: 100  0  0]
 [PLE agree/disagree/tie: 38  61  0]
-
 
 [test type: Clone Independence]
 [VF agree/help/hurt/disagree_other/tie: 76  7  0  16  0]
