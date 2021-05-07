@@ -106,7 +106,7 @@
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-const int global_maximum_case_count = 400 ;
+const int global_maximum_case_count = 100 ;
 const int global_maximum_ballot_number = 11 ;
 const int global_maximum_choice_number = 7 ;
 const int global_number_of_clones = 3 ;
@@ -794,14 +794,6 @@ void handle_calculated_results( )
             if ( ( global_choice_winner_from_method[ method_id ] > 0 ) && ( global_choice_winner_from_method[ method_id ] == global_choice_winner_all_choices_for_method[ method_id ] ) )
             {
                 global_count_of_clone_tests_match_for_method[ method_id ] ++ ;
-            } else if ( global_choice_winner_from_method[ method_id ] == 1 )
-            {
-                global_count_of_clone_tests_clone_help_for_method[ method_id ] ++ ;
-                log_out << "[" << global_name_for_method[ method_id ] << " helps]" ;
-            } else if ( global_choice_winner_all_choices_for_method[ method_id ] == 1 )
-            {
-                global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ++ ;
-                log_out << "[" << global_name_for_method[ method_id ] << " hurts]" ;
             } else if ( global_choice_winner_from_method[ method_id ] < 1 )
             {
                 global_count_of_clone_tests_tied_for_method[ method_id ] ++ ;
@@ -810,6 +802,16 @@ void handle_calculated_results( )
             {
                 global_count_of_clone_tests_fail_match_for_method[ method_id ] ++ ;
                 log_out << "[" << global_name_for_method[ method_id ] << " CL fails]" ;
+                if ( global_choice_winner_all_choices_for_method[ method_id ] == 1 )
+                {
+                    global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ++ ;
+                    log_out << "[" << global_name_for_method[ method_id ] << " hurts]" ;
+                }
+                if ( global_choice_winner_from_method[ method_id ] == 1 )
+                {
+                    global_count_of_clone_tests_clone_help_for_method[ method_id ] ++ ;
+                    log_out << "[" << global_name_for_method[ method_id ] << " helps]" ;
+                }
             }
         }
     }
@@ -877,22 +879,23 @@ void write_test_results( )
 
     log_out << std::endl << std::endl << std::endl ;
 
-    log_out << "[number of ballots: " << global_maximum_ballot_number << "]" << std::endl ;
-    log_out << "[number of choices: " << global_maximum_choice_number << "]" << std::endl ;
-    log_out << "[number of clones (excluding original): " << global_number_of_clones << "]" << std::endl ;
-    log_out << "[number of VF-match tests: " << global_vf_test_count << "]" << std::endl ;
-    log_out << "[number of IIA tests: " << global_iia_test_count << "]" << std::endl ;
-    log_out << "[number of clone independence tests: " << global_clone_test_count << "]" << std::endl ;
-    log_out << "[number of cases limit: " << global_maximum_case_count << "]" << std::endl ;
-    log_out << "[number of cases dismissed because of tied result: " << global_count_of_cases_involving_tie << "]" << std::endl ;
-    log_out << "[PLUR method ignores all but first-ranked choice]" << std::endl << std::endl << std::endl ;
+    log_out << "TEST CONDITIONS:" << std::endl ;
+    log_out << "number of choices: " << global_maximum_choice_number << std::endl ;
+    log_out << "number of ballots: " << global_maximum_ballot_number << std::endl ;
+    log_out << "number of clones (excluding original): " << global_number_of_clones << std::endl ;
+    log_out << "number of VF-match tests: " << global_vf_test_count << std::endl ;
+    log_out << "number of IIA tests: " << global_iia_test_count << std::endl ;
+    log_out << "number of clone independence tests: " << global_clone_test_count << std::endl ;
+    log_out << "number of cases limit: " << global_maximum_case_count << std::endl ;
+    log_out << "number of cases dismissed because of tied result: " << global_count_of_cases_involving_tie << std::endl ;
+    log_out << "PLUR method ignores all but first-ranked choice" << std::endl << std::endl << std::endl ;
 
 
 // -----------------------------------------------
 //  For test comparisons with VoteFair ranking,
 //  calculate and write those results.
 
-    log_out << "[test type: Matches with VoteFair ranking results]" << std::endl ;
+    log_out << "Match with VoteFair popularity ranking result?" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
         if ( global_vf_test_count > 0 )
@@ -901,14 +904,14 @@ void write_test_results( )
             calculated_vf_result_fail_match = int( ( 100 * global_count_of_vf_tests_fail_match_for_method[ method_id ] ) / global_vf_test_count ) ;
             calculated_vf_result_ties = int( ( 100 * global_count_of_vf_tests_tied_for_method[ method_id ] ) / global_vf_test_count ) ;
             calculated_vf_result_match_no_ties = int( ( 100 * global_count_of_vf_tests_match_for_method[ method_id ] ) / ( global_count_of_vf_tests_match_for_method[ method_id ] + global_count_of_vf_tests_fail_match_for_method[ method_id ] ) ) ;
-            log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tied: " << calculated_vf_result_match << "  " << calculated_vf_result_fail_match << "  " << calculated_vf_result_ties << "]" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree/tied: " << calculated_vf_result_match << "  " << calculated_vf_result_fail_match << "  " << calculated_vf_result_ties << std::endl ;
             if ( global_count_of_vf_tests_unexpected_for_method[ method_id ] > 0 )
             {
-                log_out << "[unexpected VF test results count: " << global_count_of_vf_tests_unexpected_for_method[ method_id ] << "]" << std::endl << std::endl ;
+                log_out << "unexpected VF test results count: " << global_count_of_vf_tests_unexpected_for_method[ method_id ] << std::endl << std::endl ;
             }
         } else
         {
-            log_out << "[" << global_name_for_method[ method_id ] << " has zero VF test count]" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " has zero VF test count" << std::endl ;
         }
     }
     log_out << std::endl << std::endl ;
@@ -918,7 +921,7 @@ void write_test_results( )
 //  For tests of independence of irrelevant
 //  alternatives, calculate and write those results.
 
-    log_out << "[test type: Independence of Irrelevant Alternatives (IIA)]" << std::endl ;
+    log_out << "Independence of Irrelevant Alternatives (IIA) success and failure rates:" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
         if ( global_iia_test_count > 0 )
@@ -926,14 +929,14 @@ void write_test_results( )
             calculated_iia_result_match = int( ( 100 * global_count_of_iia_tests_match_for_method[ method_id ] ) / global_iia_test_count ) ;
             calculated_iia_result_fail_match = int( ( 100 *  global_count_of_iia_tests_fail_match_for_method[ method_id ] ) / global_iia_test_count ) ;
             calculated_iia_result_ties = int( ( 100 *  global_count_of_iia_tests_tied_for_method[ method_id ] ) / global_iia_test_count ) ;
-            log_out << "[" << global_name_for_method[ method_id ] << " agree/disagree/tie: " << calculated_iia_result_match << "  " << calculated_iia_result_fail_match << "  " << calculated_iia_result_ties << "]" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree/tie: " << calculated_iia_result_match << "  " << calculated_iia_result_fail_match << "  " << calculated_iia_result_ties << std::endl ;
             if ( global_count_of_iia_tests_unexpected_for_method[ method_id ] > 0 )
             {
-                log_out << "[unexpected IIA test results count: " << global_count_of_iia_tests_unexpected_for_method[ method_id ] << "]" << std::endl << std::endl ;
+                log_out << "unexpected IIA test results count: " << global_count_of_iia_tests_unexpected_for_method[ method_id ] << std::endl << std::endl ;
             }
         } else
         {
-            log_out << "[" << global_name_for_method[ method_id ] << " has zero IIA test count]" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " has zero IIA test count]" << std::endl ;
         }
     }
     log_out << std::endl << std::endl ;
@@ -943,7 +946,7 @@ void write_test_results( )
 //  For tests of clone independence, calculate
 //  and write those results.
 
-    log_out << "[test type: Clone Independence]" << std::endl ;
+    log_out << "Clone Independence success and failure rates:" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
         if ( global_clone_test_count > 0 )
@@ -953,14 +956,14 @@ void write_test_results( )
             calculated_clone_result_ties = int( ( 100 *  global_count_of_clone_tests_tied_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_help = int( ( 100 *  global_count_of_clone_tests_clone_help_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_hurt = int( ( 100 *  global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ) / global_clone_test_count ) ;
-            log_out << "[" << global_name_for_method[ method_id ] << " agree/help/hurt/disagree_other/tie: " << calculated_clone_result_match << "  " << calculated_clone_result_fail_match << "  " << calculated_clone_result_clone_help << "  " << calculated_clone_result_clone_hurt << "  " << calculated_clone_result_ties << "]" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree/tie (help) (hurt): " << calculated_clone_result_match << "  " << calculated_clone_result_fail_match << "  " << calculated_clone_result_ties << "  (" << calculated_clone_result_clone_help << ")  (" << calculated_clone_result_clone_hurt << ")" << std::endl ;
             if ( global_count_of_clone_tests_unexpected_for_method[ method_id ] > 0 )
             {
-                log_out << "[unexpected clone test results count: " << global_count_of_clone_tests_unexpected_for_method[ method_id ] << "]" << std::endl ;
+                log_out << "unexpected clone test results count: " << global_count_of_clone_tests_unexpected_for_method[ method_id ] << std::endl ;
             }
         } else
         {
-            log_out << "[" << global_name_for_method[ method_id ] << " has zero clone test count]" ;
+            log_out << global_name_for_method[ method_id ] << " has zero clone test count" ;
         }
     }
 
