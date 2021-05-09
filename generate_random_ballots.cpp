@@ -99,17 +99,22 @@
 
 // -----------------------------------------------
 //  Change these values as needed to specify the
-//  number of ballots, the number of choices, and
-//  the number of cases (where some test consume
-//  multiple cases).
+//  number of ballots, the largest and smallest
+//  number of choices, and the number of cases
+//  for each choice count.
+//  The cases are split among multiple tests, and
+//  some cases result in ties that are unusable
+//  for comparison, so the case counts do not
+//  specify the number of tests.
 //  The number of cloned choices does not
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-const int global_maximum_case_count = 100 ;
-const int global_maximum_ballot_number = 11 ;
-const int global_maximum_choice_number = 7 ;
-const int global_number_of_clones = 3 ;
+int global_choice_count_minimum = 2 ;
+int global_choice_count_maximum = 7 ;
+int global_maximum_case_count_per_choice_count = 400 ;
+int global_maximum_ballot_number = 11 ;
+int global_number_of_clones = 3 ;
 
 
 // -----------------------------------------------
@@ -146,6 +151,16 @@ std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_plurality = "PLUR" ;
 std::string global_name_for_method_ple = "PLE" ;
 
+std::string global_full_name_for_method_votefair = "Condorcet-Kemeny (VoteFair popularity ranking)" ;
+std::string global_full_name_for_method_ipe = "Instant Pairwise Elimination (IPE)" ;
+std::string global_full_name_for_method_rcipe = "Ranked Choice Including Pairwise Elimination (RCIPE)" ;
+std::string global_full_name_for_method_irvbtr = "IRV with bottom two runoff (IRV_BTR)" ;
+std::string global_full_name_for_method_star = "Score Then Automatic Runoff (STAR) with no tactical voting" ;
+std::string global_full_name_for_method_borda = "Borda count with no tactical voting" ;
+std::string global_full_name_for_method_irv = "Instant-Runoff Voting (IRV)" ;
+std::string global_full_name_for_method_plurality = "Plurality (First Past The Post)" ;
+std::string global_full_name_for_method_ple = "Pairwise Loser Elimination (PLE) pseudo-method" ;
+
 
 // -----------------------------------------------
 //  (Do not change these numbers.)
@@ -167,6 +182,9 @@ const int global_true = 1 ;
 
 int global_case_id ;
 int global_case_type ;
+int global_case_count_limit ;
+int global_specified_choice_count ;
+int global_maximum_choice_number ;
 int global_choice_count_case_specific ;
 int global_choice_omitted ;
 int global_clone_choice_number_next ;
@@ -203,8 +221,12 @@ int pointer_number = 0 ;
 //  Declare the needed arrays.
 
 std::string global_name_for_method[ 20 ] ;
+std::string global_full_name_for_method[ 20 ] ;
 
 int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
+int calculated_vf_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
+int calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
+int calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
 
@@ -886,35 +908,9 @@ void write_test_results( )
     log_out << "number of VF-match tests: " << global_vf_test_count << std::endl ;
     log_out << "number of IIA tests: " << global_iia_test_count << std::endl ;
     log_out << "number of clone independence tests: " << global_clone_test_count << std::endl ;
-    log_out << "number of cases limit: " << global_maximum_case_count << std::endl ;
+    log_out << "number of cases limit per choice count: " << global_maximum_case_count_per_choice_count << std::endl ;
     log_out << "number of cases dismissed because of tied result: " << global_count_of_cases_involving_tie << std::endl ;
     log_out << "PLUR method ignores all but first-ranked choice" << std::endl << std::endl << std::endl ;
-
-
-// -----------------------------------------------
-//  For test comparisons with VoteFair ranking,
-//  calculate and write those results.
-
-    log_out << "Match with VoteFair popularity ranking result?" << std::endl ;
-    for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
-    {
-        if ( global_vf_test_count > 0 )
-        {
-            calculated_vf_result_match = int( ( 100 * global_count_of_vf_tests_match_for_method[ method_id ] ) / global_vf_test_count ) ;
-            calculated_vf_result_fail_match = int( ( 100 * global_count_of_vf_tests_fail_match_for_method[ method_id ] ) / global_vf_test_count ) ;
-            calculated_vf_result_ties = int( ( 100 * global_count_of_vf_tests_tied_for_method[ method_id ] ) / global_vf_test_count ) ;
-            calculated_vf_result_match_no_ties = int( ( 100 * global_count_of_vf_tests_match_for_method[ method_id ] ) / ( global_count_of_vf_tests_match_for_method[ method_id ] + global_count_of_vf_tests_fail_match_for_method[ method_id ] ) ) ;
-            log_out << global_name_for_method[ method_id ] << " agree/disagree/tied: " << calculated_vf_result_match << "  " << calculated_vf_result_fail_match << "  " << calculated_vf_result_ties << std::endl ;
-            if ( global_count_of_vf_tests_unexpected_for_method[ method_id ] > 0 )
-            {
-                log_out << "unexpected VF test results count: " << global_count_of_vf_tests_unexpected_for_method[ method_id ] << std::endl << std::endl ;
-            }
-        } else
-        {
-            log_out << global_name_for_method[ method_id ] << " has zero VF test count" << std::endl ;
-        }
-    }
-    log_out << std::endl << std::endl ;
 
 
 // -----------------------------------------------
@@ -922,11 +918,12 @@ void write_test_results( )
 //  alternatives, calculate and write those results.
 
     log_out << "Independence of Irrelevant Alternatives (IIA) success and failure rates:" << std::endl ;
-    for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+    if ( global_iia_test_count > 0 )
     {
-        if ( global_iia_test_count > 0 )
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             calculated_iia_result_match = int( ( 100 * global_count_of_iia_tests_match_for_method[ method_id ] ) / global_iia_test_count ) ;
+            calculated_iia_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_iia_result_match ;
             calculated_iia_result_fail_match = int( ( 100 *  global_count_of_iia_tests_fail_match_for_method[ method_id ] ) / global_iia_test_count ) ;
             calculated_iia_result_ties = int( ( 100 *  global_count_of_iia_tests_tied_for_method[ method_id ] ) / global_iia_test_count ) ;
             log_out << global_name_for_method[ method_id ] << " agree/disagree/tie: " << calculated_iia_result_match << "  " << calculated_iia_result_fail_match << "  " << calculated_iia_result_ties << std::endl ;
@@ -934,10 +931,10 @@ void write_test_results( )
             {
                 log_out << "unexpected IIA test results count: " << global_count_of_iia_tests_unexpected_for_method[ method_id ] << std::endl << std::endl ;
             }
-        } else
-        {
-            log_out << global_name_for_method[ method_id ] << " has zero IIA test count]" << std::endl ;
         }
+    } else
+    {
+        log_out << global_name_for_method[ method_id ] << " has zero IIA test count" << std::endl ;
     }
     log_out << std::endl << std::endl ;
 
@@ -947,11 +944,12 @@ void write_test_results( )
 //  and write those results.
 
     log_out << "Clone Independence success and failure rates:" << std::endl ;
-    for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+    if ( global_clone_test_count > 0 )
     {
-        if ( global_clone_test_count > 0 )
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             calculated_clone_result_match = int( ( 100 * global_count_of_clone_tests_match_for_method[ method_id ] ) / global_clone_test_count ) ;
+            calculated_clone_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_clone_result_match ;
             calculated_clone_result_fail_match = int( ( 100 *  global_count_of_clone_tests_fail_match_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_ties = int( ( 100 *  global_count_of_clone_tests_tied_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_help = int( ( 100 *  global_count_of_clone_tests_clone_help_for_method[ method_id ] ) / global_clone_test_count ) ;
@@ -961,13 +959,39 @@ void write_test_results( )
             {
                 log_out << "unexpected clone test results count: " << global_count_of_clone_tests_unexpected_for_method[ method_id ] << std::endl ;
             }
-        } else
-        {
-            log_out << global_name_for_method[ method_id ] << " has zero clone test count" ;
         }
+    } else
+    {
+        log_out << global_name_for_method[ method_id ] << " has zero clone test count" ;
+    }
+    log_out << std::endl << std::endl ;
+
+
+// -----------------------------------------------
+//  For test comparisons with VoteFair ranking,
+//  calculate and write those results.
+
+    log_out << "Match with VoteFair popularity ranking result?" << std::endl ;
+    if ( global_vf_test_count > 0 )
+    {
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            calculated_vf_result_match = int( ( 100 * global_count_of_vf_tests_match_for_method[ method_id ] ) / global_vf_test_count ) ;
+            calculated_vf_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_vf_result_match ;
+            calculated_vf_result_fail_match = int( ( 100 * global_count_of_vf_tests_fail_match_for_method[ method_id ] ) / global_vf_test_count ) ;
+            calculated_vf_result_ties = int( ( 100 * global_count_of_vf_tests_tied_for_method[ method_id ] ) / global_vf_test_count ) ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree/tied: " << calculated_vf_result_match << "  " << calculated_vf_result_fail_match << "  " << calculated_vf_result_ties << std::endl ;
+            if ( global_count_of_vf_tests_unexpected_for_method[ method_id ] > 0 )
+            {
+                log_out << "unexpected VF test results count: " << global_count_of_vf_tests_unexpected_for_method[ method_id ] << std::endl ;
+            }
+        }
+    } else
+    {
+        log_out << global_name_for_method[ method_id ] << " has zero VF test count" << std::endl ;
     }
 
-    log_out << std::endl ;
+    log_out << std::endl << std::endl ;
 
 
 // -----------------------------------------------
@@ -980,15 +1004,24 @@ void write_test_results( )
 
 // -----------------------------------------------
 // -----------------------------------------------
-//     do_all_tests
+//     do_all_tests_for_specified_choice_count
 //
-//  Do all the tests.
+//  Do all the tests using a specified number of
+//  choices (candidates if this is simulating
+//  a governmental election).
 //
 // -----------------------------------------------
 // -----------------------------------------------
 
 
-void do_all_tests( ) {
+void do_all_tests_for_specified_choice_count( ) {
+
+
+// -----------------------------------------------
+//  Specify the number of choices for this series
+//  of tests.
+
+    global_maximum_choice_number = global_specified_choice_count ;
 
 
 // -----------------------------------------------
@@ -1036,7 +1069,7 @@ void do_all_tests( ) {
 //  identifies which choice deserves to win
 //  according to different vote-counting methods.
 
-    for ( case_count = 1 ; case_count <= global_maximum_case_count ; case_count ++ )
+    for ( case_count = 1 ; case_count <= global_case_count_limit ; case_count ++ )
     {
         std::cout << "." ;
 
@@ -1312,7 +1345,78 @@ void do_all_tests( ) {
 
 
 // -----------------------------------------------
-//  End of function do_all_tests
+//  End of function do_all_tests_for_specified_choice_count
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
+//     write_final_results
+//
+//  Write the final results in a way that
+//  spreadsheet software can convert into charts.
+//
+// -----------------------------------------------
+// -----------------------------------------------
+
+void write_final_results( )
+{
+
+    int test_type ;
+    int method_id ;
+    int choice_count ;
+
+
+// -----------------------------------------------
+//  Write the final results in "comma-separated
+//  variables" (CSV) format.
+
+    log_out << "Summary in spreadsheet-chartable format:" << std::endl << std::endl ;
+
+    for ( test_type = 1 ; test_type <= 3 ; test_type ++ )
+    {
+        if ( test_type == 1 )
+        {
+            log_out << "Success rates for Independence of Irrelevant Alternatives (IIA)" << std::endl ;
+        } else if ( test_type == 2 )
+        {
+            log_out << "Success rates for Clone Independence" << std::endl ;
+        } else
+        {
+            log_out << "Success rates for matching the Condorcet-Kemeny method" << std::endl ;
+        }
+        for ( choice_count = global_choice_count_minimum ; choice_count <= global_choice_count_maximum ; choice_count ++ )
+        {
+            log_out << "," << choice_count ;
+        }
+        log_out << std::endl ;
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            log_out << global_full_name_for_method[ method_id ] ;
+            for ( choice_count = global_choice_count_minimum ; choice_count <= global_choice_count_maximum ; choice_count ++ )
+            {
+                if ( test_type == 1 )
+                {
+                    log_out << "," << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
+                } else if ( test_type == 2 )
+                {
+                    log_out << "," << calculated_clone_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
+                } else
+                {
+                    log_out << "," << calculated_vf_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
+                }
+            }
+            log_out << std::endl ;
+        }
+        log_out << std::endl << std::endl ;
+    }
+
+
+// -----------------------------------------------
+//  End of function write_final_results
 
     return ;
 
@@ -1339,6 +1443,15 @@ int main( ) {
     global_name_for_method[ global_method_borda ] = global_name_for_method_borda ;
     global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
+    global_full_name_for_method[ global_method_votefair ] = global_full_name_for_method_votefair ;
+    global_full_name_for_method[ global_method_ipe ] = global_full_name_for_method_ipe ;
+    global_full_name_for_method[ global_method_rcipe ] = global_full_name_for_method_rcipe ;
+    global_full_name_for_method[ global_method_star ] = global_full_name_for_method_star ;
+    global_full_name_for_method[ global_method_irv ] = global_full_name_for_method_irv ;
+    global_full_name_for_method[ global_method_irvbtr ] = global_full_name_for_method_irvbtr ;
+    global_full_name_for_method[ global_method_borda ] = global_full_name_for_method_borda ;
+    global_full_name_for_method[ global_method_ple ] = global_full_name_for_method_ple ;
+    global_full_name_for_method[ global_method_plurality ] = global_full_name_for_method_plurality ;
 
 
 // -----------------------------------------------
@@ -1348,9 +1461,39 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Do all the tests.
+//  Verify that the specified choice count
+//  maximum and minimum values are reasonable.
 
-    do_all_tests( ) ;
+    if ( global_choice_count_minimum > global_choice_count_maximum )
+    {
+        log_out << "ERROR: Choice count minimum (" << global_choice_count_minimum << ") exceeds choice count maximum (" << global_choice_count_maximum << ")" << std::endl ;
+        return 0 ;
+    } else if ( global_choice_count_minimum < 2 )
+    {
+        log_out << "ERROR: Choice count minimum (" << global_choice_count_minimum << ") is less than 2" << std::endl ;
+        return 0 ;
+    } else if ( global_choice_count_maximum > 20 )
+    {
+        log_out << "ERROR: Choice count maximum (" << global_choice_count_maximum << ") exceeds the specified array size limit of 20" << std::endl ;
+        return 0 ;
+    }
+
+
+// -----------------------------------------------
+//  Do all the tests for all the requested choice
+//  counts.
+
+    for ( global_specified_choice_count = global_choice_count_minimum ; global_specified_choice_count <= global_choice_count_maximum ; global_specified_choice_count ++ )
+    {
+        global_case_count_limit = global_maximum_case_count_per_choice_count ;
+        do_all_tests_for_specified_choice_count( ) ;
+    }
+
+
+// -----------------------------------------------
+//  Write the final results.
+
+    write_final_results( ) ;
 
 
 // -----------------------------------------------
