@@ -99,10 +99,9 @@
 
 // -----------------------------------------------
 //  Change these values as needed to specify the
-//  number of ballots, the largest and smallest
-//  number of choices, the interval between the
-//  choice counts that will be checked, and the
-//  number of cases for each choice count.
+//  number of ballots, the number of cases for
+//  each choice count, and the number of clones
+//  added during the clone independence tests.
 //  The cases are split among multiple tests, and
 //  some cases result in ties that are unusable
 //  for comparison, so the case counts do not
@@ -111,12 +110,23 @@
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-int global_choice_count_minimum = 2 ;
-int global_choice_count_maximum = 8 ;
-int global_choice_count_step_interval = 3 ;
 int global_maximum_case_count_per_choice_count = 400 ;
 int global_maximum_ballot_number = 11 ;
 int global_number_of_clones = 3 ;
+
+
+// -----------------------------------------------
+//  Declare the variables that specify which
+//  choice counts are used for the tests.
+//  NOTE:
+//  To find the code that specifies the choice
+//  counts, search for:
+//  "global_choice_count_list[ 1 ]"
+//  or
+//  "global_number_of_choice_counts_specified ="
+
+int global_number_of_choice_counts_specified ;
+int global_choice_count_list[ 20 ] ;
 
 
 // -----------------------------------------------
@@ -124,7 +134,7 @@ int global_number_of_clones = 3 ;
 //  number of digits.  This number can be changed.
 //  Note that some tests use multiple cases.
 
-const int global_minimum_case_id = 100000 ;
+int global_minimum_case_id = 100000 ;
 
 
 // -----------------------------------------------
@@ -232,7 +242,6 @@ int calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 int calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
-int global_choice_count_list[ 20 ] ;
 int global_choice_winner_all_choices_for_method[ 20 ] ;
 int global_choice_winner_from_method[ 20 ] ;
 int global_count_of_vf_tests_match_for_method[ 20 ] ;
@@ -1065,13 +1074,6 @@ void do_all_tests_for_specified_choice_count( ) {
 
 
 // -----------------------------------------------
-//  Keep track of choice counts.
-
-    global_pointer_to_choice_count_list ++ ;
-    global_choice_count_list[ global_pointer_to_choice_count_list ] = global_maximum_choice_number ;
-
-
-// -----------------------------------------------
 //  Begin a loop that handles one case.
 //  Some tests require multiple cases for each test.
 //  Each case sends ballot information to the
@@ -1319,8 +1321,16 @@ void do_all_tests_for_specified_choice_count( ) {
 //  If an independence of irrelevant alternatives
 //  test is being done, update the choice omitted
 //  number.
+//  If the number of choices is just 2, do not do
+//  the IIA test because the results would be
+//  meaningless (because it would omit one choice
+//  when there are two choices).
 
-        if ( global_case_type == global_case_all_choices )
+        if ( ( global_case_type == global_case_all_choices ) && ( global_maximum_choice_number == 2 ) )
+        {
+            global_case_type = global_case_clones_included ;
+            global_choice_omitted = 0 ;
+        } else if ( global_case_type == global_case_all_choices )
         {
             global_case_type = global_case_choice_omitted ;
             global_choice_omitted = 1 ;
@@ -1396,7 +1406,7 @@ void write_final_results( )
         {
             log_out << "Success rates for Clone Independence" << std::endl ;
         }
-        for ( pointer = 1 ; pointer <= global_pointer_to_choice_count_list ; pointer ++ )
+        for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
             log_out << "," << choice_count ;
@@ -1409,7 +1419,7 @@ void write_final_results( )
                 continue ;
             }
             log_out << global_full_name_for_method[ method_id ] ;
-            for ( pointer = 1 ; pointer <= global_pointer_to_choice_count_list ; pointer ++ )
+            for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
             {
                 choice_count = global_choice_count_list[ pointer ] ;
                 if ( test_type == 1 )
@@ -1448,6 +1458,7 @@ int main( ) {
 //  Initialization.
 
     global_case_id = global_minimum_case_id ;
+    global_choice_count_list[ 0 ] = 0 ;
     global_name_for_method[ global_method_votefair ] = global_name_for_method_votefair ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
@@ -1475,38 +1486,48 @@ int main( ) {
 
 
 // -----------------------------------------------
-//  Verify that the specified choice count
-//  maximum and minimum values, and the step value,
-//  are reasonable.
+//  Specify which choice (candidate) counts are to
+//  be tested.
 
-    if ( global_choice_count_minimum > global_choice_count_maximum )
-    {
-        log_out << "ERROR: Choice count minimum (" << global_choice_count_minimum << ") exceeds choice count maximum (" << global_choice_count_maximum << ")" << std::endl ;
-        return 0 ;
-    } else if ( global_choice_count_minimum < 2 )
-    {
-        log_out << "ERROR: Choice count minimum (" << global_choice_count_minimum << ") is less than 2" << std::endl ;
-        return 0 ;
-    } else if ( global_choice_count_maximum > 20 )
-    {
-        log_out << "ERROR: Choice count maximum (" << global_choice_count_maximum << ") exceeds the specified array size limit of 20" << std::endl ;
-        return 0 ;
-    } else if ( ( global_choice_count_step_interval < 1 ) || ( global_choice_count_step_interval > global_choice_count_maximum ) )
-    {
-        log_out << "ERROR: Choice count step interval (" << global_choice_count_step_interval << ") is unreasonably large" << std::endl ;
-        return 0 ;
-    }
+    global_choice_count_list[ 1 ] = 2 ;
+    global_choice_count_list[ 2 ] = 3 ;
+    global_choice_count_list[ 3 ] = 5 ;
+    global_choice_count_list[ 4 ] = 7 ;
+    global_choice_count_list[ 5 ] = 9 ;
+    global_number_of_choice_counts_specified = 5 ;
 
 
 // -----------------------------------------------
-//  Do all the tests for all the requested choice
-//  counts.
+//  Begin a loop that runs the tests for each
+//  requested choice count.
 
-    global_pointer_to_choice_count_list = 0 ;
-    for ( global_specified_choice_count = global_choice_count_minimum ; global_specified_choice_count <= global_choice_count_maximum ; global_specified_choice_count += global_choice_count_step_interval )
+    for ( global_pointer_to_choice_count_list = 1 ; global_pointer_to_choice_count_list <= global_number_of_choice_counts_specified ; global_pointer_to_choice_count_list ++ )
     {
+        global_specified_choice_count = global_choice_count_list[ global_pointer_to_choice_count_list ] ;
+
+
+// -----------------------------------------------
+//  Verify that the specified choice count is
+//  reasonable.  If not, exit.
+
+        if ( ( global_specified_choice_count < 2 ) || ( global_specified_choice_count > 17 ) )
+        {
+            log_out << "ERROR: Choice count (" << global_specified_choice_count << ") is unreasonable" << std::endl ;
+            return 0 ;
+        }
+
+
+// -----------------------------------------------
+//  Do the tests for the requested choice count.
+
         global_case_count_limit = global_maximum_case_count_per_choice_count ;
         do_all_tests_for_specified_choice_count( ) ;
+
+
+// -----------------------------------------------
+//  Repeat the loop to handle the next choice
+//  count.
+
     }
 
 
