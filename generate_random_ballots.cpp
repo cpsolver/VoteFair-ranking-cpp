@@ -100,8 +100,9 @@
 // -----------------------------------------------
 //  Change these values as needed to specify the
 //  number of ballots, the largest and smallest
-//  number of choices, and the number of cases
-//  for each choice count.
+//  number of choices, the interval between the
+//  choice counts that will be checked, and the
+//  number of cases for each choice count.
 //  The cases are split among multiple tests, and
 //  some cases result in ties that are unusable
 //  for comparison, so the case counts do not
@@ -111,7 +112,8 @@
 //  NONE of these values can be zero!
 
 int global_choice_count_minimum = 2 ;
-int global_choice_count_maximum = 7 ;
+int global_choice_count_maximum = 8 ;
+int global_choice_count_step_interval = 3 ;
 int global_maximum_case_count_per_choice_count = 400 ;
 int global_maximum_ballot_number = 11 ;
 int global_number_of_clones = 3 ;
@@ -144,7 +146,7 @@ const int global_method_ple = 9 ;
 std::string global_name_for_method_votefair = "VF" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
-std::string global_name_for_method_irvbtr = "IRV_BTR" ;
+std::string global_name_for_method_irvbtr = "IRV-BTR" ;
 std::string global_name_for_method_star = "STAR/NT" ;
 std::string global_name_for_method_borda = "Borda/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
@@ -192,6 +194,7 @@ int global_vf_test_count ;
 int global_iia_test_count ;
 int global_clone_test_count ;
 int global_count_of_cases_involving_tie ;
+int global_pointer_to_choice_count_list ;
 
 
 // -----------------------------------------------
@@ -229,7 +232,7 @@ int calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 int calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
-
+int global_choice_count_list[ 20 ] ;
 int global_choice_winner_all_choices_for_method[ 20 ] ;
 int global_choice_winner_from_method[ 20 ] ;
 int global_count_of_vf_tests_match_for_method[ 20 ] ;
@@ -1062,6 +1065,13 @@ void do_all_tests_for_specified_choice_count( ) {
 
 
 // -----------------------------------------------
+//  Keep track of choice counts.
+
+    global_pointer_to_choice_count_list ++ ;
+    global_choice_count_list[ global_pointer_to_choice_count_list ] = global_maximum_choice_number ;
+
+
+// -----------------------------------------------
 //  Begin a loop that handles one case.
 //  Some tests require multiple cases for each test.
 //  Each case sends ballot information to the
@@ -1368,6 +1378,7 @@ void write_final_results( )
     int test_type ;
     int method_id ;
     int choice_count ;
+    int pointer ;
 
 
 // -----------------------------------------------
@@ -1376,7 +1387,7 @@ void write_final_results( )
 
     log_out << "Summary in spreadsheet-chartable format:" << std::endl << std::endl ;
 
-    for ( test_type = 1 ; test_type <= 3 ; test_type ++ )
+    for ( test_type = 1 ; test_type <= 2 ; test_type ++ )
     {
         if ( test_type == 1 )
         {
@@ -1384,20 +1395,23 @@ void write_final_results( )
         } else if ( test_type == 2 )
         {
             log_out << "Success rates for Clone Independence" << std::endl ;
-        } else
-        {
-            log_out << "Success rates for matching the Condorcet-Kemeny method" << std::endl ;
         }
-        for ( choice_count = global_choice_count_minimum ; choice_count <= global_choice_count_maximum ; choice_count ++ )
+        for ( pointer = 1 ; pointer <= global_pointer_to_choice_count_list ; pointer ++ )
         {
+            choice_count = global_choice_count_list[ pointer ] ;
             log_out << "," << choice_count ;
         }
         log_out << std::endl ;
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            log_out << global_full_name_for_method[ method_id ] ;
-            for ( choice_count = global_choice_count_minimum ; choice_count <= global_choice_count_maximum ; choice_count ++ )
+            if ( ( method_id == global_method_ple ) || ( method_id == global_method_votefair ) )
             {
+                continue ;
+            }
+            log_out << global_full_name_for_method[ method_id ] ;
+            for ( pointer = 1 ; pointer <= global_pointer_to_choice_count_list ; pointer ++ )
+            {
+                choice_count = global_choice_count_list[ pointer ] ;
                 if ( test_type == 1 )
                 {
                     log_out << "," << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
@@ -1462,7 +1476,8 @@ int main( ) {
 
 // -----------------------------------------------
 //  Verify that the specified choice count
-//  maximum and minimum values are reasonable.
+//  maximum and minimum values, and the step value,
+//  are reasonable.
 
     if ( global_choice_count_minimum > global_choice_count_maximum )
     {
@@ -1476,6 +1491,10 @@ int main( ) {
     {
         log_out << "ERROR: Choice count maximum (" << global_choice_count_maximum << ") exceeds the specified array size limit of 20" << std::endl ;
         return 0 ;
+    } else if ( ( global_choice_count_step_interval < 1 ) || ( global_choice_count_step_interval > global_choice_count_maximum ) )
+    {
+        log_out << "ERROR: Choice count step interval (" << global_choice_count_step_interval << ") is unreasonably large" << std::endl ;
+        return 0 ;
     }
 
 
@@ -1483,7 +1502,8 @@ int main( ) {
 //  Do all the tests for all the requested choice
 //  counts.
 
-    for ( global_specified_choice_count = global_choice_count_minimum ; global_specified_choice_count <= global_choice_count_maximum ; global_specified_choice_count ++ )
+    global_pointer_to_choice_count_list = 0 ;
+    for ( global_specified_choice_count = global_choice_count_minimum ; global_specified_choice_count <= global_choice_count_maximum ; global_specified_choice_count += global_choice_count_step_interval )
     {
         global_case_count_limit = global_maximum_case_count_per_choice_count ;
         do_all_tests_for_specified_choice_count( ) ;
