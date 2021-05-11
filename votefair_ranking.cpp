@@ -9277,6 +9277,10 @@ void elim_find_fewest_first_choice( )
                 }
 //                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
 
+
+//  todo: add Approval voting counting here
+
+
                 if ( global_elimination_result_type == global_voteinfo_code_for_winner_star_voting )
                 {
                     global_star_score_count_for_choice[ actual_choice ] += global_ballot_info_repeat_count * ( global_full_choice_count - preference_level );
@@ -9931,8 +9935,18 @@ void method_star_voting( )
 //  The choice with the highest score is the
 //  winner of the Borda count method.  Write this
 //  result to allow this method to be compared.
+//  This equivalence assumes that STAR ballots and
+//  Borda-count ballots are marked honestly and
+//  with a different preference for each choice.
+//  This assumption is valid when comparing
+//  voting methods, but is not valid when counting
+//  real election ballots.  In other words, these
+//  STAR and Borda-count calculations are for
+//  comparison purposes only, and must not be used
+//  in a real poll or election where tactical
+//  voting is allowed.
 
-//  todo: debug this new code
+//  todo: verify this new code is working correctly
 
     if ( count_of_choices_with_largest_score_count == 1 )
     {
@@ -9963,7 +9977,7 @@ void method_star_voting( )
         }
         if ( global_logging_info == global_true ) { log_out << "[there is a tie at top score]" << std::endl ; } ;
 
-//  todo: need code here or revisions below ...
+//  todo: possibly add code to resolve this kind of tie
 
     }
 
