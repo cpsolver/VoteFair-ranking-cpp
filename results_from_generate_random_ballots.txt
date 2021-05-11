@@ -1,3 +1,54 @@
+Summary in spreadsheet-chartable format:
+
+Success rates for Independence of Irrelevant Alternatives (IIA)
+,2,3,5,7,9
+Instant Pairwise Elimination (IPE),0,97,88,83,79
+Ranked Choice Including Pairwise Elimination (RCIPE),0,97,82,66,73
+IRV with bottom two runoff (IRV_BTR),0,90,73,61,52
+Score Then Automatic Runoff (STAR) with no tactical voting,0,97,82,76,76
+Borda count with no tactical voting,0,84,76,66,79
+Instant-Runoff Voting (IRV),0,89,71,61,52
+Plurality (First Past The Post),0,85,90,100,94
+
+
+Success rates for Clone Independence
+,2,3,5,7,9
+Instant Pairwise Elimination (IPE),100,100,94,92,94
+Ranked Choice Including Pairwise Elimination (RCIPE),100,100,96,90,97
+IRV with bottom two runoff (IRV_BTR),67,76,80,80,97
+Score Then Automatic Runoff (STAR) with no tactical voting,53,74,71,85,73
+Borda count with no tactical voting,53,61,61,66,70
+Instant-Runoff Voting (IRV),66,76,82,80,97
+Plurality (First Past The Post),54,70,86,85,94
+
+
+
+Summary in spreadsheet-chartable format:
+
+Success rates for Independence of Irrelevant Alternatives (IIA)
+,2,5,8
+Instant Pairwise Elimination (IPE),100,88,84
+Ranked Choice Including Pairwise Elimination (RCIPE),100,83,84
+IRV with bottom two runoff (IRV_BTR),100,77,71
+Score Then Automatic Runoff (STAR) with no tactical voting,100,85,78
+Borda count with no tactical voting,0,81,76
+Instant-Runoff Voting (IRV),100,79,71
+Plurality (First Past The Post),0,94,92
+
+
+Success rates for Clone Independence
+,2,5,8
+Instant Pairwise Elimination (IPE),100,96,92
+Ranked Choice Including Pairwise Elimination (RCIPE),100,100,94
+IRV with bottom two runoff (IRV_BTR),70,83,92
+Score Then Automatic Runoff (STAR) with no tactical voting,55,68,76
+Borda count with no tactical voting,55,66,65
+Instant-Runoff Voting (IRV),69,83,92
+Plurality (First Past The Post),55,85,89
+
+
+
+
 TEST CONDITIONS:
 number of choices: 2
 number of ballots: 11
