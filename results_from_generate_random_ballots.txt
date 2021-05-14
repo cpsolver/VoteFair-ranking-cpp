@@ -1,383 +1,67 @@
 Summary in spreadsheet-chartable format:
 
 Success rates for Independence of Irrelevant Alternatives (IIA)
-,2,3,5,7,9
-Instant Pairwise Elimination (IPE),0,97,88,83,79
-Ranked Choice Including Pairwise Elimination (RCIPE),0,97,82,66,73
-IRV with bottom two runoff (IRV_BTR),0,90,73,61,52
-Score Then Automatic Runoff (STAR) with no tactical voting,0,97,82,76,76
-Borda count with no tactical voting,0,84,76,66,79
-Instant-Runoff Voting (IRV),0,89,71,61,52
-Plurality (First Past The Post),0,85,90,100,94
+,3,5,7,9
+Condorcet-Kemeny (VoteFair popularity ranking),93,90,80,61
+Instant Pairwise Elimination (IPE),93,84,80,52
+Ranked Choice Including Pairwise Elimination (RCIPE),93,83,80,44
+IRV with bottom two runoff (IRV_BTR),90,71,57,44
+Score Then Automatic Runoff (STAR) with no tactical voting,93,83,69,67
+Borda count with no tactical voting,82,88,85,79
+Instant-Runoff Voting (IRV),90,71,57,44
+Plurality (First Past The Post),87,84,100,100
 
 
 Success rates for Clone Independence
 ,2,3,5,7,9
-Instant Pairwise Elimination (IPE),100,100,94,92,94
-Ranked Choice Including Pairwise Elimination (RCIPE),100,100,96,90,97
-IRV with bottom two runoff (IRV_BTR),67,76,80,80,97
-Score Then Automatic Runoff (STAR) with no tactical voting,53,74,71,85,73
-Borda count with no tactical voting,53,61,61,66,70
-Instant-Runoff Voting (IRV),66,76,82,80,97
-Plurality (First Past The Post),54,70,86,85,94
-
-
-
-Summary in spreadsheet-chartable format:
-
-Success rates for Independence of Irrelevant Alternatives (IIA)
-,2,5,8
-Instant Pairwise Elimination (IPE),100,88,84
-Ranked Choice Including Pairwise Elimination (RCIPE),100,83,84
-IRV with bottom two runoff (IRV_BTR),100,77,71
-Score Then Automatic Runoff (STAR) with no tactical voting,100,85,78
-Borda count with no tactical voting,0,81,76
-Instant-Runoff Voting (IRV),100,79,71
-Plurality (First Past The Post),0,94,92
-
-
-Success rates for Clone Independence
-,2,5,8
-Instant Pairwise Elimination (IPE),100,96,92
-Ranked Choice Including Pairwise Elimination (RCIPE),100,100,94
-IRV with bottom two runoff (IRV_BTR),70,83,92
-Score Then Automatic Runoff (STAR) with no tactical voting,55,68,76
-Borda count with no tactical voting,55,66,65
-Instant-Runoff Voting (IRV),69,83,92
-Plurality (First Past The Post),55,85,89
-
-
-
-
-TEST CONDITIONS:
-number of choices: 2
-number of ballots: 11
-number of clones (excluding original): 3
-number of VF-match tests: 100
-number of IIA tests: 100
-number of clone independence tests: 100
-number of cases limit per choice count: 400
-number of cases dismissed because of tied result: 0
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-VF agree/disagree/tie: 0  0  100
-IPE agree/disagree/tie: 100  0  0
-RCIPE agree/disagree/tie: 100  0  0
-IRV_BTR agree/disagree/tie: 100  0  0
-STAR/NT agree/disagree/tie: 100  0  0
-Borda/NT agree/disagree/tie: 0  0  100
-IRV agree/disagree/tie: 100  0  0
-PLUR agree/disagree/tie: 0  0  100
-PLE agree/disagree/tie: 100  0  0
-
-
-Clone Independence success and failure rates:
-VF agree/disagree/tie (help) (hurt): 46  54  0  (0)  (54)
-IPE agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-IRV_BTR agree/disagree/tie (help) (hurt): 57  43  0  (0)  (43)
-STAR/NT agree/disagree/tie (help) (hurt): 46  54  0  (0)  (54)
-Borda/NT agree/disagree/tie (help) (hurt): 46  54  0  (0)  (54)
-IRV agree/disagree/tie (help) (hurt): 57  43  0  (0)  (43)
-PLUR agree/disagree/tie (help) (hurt): 46  46  8  (0)  (46)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-VF agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 100  0  0
-RCIPE agree/disagree/tied: 100  0  0
-IRV_BTR agree/disagree/tied: 100  0  0
-STAR/NT agree/disagree/tied: 100  0  0
-Borda/NT agree/disagree/tied: 100  0  0
-IRV agree/disagree/tied: 100  0  0
-PLUR agree/disagree/tied: 100  0  0
-PLE agree/disagree/tied: 100  0  0
-
-
-
-TEST CONDITIONS:
-number of choices: 3
-number of ballots: 11
-number of clones (excluding original): 3
-number of VF-match tests: 74
-number of IIA tests: 73
-number of clone independence tests: 73
-number of cases limit per choice count: 400
-number of cases dismissed because of tied result: 34
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-VF agree/disagree/tie: 98  1  0
-IPE agree/disagree/tie: 98  1  0
-RCIPE agree/disagree/tie: 98  1  0
-IRV_BTR agree/disagree/tie: 97  2  0
-STAR/NT agree/disagree/tie: 98  1  0
-Borda/NT agree/disagree/tie: 84  15  0
-IRV agree/disagree/tie: 97  2  0
-PLUR agree/disagree/tie: 86  13  0
-PLE agree/disagree/tie: 98  1  0
-
-
-Clone Independence success and failure rates:
-VF agree/disagree/tie (help) (hurt): 69  30  0  (0)  (30)
-IPE agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-IRV_BTR agree/disagree/tie (help) (hurt): 78  21  0  (0)  (21)
-STAR/NT agree/disagree/tie (help) (hurt): 68  31  0  (1)  (28)
-Borda/NT agree/disagree/tie (help) (hurt): 60  38  1  (0)  (26)
-IRV agree/disagree/tie (help) (hurt): 78  21  0  (0)  (21)
-PLUR agree/disagree/tie (help) (hurt): 68  20  10  (0)  (20)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-VF agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 98  1  0
-RCIPE agree/disagree/tied: 100  0  0
-IRV_BTR agree/disagree/tied: 98  1  0
-STAR/NT agree/disagree/tied: 98  1  0
-Borda/NT agree/disagree/tied: 86  5  8
-IRV agree/disagree/tied: 98  1  0
-PLUR agree/disagree/tied: 87  12  0
-PLE agree/disagree/tied: 98  0  1
-
-
-
-TEST CONDITIONS:
-number of choices: 4
-number of ballots: 11
-number of clones (excluding original): 3
-number of VF-match tests: 62
-number of IIA tests: 62
-number of clone independence tests: 62
-number of cases limit per choice count: 400
-number of cases dismissed because of tied result: 28
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-VF agree/disagree/tie: 88  11  0
-IPE agree/disagree/tie: 88  11  0
-RCIPE agree/disagree/tie: 85  14  0
-IRV_BTR agree/disagree/tie: 74  25  0
-STAR/NT agree/disagree/tie: 85  14  0
-Borda/NT agree/disagree/tie: 79  20  0
-IRV agree/disagree/tie: 74  25  0
-PLUR agree/disagree/tie: 80  17  1
-PLE agree/disagree/tie: 75  24  0
-
-
-Clone Independence success and failure rates:
-VF agree/disagree/tie (help) (hurt): 69  30  0  (0)  (29)
-IPE agree/disagree/tie (help) (hurt): 95  4  0  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 96  3  0  (0)  (3)
-IRV_BTR agree/disagree/tie (help) (hurt): 77  22  0  (0)  (20)
-STAR/NT agree/disagree/tie (help) (hurt): 66  33  0  (0)  (30)
-Borda/NT agree/disagree/tie (help) (hurt): 56  40  3  (0)  (22)
-IRV agree/disagree/tie (help) (hurt): 80  19  0  (0)  (19)
-PLUR agree/disagree/tie (help) (hurt): 75  9  14  (0)  (9)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-VF agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 95  3  1
-RCIPE agree/disagree/tied: 85  14  0
-IRV_BTR agree/disagree/tied: 75  24  0
-STAR/NT agree/disagree/tied: 91  8  0
-Borda/NT agree/disagree/tied: 82  3  14
-IRV agree/disagree/tied: 74  25  0
-PLUR agree/disagree/tied: 69  30  0
-PLE agree/disagree/tied: 75  0  24
-
-
-
-TEST CONDITIONS:
-number of choices: 5
-number of ballots: 11
-number of clones (excluding original): 3
-number of VF-match tests: 54
-number of IIA tests: 53
-number of clone independence tests: 53
-number of cases limit per choice count: 400
-number of cases dismissed because of tied result: 26
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-VF agree/disagree/tie: 88  11  0
-IPE agree/disagree/tie: 84  15  0
-RCIPE agree/disagree/tie: 84  15  0
-IRV_BTR agree/disagree/tie: 66  33  0
-STAR/NT agree/disagree/tie: 84  15  0
-Borda/NT agree/disagree/tie: 86  13  0
-IRV agree/disagree/tie: 66  33  0
-PLUR agree/disagree/tie: 86  11  1
-PLE agree/disagree/tie: 58  41  0
-
-
-Clone Independence success and failure rates:
-VF agree/disagree/tie (help) (hurt): 71  28  0  (0)  (24)
-IPE agree/disagree/tie (help) (hurt): 94  3  1  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 94  5  0  (0)  (5)
-IRV_BTR agree/disagree/tie (help) (hurt): 81  18  0  (0)  (11)
-STAR/NT agree/disagree/tie (help) (hurt): 73  26  0  (0)  (26)
-Borda/NT agree/disagree/tie (help) (hurt): 56  32  11  (0)  (18)
-IRV agree/disagree/tie (help) (hurt): 81  18  0  (0)  (11)
-PLUR agree/disagree/tie (help) (hurt): 86  9  3  (0)  (9)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-VF agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 88  9  1
-RCIPE agree/disagree/tied: 92  7  0
-IRV_BTR agree/disagree/tied: 75  24  0
-STAR/NT agree/disagree/tied: 96  3  0
-Borda/NT agree/disagree/tied: 83  9  7
-IRV agree/disagree/tied: 75  24  0
-PLUR agree/disagree/tied: 66  33  0
-PLE agree/disagree/tied: 59  0  40
-
-
-
-TEST CONDITIONS:
-number of choices: 6
-number of ballots: 11
-number of clones (excluding original): 3
-number of VF-match tests: 47
-number of IIA tests: 46
-number of clone independence tests: 46
-number of cases limit per choice count: 400
-number of cases dismissed because of tied result: 29
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-VF agree/disagree/tie: 71  28  0
-IPE agree/disagree/tie: 71  28  0
-RCIPE agree/disagree/tie: 67  32  0
-IRV_BTR agree/disagree/tie: 52  47  0
-STAR/NT agree/disagree/tie: 69  30  0
-Borda/NT agree/disagree/tie: 78  21  0
-IRV agree/disagree/tie: 52  47  0
-PLUR agree/disagree/tie: 91  8  0
-PLE agree/disagree/tie: 43  56  0
-
-
-Clone Independence success and failure rates:
-VF agree/disagree/tie (help) (hurt): 82  17  0  (0)  (13)
-IPE agree/disagree/tie (help) (hurt): 95  4  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 93  6  0  (0)  (6)
-IRV_BTR agree/disagree/tie (help) (hurt): 86  13  0  (0)  (6)
-STAR/NT agree/disagree/tie (help) (hurt): 76  23  0  (2)  (13)
-Borda/NT agree/disagree/tie (help) (hurt): 73  19  6  (0)  (8)
-IRV agree/disagree/tie (help) (hurt): 89  10  0  (0)  (6)
-PLUR agree/disagree/tie (help) (hurt): 93  4  2  (0)  (4)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-VF agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 85  12  2
-RCIPE agree/disagree/tied: 78  21  0
-IRV_BTR agree/disagree/tied: 72  27  0
-STAR/NT agree/disagree/tied: 85  14  0
-Borda/NT agree/disagree/tied: 74  14  10
-IRV agree/disagree/tied: 70  29  0
-PLUR agree/disagree/tied: 59  40  0
-PLE agree/disagree/tied: 31  0  68
-
-
-
-TEST CONDITIONS:
-number of choices: 7
-number of ballots: 11
-number of clones (excluding original): 3
-number of VF-match tests: 43
-number of IIA tests: 42
-number of clone independence tests: 42
-number of cases limit per choice count: 400
-number of cases dismissed because of tied result: 18
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-VF agree/disagree/tie: 90  9  0
-IPE agree/disagree/tie: 90  9  0
-RCIPE agree/disagree/tie: 83  16  0
-IRV_BTR agree/disagree/tie: 54  45  0
-STAR/NT agree/disagree/tie: 80  19  0
-Borda/NT agree/disagree/tie: 80  19  0
-IRV agree/disagree/tie: 54  45  0
-PLUR agree/disagree/tie: 90  9  0
-PLE agree/disagree/tie: 47  52  0
-
-
-Clone Independence success and failure rates:
-VF agree/disagree/tie (help) (hurt): 80  19  0  (0)  (16)
-IPE agree/disagree/tie (help) (hurt): 95  4  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 95  4  0  (0)  (4)
-IRV_BTR agree/disagree/tie (help) (hurt): 78  21  0  (0)  (16)
-STAR/NT agree/disagree/tie (help) (hurt): 78  21  0  (2)  (11)
-Borda/NT agree/disagree/tie (help) (hurt): 66  23  9  (0)  (9)
-IRV agree/disagree/tie (help) (hurt): 78  21  0  (0)  (16)
-PLUR agree/disagree/tie (help) (hurt): 85  2  11  (0)  (2)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-VF agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 90  4  4
-RCIPE agree/disagree/tied: 93  6  0
-IRV_BTR agree/disagree/tied: 79  20  0
-STAR/NT agree/disagree/tied: 90  9  0
-Borda/NT agree/disagree/tied: 74  13  11
-IRV agree/disagree/tied: 79  20  0
-PLUR agree/disagree/tied: 58  41  0
-PLE agree/disagree/tied: 23  0  76
-
-
-Summary in spreadsheet-chartable format:
-
-Success rates for Independence of Irrelevant Alternatives (IIA)
-,2,3,4,5,6,7
-Condorcet-Kemeny (VoteFair popularity ranking),0,98,88,88,71,90
-Instant Pairwise Elimination (IPE),100,98,88,84,71,90
-Ranked Choice Including Pairwise Elimination (RCIPE),100,98,85,84,67,83
-IRV with bottom two runoff (IRV_BTR),100,97,74,66,52,54
-Score Then Automatic Runoff (STAR) with no tactical voting,100,98,85,84,69,80
-Borda count with no tactical voting,0,84,79,86,78,80
-Instant-Runoff Voting (IRV),100,97,74,66,52,54
-Plurality (First Past The Post),0,86,80,86,91,90
-Pairwise Loser Elimination (PLE) pseudo-method,100,98,75,58,43,47
-
-
-Success rates for Clone Independence
-,2,3,4,5,6,7
-Condorcet-Kemeny (VoteFair popularity ranking),46,69,69,71,82,80
-Instant Pairwise Elimination (IPE),100,100,95,94,95,95
-Ranked Choice Including Pairwise Elimination (RCIPE),100,100,96,94,93,95
-IRV with bottom two runoff (IRV_BTR),57,78,77,81,86,78
-Score Then Automatic Runoff (STAR) with no tactical voting,46,68,66,73,76,78
-Borda count with no tactical voting,46,60,56,56,73,66
-Instant-Runoff Voting (IRV),57,78,80,81,89,78
-Plurality (First Past The Post),46,68,75,86,93,85
-Pairwise Loser Elimination (PLE) pseudo-method,0,0,0,0,0,0
-
-
-Success rates for matching the Condorcet-Kemeny method
-,2,3,4,5,6,7
-Condorcet-Kemeny (VoteFair popularity ranking),100,100,100,100,100,100
-Instant Pairwise Elimination (IPE),100,98,95,88,85,90
-Ranked Choice Including Pairwise Elimination (RCIPE),100,100,85,92,78,93
-IRV with bottom two runoff (IRV_BTR),100,98,75,75,72,79
-Score Then Automatic Runoff (STAR) with no tactical voting,100,98,91,96,85,90
-Borda count with no tactical voting,100,86,82,83,74,74
-Instant-Runoff Voting (IRV),100,98,74,75,70,79
-Plurality (First Past The Post),100,87,69,66,59,58
-Pairwise Loser Elimination (PLE) pseudo-method,100,98,75,59,31,23
+Condorcet-Kemeny (VoteFair popularity ranking),52,63,71,90,76
+Instant Pairwise Elimination (IPE),100,100,96,92,82
+Ranked Choice Including Pairwise Elimination (RCIPE),100,98,98,97,94
+IRV with bottom two runoff (IRV_BTR),71,78,82,90,91
+Score Then Automatic Runoff (STAR) with no tactical voting,100,93,86,85,88
+Borda count with no tactical voting,52,58,57,70,76
+Instant-Runoff Voting (IRV),70,78,84,90,91
+Plurality (First Past The Post),56,63,73,97,91
+
+
+Scatter plot for IIA and Clone Independence
+Condorcet-Kemeny (VoteFair popularity ranking) 2 choices,0,52
+Condorcet-Kemeny (VoteFair popularity ranking) 3 choices,93,63
+Condorcet-Kemeny (VoteFair popularity ranking) 5 choices,90,71
+Condorcet-Kemeny (VoteFair popularity ranking) 7 choices,80,90
+Condorcet-Kemeny (VoteFair popularity ranking) 9 choices,61,76
+Instant Pairwise Elimination (IPE) 2 choices,0,100
+Instant Pairwise Elimination (IPE) 3 choices,93,100
+Instant Pairwise Elimination (IPE) 5 choices,84,96
+Instant Pairwise Elimination (IPE) 7 choices,80,92
+Instant Pairwise Elimination (IPE) 9 choices,52,82
+Ranked Choice Including Pairwise Elimination (RCIPE) 2 choices,0,100
+Ranked Choice Including Pairwise Elimination (RCIPE) 3 choices,93,98
+Ranked Choice Including Pairwise Elimination (RCIPE) 5 choices,83,98
+Ranked Choice Including Pairwise Elimination (RCIPE) 7 choices,80,97
+Ranked Choice Including Pairwise Elimination (RCIPE) 9 choices,44,94
+IRV with bottom two runoff (IRV_BTR) 2 choices,0,71
+IRV with bottom two runoff (IRV_BTR) 3 choices,90,78
+IRV with bottom two runoff (IRV_BTR) 5 choices,71,82
+IRV with bottom two runoff (IRV_BTR) 7 choices,57,90
+IRV with bottom two runoff (IRV_BTR) 9 choices,44,91
+Score Then Automatic Runoff (STAR) with no tactical voting 2 choices,0,100
+Score Then Automatic Runoff (STAR) with no tactical voting 3 choices,93,93
+Score Then Automatic Runoff (STAR) with no tactical voting 5 choices,83,86
+Score Then Automatic Runoff (STAR) with no tactical voting 7 choices,69,85
+Score Then Automatic Runoff (STAR) with no tactical voting 9 choices,67,88
+Borda count with no tactical voting 2 choices,0,52
+Borda count with no tactical voting 3 choices,82,58
+Borda count with no tactical voting 5 choices,88,57
+Borda count with no tactical voting 7 choices,85,70
+Borda count with no tactical voting 9 choices,79,76
+Instant-Runoff Voting (IRV) 2 choices,0,70
+Instant-Runoff Voting (IRV) 3 choices,90,78
+Instant-Runoff Voting (IRV) 5 choices,71,84
+Instant-Runoff Voting (IRV) 7 choices,57,90
+Instant-Runoff Voting (IRV) 9 choices,44,91
+Plurality (First Past The Post) 2 choices,0,56
+Plurality (First Past The Post) 3 choices,87,63
+Plurality (First Past The Post) 5 choices,84,73
+Plurality (First Past The Post) 7 choices,100,97
+Plurality (First Past The Post) 9 choices,100,91
