@@ -110,9 +110,9 @@
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-int global_maximum_case_count_per_choice_count = 400 ;
+int global_maximum_case_count_per_choice_count = 50 ;
 int global_maximum_ballot_number = 11 ;
-int global_number_of_clones = 3 ;
+int global_number_of_clones = 2 ;
 
 
 // -----------------------------------------------
@@ -163,15 +163,15 @@ std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_plurality = "PLUR" ;
 std::string global_name_for_method_ple = "PLE" ;
 
-std::string global_full_name_for_method_votefair = "Condorcet-Kemeny (VoteFair popularity ranking)" ;
-std::string global_full_name_for_method_ipe = "Instant Pairwise Elimination (IPE)" ;
-std::string global_full_name_for_method_rcipe = "Ranked Choice Including Pairwise Elimination (RCIPE)" ;
-std::string global_full_name_for_method_irvbtr = "IRV with bottom two runoff (IRV_BTR)" ;
-std::string global_full_name_for_method_star = "Score Then Automatic Runoff (STAR) with no tactical voting" ;
-std::string global_full_name_for_method_borda = "Borda count with no tactical voting" ;
-std::string global_full_name_for_method_irv = "Instant-Runoff Voting (IRV)" ;
-std::string global_full_name_for_method_plurality = "Plurality (First Past The Post)" ;
-std::string global_full_name_for_method_ple = "Pairwise Loser Elimination (PLE) pseudo-method" ;
+std::string global_letter_for_method_votefair = "K" ;
+std::string global_letter_for_method_ipe = "E" ;
+std::string global_letter_for_method_rcipe = "R" ;
+std::string global_letter_for_method_irvbtr = "T" ;
+std::string global_letter_for_method_star = "S" ;
+std::string global_letter_for_method_borda = "B" ;
+std::string global_letter_for_method_irv = "I" ;
+std::string global_letter_for_method_plurality = "P" ;
+std::string global_letter_for_method_ple = "L" ;
 
 
 // -----------------------------------------------
@@ -234,7 +234,8 @@ int pointer_number = 0 ;
 //  Declare the needed arrays.
 
 std::string global_name_for_method[ 20 ] ;
-std::string global_full_name_for_method[ 20 ] ;
+std::string global_letter_for_method[ 20 ] ;
+std::string global_color_hex_for_method[ 20 ] ;
 
 int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
 int calculated_vf_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
@@ -793,7 +794,19 @@ void handle_calculated_results( )
 //  time).  The test fails if the winner changes
 //  as a result of omitting any choice other than
 //  the original winning choice.
+//  If the test involves only two choices, the
+//  test is always successful because removing
+//  either choice will always change the result,
+//  which is not a meaningful result.
 
+    if ( ( global_maximum_choice_number == 2 ) && ( global_case_type == global_case_all_choices ) )
+    {
+        global_iia_test_count ++ ;
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            global_count_of_iia_tests_match_for_method[ method_id ] ++ ;
+        }
+    }
     if ( global_case_type == global_case_choice_omitted_final )
     {
         global_iia_test_count ++ ;
@@ -1396,47 +1409,57 @@ void write_final_results( )
 //  variables" (CSV) format.
 
     log_out << "Summary in spreadsheet-chartable format:" << std::endl << std::endl ;
-
+    log_out << "IIA" << ",Clone Ind." << std::endl ;
     for ( test_type = 1 ; test_type <= 2 ; test_type ++ )
     {
-        if ( test_type == 1 )
-        {
-            log_out << "Success rates for Independence of Irrelevant Alternatives (IIA)" << std::endl ;
-        } else if ( test_type == 2 )
-        {
-            log_out << "Success rates for Clone Independence" << std::endl ;
-        }
         for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
-            log_out << "," << choice_count ;
         }
-        log_out << std::endl ;
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            if ( ( method_id == global_method_ple ) || ( method_id == global_method_votefair ) )
+            if ( method_id == global_method_ple )
             {
                 continue ;
             }
-            log_out << global_full_name_for_method[ method_id ] ;
             for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
             {
                 choice_count = global_choice_count_list[ pointer ] ;
-                if ( test_type == 1 )
-                {
-                    log_out << "," << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
-                } else if ( test_type == 2 )
-                {
-                    log_out << "," << calculated_clone_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
-                } else
-                {
-                    log_out << "," << calculated_vf_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
-                }
+                log_out << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
+                log_out << "," << calculated_clone_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
+                log_out << "," << global_letter_for_method[ method_id ] << "," << choice_count << " choices" << std::endl ;
             }
-            log_out << std::endl ;
         }
-        log_out << std::endl << std::endl ;
     }
+    log_out << std::endl << std::endl ;
+
+
+// -----------------------------------------------
+//  Write the data in SVG format to generate a
+//  scatter plot.
+
+    global_color_hex_for_method[ global_method_votefair ] = "#ff0000" ;
+    global_color_hex_for_method[ global_method_ipe ] = "#00ff00" ;
+    global_color_hex_for_method[ global_method_rcipe ] = "#0000ff" ;
+    global_color_hex_for_method[ global_method_irvbtr ] = "#ffa500" ;
+    global_color_hex_for_method[ global_method_star ] = "#800000" ;
+    global_color_hex_for_method[ global_method_borda ] = "#808080" ;
+    global_color_hex_for_method[ global_method_irv ] = "#ff00ff" ;
+    global_color_hex_for_method[ global_method_plurality ] = "#0000ff" ;
+    global_color_hex_for_method[ global_method_ple ] = "#000000" ;
+
+    log_out << "SVG code for scatter plot for IIA and Clone Independence" << std::endl << std::endl ;
+
+    log_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << "><g>" << std::endl ;
+    for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+    {
+        for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
+        {
+            choice_count = global_choice_count_list[ pointer ] ;
+            log_out << "<text style=" << '"' << "font-size:3px;" << '"' << "><tspan x=" << '"' << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 -calculated_clone_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ) << '"' << ">" << global_letter_for_method[ method_id ] << choice_count << "</tspan></text>" << std:: endl ;
+        }
+    }
+    log_out << "</g></svg>" << std::endl ;
 
 
 // -----------------------------------------------
@@ -1468,15 +1491,15 @@ int main( ) {
     global_name_for_method[ global_method_borda ] = global_name_for_method_borda ;
     global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
-    global_full_name_for_method[ global_method_votefair ] = global_full_name_for_method_votefair ;
-    global_full_name_for_method[ global_method_ipe ] = global_full_name_for_method_ipe ;
-    global_full_name_for_method[ global_method_rcipe ] = global_full_name_for_method_rcipe ;
-    global_full_name_for_method[ global_method_star ] = global_full_name_for_method_star ;
-    global_full_name_for_method[ global_method_irv ] = global_full_name_for_method_irv ;
-    global_full_name_for_method[ global_method_irvbtr ] = global_full_name_for_method_irvbtr ;
-    global_full_name_for_method[ global_method_borda ] = global_full_name_for_method_borda ;
-    global_full_name_for_method[ global_method_ple ] = global_full_name_for_method_ple ;
-    global_full_name_for_method[ global_method_plurality ] = global_full_name_for_method_plurality ;
+    global_letter_for_method[ global_method_votefair ] = global_letter_for_method_votefair ;
+    global_letter_for_method[ global_method_ipe ] = global_letter_for_method_ipe ;
+    global_letter_for_method[ global_method_rcipe ] = global_letter_for_method_rcipe ;
+    global_letter_for_method[ global_method_star ] = global_letter_for_method_star ;
+    global_letter_for_method[ global_method_irv ] = global_letter_for_method_irv ;
+    global_letter_for_method[ global_method_irvbtr ] = global_letter_for_method_irvbtr ;
+    global_letter_for_method[ global_method_borda ] = global_letter_for_method_borda ;
+    global_letter_for_method[ global_method_ple ] = global_letter_for_method_ple ;
+    global_letter_for_method[ global_method_plurality ] = global_letter_for_method_plurality ;
 
 
 // -----------------------------------------------
