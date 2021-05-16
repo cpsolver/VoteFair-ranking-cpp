@@ -408,16 +408,17 @@ const int global_voteinfo_code_for_number_of_representation_levels_to_compute = 
 const int global_voteinfo_code_for_request_text_output = -49 ;
 const int global_voteinfo_code_for_request_instant_runoff_voting = -50 ;
 const int global_voteinfo_code_for_request_instant_pairwise_elimination = -51 ;
-const int global_voteinfo_code_for_request_irv_minus_pairwise_losers = -52 ;
+const int global_voteinfo_code_for_request_rcipe_voting = -52 ;
 const int global_voteinfo_code_for_winner_instant_runoff_voting = -53 ;
 const int global_voteinfo_code_for_winner_instant_pairwise_elimination = -54 ;
-const int global_voteinfo_code_for_winner_irv_minus_pairwise_losers = -55 ;
+const int global_voteinfo_code_for_winner_rcipe_voting = -55 ;
 const int global_voteinfo_code_for_request_star_voting = -56 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
 const int global_voteinfo_code_for_request_pairwise_loser_elimination = -58 ;
 const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 const int global_voteinfo_code_for_winner_borda_count = -61 ;
+const int global_voteinfo_code_for_flag_as_interesting = -62 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -552,13 +553,14 @@ std::string global_string_tied = "tied_unknown" ;
 int global_elimination_result_type ;
 int global_choice_to_eliminate ;
 int global_true_or_false_request_instant_pairwise_elimination ;
-int global_true_or_false_request_instant_runoff_minus_pairwise_losers ;
+int global_true_or_false_request_rcipe_voting ;
 int global_true_or_false_request_instant_runoff_voting ;
 int global_true_or_false_request_star_voting ;
 int global_true_or_false_request_pairwise_loser_elimination ;
 int global_true_or_false_find_largest_not_smallest ;
 int global_true_or_false_find_pairwise_opposition_not_support ;
 int global_true_or_false_request_irv_with_bottom_two_runoff ;
+int global_count_irv_rounds_with_ties ;
 
 int global_integer_count_for_choice[ 99 ] ;
 int global_list_of_choices_with_largest_or_smallest_count[ 99 ] ;
@@ -864,7 +866,7 @@ void do_initialization( )
 //  methods.
 
     global_true_or_false_request_instant_pairwise_elimination = global_false ;
-    global_true_or_false_request_instant_runoff_minus_pairwise_losers = global_false ;
+    global_true_or_false_request_rcipe_voting = global_false ;
     global_true_or_false_request_instant_runoff_voting = global_false ;
     global_true_or_false_request_star_voting = global_false ;
     global_true_or_false_request_pairwise_loser_elimination = global_false ;
@@ -1863,18 +1865,19 @@ void check_vote_info_numbers( )
 
 
 // -----------------------------------------------
-//  Handle the code for a request to calculate
-//  instant-runoff voting (IRV), or
-//  instant pairwise elimination (IPE), or
-//  IRV plus pairwise loser elimination, or
-//  STAR (Score Then Automatic Runoff).
+//  Handle the code for requests to calculate
+//  elimination-based voting methods such as
+//  RCIPE (Ranked Choice Including Pairwise
+//  Elimination), (IPE) Instant Pairwise
+//  Elimination, or for comparison purposes,
+//  IRV or STAR.
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_pairwise_elimination )
         {
             global_true_or_false_request_instant_pairwise_elimination = global_true ;
-        } else if ( current_vote_info_number == global_voteinfo_code_for_request_irv_minus_pairwise_losers )
+        } else if ( current_vote_info_number == global_voteinfo_code_for_request_rcipe_voting )
         {
-            global_true_or_false_request_instant_runoff_minus_pairwise_losers = global_true ;
+            global_true_or_false_request_rcipe_voting = global_true ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_runoff_voting )
         {
             global_true_or_false_request_instant_runoff_voting = global_true ;
@@ -9467,7 +9470,7 @@ void method_ranked_choice_including_pairwise_elimination( )
 //  Do initialization.
 
     global_elimination_type_requested = "RCIPE" ;
-    global_elimination_result_type = global_voteinfo_code_for_winner_irv_minus_pairwise_losers ;
+    global_elimination_result_type = global_voteinfo_code_for_winner_rcipe_voting ;
     elim_initialize( ) ;
 
 
@@ -9723,6 +9726,10 @@ void method_instant_runoff_voting( )
             if ( actual_choice != global_actual_choice_at_top_of_full_popularity_ranking )
             {
                 if ( global_logging_info == global_true ) { log_out << "\n[IRV disagrees with VoteFair ranking]" << std::endl ; } ;
+                if ( global_count_irv_rounds_with_ties < 1 )
+                {
+                    put_next_result_info_number( global_voteinfo_code_for_flag_as_interesting ) ;
+                }
             }
             if ( global_true_or_false_request_irv_with_bottom_two_runoff == global_true )
             {
@@ -9755,7 +9762,8 @@ void method_instant_runoff_voting( )
                 elim_choice_to_eliminate( ) ;
                 continue ;
             }
-            if ( global_logging_info == global_true ) { log_out << "[more than one choice has the smallest first-choice count]" << std::endl ; } ;
+            global_count_irv_rounds_with_ties ++ ;
+            if ( global_logging_info == global_true ) { log_out << "[IRV, more than one choice has the smallest first-choice count]" << std::endl ; } ;
         }
 
 
@@ -10172,10 +10180,10 @@ void calc_eliminate_methods() {
 
 // -----------------------------------------------
 //  If requested, find the winner according to
-//  instant runoff plus pairwise loser elimination
+//  Ranked Choice Including Pairwise Elimination
 //  (RCIPE).
 
-    if ( global_true_or_false_request_instant_runoff_minus_pairwise_losers == global_true )
+    if ( global_true_or_false_request_rcipe_voting == global_true )
     {
         method_ranked_choice_including_pairwise_elimination( ) ;
         winner_rcipe = global_output_results[ global_pointer_to_output_results - 1 ] ;
