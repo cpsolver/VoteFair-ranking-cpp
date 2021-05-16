@@ -111,7 +111,7 @@
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-int global_maximum_case_count_per_choice_count = 50 ;
+int global_maximum_case_count_per_choice_count = 20 ;
 int global_maximum_ballot_number = 11 ;
 int global_number_of_clones = 2 ;
 
@@ -318,6 +318,12 @@ std::ofstream log_out ;
 //  results.
 
 std::ifstream calc_results ;
+
+
+// -----------------------------------------------
+//  Declare an output file for the scatter plot.
+
+std::ofstream svg_out ;
 
 
 // -----------------------------------------------
@@ -1459,19 +1465,22 @@ void write_final_results( )
 //  Write the data in SVG format to generate a
 //  scatter plot.
 
-    global_color_hex_for_method[ global_method_votefair ] = "#ff0000" ;
+    svg_out.open ( "generated_svg_scatter_plot.svg" , std::ios::out ) ;
+
+// color finder: https://html-color.codes
+
+    global_color_hex_for_method[ global_method_votefair ] = "#000000" ;
     global_color_hex_for_method[ global_method_ipe ] = "#00ff00" ;
-    global_color_hex_for_method[ global_method_rcipe ] = "#0000ff" ;
+    global_color_hex_for_method[ global_method_rcipe ] = "#00ffff" ;
     global_color_hex_for_method[ global_method_irvbtr ] = "#ffa500" ;
     global_color_hex_for_method[ global_method_star ] = "#800000" ;
-    global_color_hex_for_method[ global_method_borda ] = "#808080" ;
+    global_color_hex_for_method[ global_method_borda ] = "#0000ff" ;
     global_color_hex_for_method[ global_method_irv ] = "#ff00ff" ;
-    global_color_hex_for_method[ global_method_plurality ] = "#000000" ;
+    global_color_hex_for_method[ global_method_plurality ] = "#ff0000" ;
     global_color_hex_for_method[ global_method_ple ] = "#000ff0" ;
+//    global_color_hex_for_method[ global_method_approval ] = "#000ff0" ;
 
-    log_out << "SVG code for scatter plot for IIA and Clone Independence" << std::endl << std::endl ;
-
-    log_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << "><g>" << std::endl ;
+    svg_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << "><g>" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
         if ( method_id == global_method_ple )
@@ -1484,15 +1493,16 @@ void write_final_results( )
             choice_count = global_choice_count_list[ pointer ] ;
             if ( previous_choice_count > 0 )
             {
-                log_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
+                svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
             }
-            log_out << "<text style=" << '"' << "font-size:3px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << ">" << global_letter_for_method[ method_id ] << choice_count << "</tspan></text>" << std:: endl ;
+            svg_out << "<text style=" << '"' << "font-size:3px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << ">" << global_letter_for_method[ method_id ] << choice_count << "</tspan></text>" << std:: endl ;
             previous_choice_count = choice_count ;
         }
     }
-    log_out << "</g>" << std::endl ;
-    log_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer2" << '"' << " inkscape:label=" << '"' << "Layer 2" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g><rect rectstyle=" << '"' << "fill:none;stroke-width:0.3;stroke-linecap:round;stroke-opacity:1;stroke:#000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round" << '"' << " width=" << '"' << "10" << '"' << " height=" << '"' << "100" << '"' << " x=" << '"' << "0" << '"' << " y=" << '"' << "0" << '"' << " /></g>" << std::endl ;
-    log_out << "</svg>" << std::endl ;
+    svg_out << "</g>" << std::endl ;
+    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer3" << '"' << " inkscape:label=" << '"' << "Layer 3" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 50,50 50,0 100,0 100,50 50,50" << '"' << "/></g>" << std::endl ;
+//    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer2" << '"' << " inkscape:label=" << '"' << "Layer 2" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g><rect rectstyle=" << '"' << "fill:none;stroke-width:0.3;stroke-linecap:round;stroke-opacity:1;stroke:#000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round" << '"' << " width=" << '"' << "10" << '"' << " height=" << '"' << "100" << '"' << " x=" << '"' << "0" << '"' << " y=" << '"' << "0" << '"' << " /></g>" << std::endl ;
+    svg_out << "</svg>" << std::endl ;
 
 
 // -----------------------------------------------
@@ -1547,10 +1557,13 @@ int main( ) {
 
     global_choice_count_list[ 1 ] = 2 ;
     global_choice_count_list[ 2 ] = 3 ;
-    global_choice_count_list[ 3 ] = 5 ;
-    global_choice_count_list[ 4 ] = 7 ;
-    global_choice_count_list[ 5 ] = 9 ;
-    global_number_of_choice_counts_specified = 5 ;
+    global_choice_count_list[ 3 ] = 4 ;
+    global_choice_count_list[ 4 ] = 5 ;
+    global_choice_count_list[ 5 ] = 6 ;
+    global_choice_count_list[ 6 ] = 7 ;
+    global_choice_count_list[ 7 ] = 8 ;
+    global_choice_count_list[ 8 ] = 9 ;
+    global_number_of_choice_counts_specified = 8 ;
 
 
 // -----------------------------------------------
