@@ -93,6 +93,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <random>
 #include <chrono>
 
@@ -205,6 +206,7 @@ int global_iia_test_count ;
 int global_clone_test_count ;
 int global_count_of_cases_involving_tie ;
 int global_pointer_to_choice_count_list ;
+int global_flag_as_interesting ;
 
 
 // -----------------------------------------------
@@ -228,6 +230,7 @@ int choice_number = 0 ;
 int ranking_level = 0 ;
 int position_number = 0 ;
 int pointer_number = 0 ;
+float float_number = 0.0 ;
 
 
 // -----------------------------------------------
@@ -239,8 +242,10 @@ std::string global_color_hex_for_method[ 20 ] ;
 
 int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
 int calculated_vf_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
-int calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
-int calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
+int global_calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
+float global_calculated_iia_result_match_with_tenths[ 20 ][ 20 ] ;
+int global_calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
+float global_calculated_clone_result_match_with_tenths[ 20 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
 int global_choice_winner_all_choices_for_method[ 20 ] ;
@@ -280,7 +285,7 @@ std::string global_string_voteinfo_code_for_preference_level = "-12" ;
 
 std::string global_voteinfo_code_for_request_instant_runoff_voting = "-50" ;
 std::string global_voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
-std::string global_voteinfo_code_for_request_irv_minus_pairwise_losers = "-52" ;
+std::string global_voteinfo_code_for_request_rcipe_voting = "-52" ;
 std::string global_voteinfo_code_for_request_star_voting = "-56" ;
 std::string global_voteinfo_code_for_request_pairwise_loser_elimination = "-58" ;
 
@@ -294,11 +299,12 @@ const int global_voteinfo_code_for_end_of_plurality_results = -37 ;
 const int global_voteinfo_code_for_plurality_count = -38 ;
 const int global_voteinfo_code_for_winner_instant_runoff_voting = -53 ;
 const int global_voteinfo_code_for_winner_instant_pairwise_elimination = -54 ;
-const int global_voteinfo_code_for_winner_irv_minus_pairwise_losers = -55 ;
+const int global_voteinfo_code_for_winner_rcipe_voting = -55 ;
 const int global_voteinfo_code_for_winner_star_voting = -57 ;
 const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 const int global_voteinfo_code_for_winner_borda_count = -61 ;
+const int global_voteinfo_code_for_flag_as_interesting = -62 ;
 
 
 // -----------------------------------------------
@@ -601,6 +607,10 @@ void handle_calculated_results( )
             {
                 count_position_at_start_of_votefair_popularity_sequence = count_of_result_codes ;
 
+            } else if ( current_result_code == global_voteinfo_code_for_flag_as_interesting )
+            {
+                global_flag_as_interesting ++ ;
+
             } else if ( current_result_code == global_voteinfo_code_for_choice )
             {
                 count_position_at_choice_number = count_of_result_codes ;
@@ -620,7 +630,7 @@ void handle_calculated_results( )
                 global_choice_winner_from_method[ global_method_ipe ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_ipe ] << " " << global_choice_winner_from_method[ global_method_ipe ] << "]" ;
 
-            } else if ( previous_result_code == global_voteinfo_code_for_winner_irv_minus_pairwise_losers )
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_rcipe_voting )
             {
                 global_choice_winner_from_method[ global_method_rcipe ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_rcipe ] << " " << global_choice_winner_from_method[ global_method_rcipe ] << "]" ;
@@ -875,6 +885,11 @@ void handle_calculated_results( )
             log_out << "[very]" ;
         }
     }
+    if ( global_flag_as_interesting > 0 )
+    {
+        log_out << "[flagged_interesting]" ;
+        global_flag_as_interesting = 0 ;
+    }
 
 
 // -----------------------------------------------
@@ -948,7 +963,9 @@ void write_test_results( )
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             calculated_iia_result_match = int( ( 100 * global_count_of_iia_tests_match_for_method[ method_id ] ) / global_iia_test_count ) ;
-            calculated_iia_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_iia_result_match ;
+            global_calculated_iia_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_iia_result_match ;
+            float_number = global_count_of_iia_tests_match_for_method[ method_id ] ;
+            global_calculated_iia_result_match_with_tenths[ method_id ][ global_maximum_choice_number ] = ( int( ( 1000.0 * float_number ) / global_iia_test_count ) ) / 10.0 ;
             calculated_iia_result_fail_match = int( ( 100 *  global_count_of_iia_tests_fail_match_for_method[ method_id ] ) / global_iia_test_count ) ;
             calculated_iia_result_ties = int( ( 100 *  global_count_of_iia_tests_tied_for_method[ method_id ] ) / global_iia_test_count ) ;
             log_out << global_name_for_method[ method_id ] << " agree/disagree/tie: " << calculated_iia_result_match << "  " << calculated_iia_result_fail_match << "  " << calculated_iia_result_ties << std::endl ;
@@ -974,7 +991,9 @@ void write_test_results( )
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             calculated_clone_result_match = int( ( 100 * global_count_of_clone_tests_match_for_method[ method_id ] ) / global_clone_test_count ) ;
-            calculated_clone_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_clone_result_match ;
+            global_calculated_clone_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_clone_result_match ;
+            float_number = global_count_of_clone_tests_match_for_method[ method_id ] ;
+            global_calculated_clone_result_match_with_tenths[ method_id ][ global_maximum_choice_number ] = ( int( ( 1000.0 * float_number ) / global_clone_test_count ) ) / 10.0 ;
             calculated_clone_result_fail_match = int( ( 100 *  global_count_of_clone_tests_fail_match_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_ties = int( ( 100 *  global_count_of_clone_tests_tied_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_help = int( ( 100 *  global_count_of_clone_tests_clone_help_for_method[ method_id ] ) / global_clone_test_count ) ;
@@ -1151,7 +1170,7 @@ void do_all_tests_for_specified_choice_count( ) {
         outfile << global_string_voteinfo_code_for_case_number << " " << global_case_id << std::endl ;
         outfile << global_voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
         outfile << global_voteinfo_code_for_request_instant_runoff_voting << std::endl ;
-        outfile << global_voteinfo_code_for_request_irv_minus_pairwise_losers << std::endl ;
+        outfile << global_voteinfo_code_for_request_rcipe_voting << std::endl ;
         outfile << global_voteinfo_code_for_request_star_voting << std::endl ;
         outfile << global_voteinfo_code_for_request_pairwise_loser_elimination << std::endl ;
         outfile << global_string_voteinfo_code_for_question_number << " " << global_question_number << std::endl ;
@@ -1401,6 +1420,7 @@ void write_final_results( )
     int test_type ;
     int method_id ;
     int choice_count ;
+    int previous_choice_count ;
     int pointer ;
 
 
@@ -1425,8 +1445,9 @@ void write_final_results( )
             for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
             {
                 choice_count = global_choice_count_list[ pointer ] ;
-                log_out << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
-                log_out << "," << calculated_clone_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ;
+                log_out << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] ;
+                log_out << "," ;
+                log_out << global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ;
                 log_out << "," << global_letter_for_method[ method_id ] << "," << choice_count << " choices" << std::endl ;
             }
         }
@@ -1445,21 +1466,33 @@ void write_final_results( )
     global_color_hex_for_method[ global_method_star ] = "#800000" ;
     global_color_hex_for_method[ global_method_borda ] = "#808080" ;
     global_color_hex_for_method[ global_method_irv ] = "#ff00ff" ;
-    global_color_hex_for_method[ global_method_plurality ] = "#0000ff" ;
-    global_color_hex_for_method[ global_method_ple ] = "#000000" ;
+    global_color_hex_for_method[ global_method_plurality ] = "#000000" ;
+    global_color_hex_for_method[ global_method_ple ] = "#000ff0" ;
 
     log_out << "SVG code for scatter plot for IIA and Clone Independence" << std::endl << std::endl ;
 
-    log_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << "><g>" << std::endl ;
+    log_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << "><g>" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
+        if ( method_id == global_method_ple )
+        {
+            continue ;
+        }
+        previous_choice_count = 0 ;
         for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
-            log_out << "<text style=" << '"' << "font-size:3px;" << '"' << "><tspan x=" << '"' << calculated_iia_result_match_for_method_and_choice_count[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 -calculated_clone_result_match_for_method_and_choice_count[ method_id ][ choice_count ] ) << '"' << ">" << global_letter_for_method[ method_id ] << choice_count << "</tspan></text>" << std:: endl ;
+            if ( previous_choice_count > 0 )
+            {
+                log_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
+            }
+            log_out << "<text style=" << '"' << "font-size:3px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << ">" << global_letter_for_method[ method_id ] << choice_count << "</tspan></text>" << std:: endl ;
+            previous_choice_count = choice_count ;
         }
     }
-    log_out << "</g></svg>" << std::endl ;
+    log_out << "</g>" << std::endl ;
+    log_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer2" << '"' << " inkscape:label=" << '"' << "Layer 2" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g><rect rectstyle=" << '"' << "fill:none;stroke-width:0.3;stroke-linecap:round;stroke-opacity:1;stroke:#000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round" << '"' << " width=" << '"' << "10" << '"' << " height=" << '"' << "100" << '"' << " x=" << '"' << "0" << '"' << " y=" << '"' << "0" << '"' << " /></g>" << std::endl ;
+    log_out << "</svg>" << std::endl ;
 
 
 // -----------------------------------------------
