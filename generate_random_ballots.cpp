@@ -1,7 +1,9 @@
 //  generate_random_ballots.cpp
 //
 //  This program generates random ballots for use with the
-//  votefair_ranking.cpp code.
+//  votefair_ranking.cpp code, or other vote-counting
+//  software that uses numeric codes to supply ballots
+//  and numeric codes to indicate winners.
 //  See the ABOUT section for details.
 //
 //
@@ -22,7 +24,7 @@
 //
 //  VERSION
 //
-//  Version 2.1
+//  Version 2.2
 //
 //
 // -----------------------------------------------
@@ -111,7 +113,7 @@
 //  include the original similar choice.
 //  NONE of these values can be zero!
 
-int global_maximum_case_count_per_choice_count = 20 ;
+int global_maximum_case_count_per_choice_count = 200 ;
 int global_maximum_ballot_number = 11 ;
 int global_number_of_clones = 2 ;
 
@@ -143,36 +145,28 @@ int global_minimum_case_id = 100000 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 9 ;
-const int global_method_votefair = 1 ;
+int global_number_of_methods = 10 ;
+const int global_method_kemeny = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
 const int global_method_irvbtr = 4 ;
 const int global_method_star = 5 ;
-const int global_method_borda = 6 ;
-const int global_method_irv = 7 ;
-const int global_method_plurality = 8 ;
-const int global_method_ple = 9 ;
+const int global_method_irv = 6 ;
+const int global_method_borda = 7 ;
+const int global_method_approval = 8 ;
+const int global_method_plurality = 9 ;
+const int global_method_ple = 10 ;
 
-std::string global_name_for_method_votefair = "VF" ;
+std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
 std::string global_name_for_method_irvbtr = "IRV-BTR" ;
-std::string global_name_for_method_star = "STAR/NT" ;
-std::string global_name_for_method_borda = "Borda/NT" ;
+std::string global_name_for_method_star = "STAR/sim/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
-std::string global_name_for_method_plurality = "PLUR" ;
+std::string global_name_for_method_borda = "Borda/NT" ;
+std::string global_name_for_method_approval = "Appr/NT" ;
+std::string global_name_for_method_plurality = "Plur" ;
 std::string global_name_for_method_ple = "PLE" ;
-
-std::string global_letter_for_method_votefair = "K" ;
-std::string global_letter_for_method_ipe = "E" ;
-std::string global_letter_for_method_rcipe = "R" ;
-std::string global_letter_for_method_irvbtr = "T" ;
-std::string global_letter_for_method_star = "S" ;
-std::string global_letter_for_method_borda = "B" ;
-std::string global_letter_for_method_irv = "I" ;
-std::string global_letter_for_method_plurality = "P" ;
-std::string global_letter_for_method_ple = "L" ;
 
 
 // -----------------------------------------------
@@ -237,7 +231,6 @@ float float_number = 0.0 ;
 //  Declare the needed arrays.
 
 std::string global_name_for_method[ 20 ] ;
-std::string global_letter_for_method[ 20 ] ;
 std::string global_color_hex_for_method[ 20 ] ;
 
 int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
@@ -305,6 +298,7 @@ const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 const int global_voteinfo_code_for_winner_borda_count = -61 ;
 const int global_voteinfo_code_for_flag_as_interesting = -62 ;
+const int global_voteinfo_code_for_winner_approval_voting = -63 ;
 
 
 // -----------------------------------------------
@@ -623,13 +617,13 @@ void handle_calculated_results( )
 
             } else if ( ( count_of_result_codes == count_position_at_start_of_votefair_popularity_sequence + 2 ) && ( count_of_result_codes == count_position_at_choice_number + 1 ) )
             {
-                global_choice_winner_from_method[ global_method_votefair ] = current_result_code ;
-                log_out << "[" << global_name_for_method[ global_method_votefair ] << " " << global_choice_winner_from_method[ global_method_votefair ] << "]" ;
+                global_choice_winner_from_method[ global_method_kemeny ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_kemeny ] << " " << global_choice_winner_from_method[ global_method_kemeny ] << "]" ;
 
             } else if ( ( current_result_code == global_voteinfo_code_for_tie ) && ( count_of_result_codes == count_position_at_start_of_votefair_popularity_sequence + 3 ) )
             {
-                global_choice_winner_from_method[ global_method_votefair ] = 0 ;
-                log_out << "[" << global_name_for_method[ global_method_votefair ] << "_tie]" ;
+                global_choice_winner_from_method[ global_method_kemeny ] = 0 ;
+                log_out << "[" << global_name_for_method[ global_method_kemeny ] << "_tie]" ;
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_pairwise_elimination )
             {
@@ -660,6 +654,11 @@ void handle_calculated_results( )
             {
                 global_choice_winner_from_method[ global_method_star ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_star ] << " " << global_choice_winner_from_method[ global_method_star ] << "]" ;
+
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_approval_voting )
+            {
+                global_choice_winner_from_method[ global_method_approval ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_approval ] << " " << global_choice_winner_from_method[ global_method_approval ] << "]" ;
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_pairwise_loser_elimination )
             {
@@ -717,7 +716,7 @@ void handle_calculated_results( )
 //  ignored because this would not be a meaningful
 //  test.
 
-    if ( ( global_case_type == global_case_all_choices ) && ( ( global_choice_winner_from_method[ global_method_votefair ] < 1 ) || ( global_choice_winner_from_method[ global_method_plurality ] < 1 ) || ( global_choice_winner_from_method[ global_method_irv ] < 1 ) ) )
+    if ( ( global_case_type == global_case_all_choices ) && ( ( global_choice_winner_from_method[ global_method_kemeny ] < 1 ) || ( global_choice_winner_from_method[ global_method_plurality ] < 1 ) || ( global_choice_winner_from_method[ global_method_irv ] < 1 ) ) )
     {
         global_count_of_cases_involving_tie ++ ;
         global_case_type = global_case_ignored ;
@@ -749,7 +748,7 @@ void handle_calculated_results( )
         global_vf_test_count ++ ;
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method[ global_method_votefair ] )
+            if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method[ global_method_kemeny ] )
             {
                 global_count_of_vf_tests_match_for_method[ method_id ] ++ ;
             } else if ( global_choice_winner_from_method[ method_id ] > 0 )
@@ -883,10 +882,10 @@ void handle_calculated_results( )
 // -----------------------------------------------
 //  Identify interesting cases:
 
-    if ( ( global_choice_winner_from_method[ global_method_ple ] < 0 ) && ( global_choice_winner_from_method[ global_method_rcipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_ipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_irv ] > 0 ) && ( global_choice_winner_from_method[ global_method_votefair ] == global_choice_winner_from_method[ global_method_rcipe ] ) && ( global_choice_winner_from_method[ global_method_rcipe ] != global_choice_winner_from_method[ global_method_irv ] ) )
+    if ( ( global_choice_winner_from_method[ global_method_ple ] < 0 ) && ( global_choice_winner_from_method[ global_method_rcipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_ipe ] > 0 ) && ( global_choice_winner_from_method[ global_method_irv ] > 0 ) && ( global_choice_winner_from_method[ global_method_kemeny ] == global_choice_winner_from_method[ global_method_rcipe ] ) && ( global_choice_winner_from_method[ global_method_rcipe ] != global_choice_winner_from_method[ global_method_irv ] ) )
     {
         log_out << "[interesting]" ;
-        if ( global_choice_winner_from_method[ global_method_plurality ] != global_choice_winner_from_method[ global_method_votefair ] )
+        if ( global_choice_winner_from_method[ global_method_plurality ] != global_choice_winner_from_method[ global_method_kemeny ] )
         {
             log_out << "[very]" ;
         }
@@ -1435,13 +1434,10 @@ void write_final_results( )
 //  variables" (CSV) format.
 
     log_out << "Summary in spreadsheet-chartable format:" << std::endl << std::endl ;
-    log_out << "IIA" << ",Clone Ind." << std::endl ;
-    for ( test_type = 1 ; test_type <= 2 ; test_type ++ )
+    log_out << "Choices,Method,IIA,Clone Ind." << std::endl ;
+    for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
     {
-        for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
-        {
-            choice_count = global_choice_count_list[ pointer ] ;
-        }
+        choice_count = global_choice_count_list[ pointer ] ;
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
             if ( method_id == global_method_ple )
@@ -1451,10 +1447,11 @@ void write_final_results( )
             for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
             {
                 choice_count = global_choice_count_list[ pointer ] ;
+                log_out << choice_count << " choices," << global_name_for_method[ method_id ] << "," ;
                 log_out << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] ;
                 log_out << "," ;
                 log_out << global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ;
-                log_out << "," << global_letter_for_method[ method_id ] << "," << choice_count << " choices" << std::endl ;
+                log_out << std::endl ;
             }
         }
     }
@@ -1469,16 +1466,16 @@ void write_final_results( )
 
 // color finder: https://html-color.codes
 
-    global_color_hex_for_method[ global_method_votefair ] = "#000000" ;
+    global_color_hex_for_method[ global_method_kemeny ] = "#800080" ;
     global_color_hex_for_method[ global_method_ipe ] = "#00ff00" ;
-    global_color_hex_for_method[ global_method_rcipe ] = "#00ffff" ;
-    global_color_hex_for_method[ global_method_irvbtr ] = "#ffa500" ;
-    global_color_hex_for_method[ global_method_star ] = "#800000" ;
-    global_color_hex_for_method[ global_method_borda ] = "#0000ff" ;
-    global_color_hex_for_method[ global_method_irv ] = "#ff00ff" ;
+    global_color_hex_for_method[ global_method_rcipe ] = "#0000ff" ;
+    global_color_hex_for_method[ global_method_star ] = "#c4aead" ;
+    global_color_hex_for_method[ global_method_borda ] = "#00ffff" ;
+    global_color_hex_for_method[ global_method_irvbtr ] = "#ff00ff" ;
+    global_color_hex_for_method[ global_method_irv ] = "#ffa500" ;
     global_color_hex_for_method[ global_method_plurality ] = "#ff0000" ;
     global_color_hex_for_method[ global_method_ple ] = "#000ff0" ;
-//    global_color_hex_for_method[ global_method_approval ] = "#000ff0" ;
+    global_color_hex_for_method[ global_method_approval ] = "#9400d3" ;
 
     svg_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << "><g>" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
@@ -1493,14 +1490,17 @@ void write_final_results( )
             choice_count = global_choice_count_list[ pointer ] ;
             if ( previous_choice_count > 0 )
             {
-                svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
+                svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
             }
-            svg_out << "<text style=" << '"' << "font-size:3px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << ">" << global_letter_for_method[ method_id ] << choice_count << "</tspan></text>" << std:: endl ;
+            if ( ( choice_count == 2 ) || ( choice_count == global_choice_count_list[ global_number_of_choice_counts_specified ] ) )
+            {
+                svg_out << "<text style=" << '"' << "font-size:1px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << ">" << global_name_for_method[ method_id ] << "," << choice_count << "</tspan></text>" << std:: endl ;
+            }
             previous_choice_count = choice_count ;
         }
     }
     svg_out << "</g>" << std::endl ;
-    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer3" << '"' << " inkscape:label=" << '"' << "Layer 3" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 50,50 50,0 100,0 100,50 50,50" << '"' << "/></g>" << std::endl ;
+    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer3" << '"' << " inkscape:label=" << '"' << "Layer 3" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 50,50 50,0 100,0 100,50 50,50" << '"' << "/></g>" << std::endl ;
 //    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer2" << '"' << " inkscape:label=" << '"' << "Layer 2" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g><rect rectstyle=" << '"' << "fill:none;stroke-width:0.3;stroke-linecap:round;stroke-opacity:1;stroke:#000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round" << '"' << " width=" << '"' << "10" << '"' << " height=" << '"' << "100" << '"' << " x=" << '"' << "0" << '"' << " y=" << '"' << "0" << '"' << " /></g>" << std::endl ;
     svg_out << "</svg>" << std::endl ;
 
@@ -1525,24 +1525,16 @@ int main( ) {
 
     global_case_id = global_minimum_case_id ;
     global_choice_count_list[ 0 ] = 0 ;
-    global_name_for_method[ global_method_votefair ] = global_name_for_method_votefair ;
+    global_name_for_method[ global_method_kemeny ] = global_name_for_method_kemeny ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
-    global_name_for_method[ global_method_star ] = global_name_for_method_star ;
-    global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
     global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
+    global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
+    global_name_for_method[ global_method_star ] = global_name_for_method_star ;
     global_name_for_method[ global_method_borda ] = global_name_for_method_borda ;
-    global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
+    global_name_for_method[ global_method_approval ] = global_name_for_method_approval ;
     global_name_for_method[ global_method_plurality ] = global_name_for_method_plurality ;
-    global_letter_for_method[ global_method_votefair ] = global_letter_for_method_votefair ;
-    global_letter_for_method[ global_method_ipe ] = global_letter_for_method_ipe ;
-    global_letter_for_method[ global_method_rcipe ] = global_letter_for_method_rcipe ;
-    global_letter_for_method[ global_method_star ] = global_letter_for_method_star ;
-    global_letter_for_method[ global_method_irv ] = global_letter_for_method_irv ;
-    global_letter_for_method[ global_method_irvbtr ] = global_letter_for_method_irvbtr ;
-    global_letter_for_method[ global_method_borda ] = global_letter_for_method_borda ;
-    global_letter_for_method[ global_method_ple ] = global_letter_for_method_ple ;
-    global_letter_for_method[ global_method_plurality ] = global_letter_for_method_plurality ;
+    global_name_for_method[ global_method_ple ] = global_name_for_method_ple ;
 
 
 // -----------------------------------------------
