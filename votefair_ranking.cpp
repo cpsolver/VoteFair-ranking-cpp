@@ -73,8 +73,7 @@
 //  developments.
 //
 //  Version 6.10 - In 2020 Richard Fobes added
-//  the calc_eliminate_one_choice_each_round
-//  function to calculate methods that eliminate
+//  functions to calculate methods that eliminate
 //  one choice (candidate) at a time.
 //
 //  Version 6.20 - In early 2021 Richard Fobes
@@ -93,9 +92,9 @@
 //  The components of VoteFair Ranking that are implemented here are
 //  briefly described below in the ABOUT section.
 //
-//  The following sample code executes this software under a typical
-//  Windows environment with the g++ compiler and the mingw32 library
-//  already installed.
+//  The following sample code compiles and executes this software
+//  under a typical Windows environment with the g++ compiler and
+//  the mingw32 library already installed.
 //
 //      path=C:\Program Files (x86)\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin\
 //
@@ -419,6 +418,7 @@ const int global_voteinfo_code_for_winner_pairwise_loser_elimination = -59 ;
 const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 const int global_voteinfo_code_for_winner_borda_count = -61 ;
 const int global_voteinfo_code_for_flag_as_interesting = -62 ;
+const int global_voteinfo_code_for_winner_approval_voting = -63 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -560,7 +560,10 @@ int global_true_or_false_request_pairwise_loser_elimination ;
 int global_true_or_false_find_largest_not_smallest ;
 int global_true_or_false_find_pairwise_opposition_not_support ;
 int global_true_or_false_request_irv_with_bottom_two_runoff ;
+int global_true_or_false_request_approval_voting ;
 int global_count_irv_rounds_with_ties ;
+int global_choice_with_largest_approval_count ;
+int global_choice_borda_count_winner ;
 
 int global_integer_count_for_choice[ 99 ] ;
 int global_list_of_choices_with_largest_or_smallest_count[ 99 ] ;
@@ -573,6 +576,8 @@ int global_loss_count_for_choice[ 99 ] ;
 int global_list_of_top_ranked_choices[ 99 ] ;
 int global_list_of_choices_with_fewest_first_choice_counts[ 99 ] ;
 int global_star_score_count_for_choice[ 99 ] ;
+int global_approval_count_for_choice[ 99 ] ;
+int global_approval_half_count_for_choice[ 99 ] ;
 
 const int global_maximum_fraction_denominator = 10 ;
 
@@ -9169,6 +9174,8 @@ void method_instant_pairwise_elimination( )
 //  ballots are Score (rating, not ranking)
 //  ballots and calculates the score for each
 //  choice.
+//  Also if requested, this function does counting
+//  to simulate Approval voting.
 //
 // -----------------------------------------------
 // -----------------------------------------------
@@ -9194,6 +9201,9 @@ void elim_find_fewest_first_choice( )
     int smallest_first_choice_count ;
     int sum_of_all_first_choice_counts ;
     int count_of_top_ranked_continuing_choices ;
+    int ranking_level_approval ;
+    int ranking_level_disapproval ;
+    int integer_half_full_choice_count ;
 
 
 // -----------------------------------------------
@@ -9203,6 +9213,27 @@ void elim_find_fewest_first_choice( )
     for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
     {
         global_first_choice_count_for_choice[ actual_choice ] = 0 ;
+    }
+
+
+// -----------------------------------------------
+//  If approval voting is requested, determine
+//  the ranking levels that determine whether a
+//  ranking counts as approval or disapproval.
+//  Reminder: Preference level 1 is highest,
+//  not lowest.
+
+    if ( global_true_or_false_request_approval_voting == global_true )
+    {
+        integer_half_full_choice_count = int( global_full_choice_count / 2.0 ) ;
+        ranking_level_approval = integer_half_full_choice_count ;
+        if ( ( integer_half_full_choice_count * 2 ) < global_full_choice_count )
+        {
+            ranking_level_disapproval = ranking_level_approval + 2 ;
+        } else
+        {
+            ranking_level_disapproval = ranking_level_approval + 1 ;
+        }
     }
 
 
@@ -9280,9 +9311,21 @@ void elim_find_fewest_first_choice( )
                 }
 //                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is at preference level " << preference_level << "]" << std::endl ; } ;
 
-
-//  todo: add Approval voting counting here
-
+                if ( global_true_or_false_request_approval_voting == global_true )
+                {
+                    if ( preference_level <= ranking_level_approval )
+                    {
+                        global_approval_count_for_choice[ actual_choice ] ++ ;
+                        if ( global_logging_info == global_true ) { log_out << "[approval for choice " << actual_choice << " at ranking level " << preference_level << "]" << std::endl ; } ;
+                    } else if ( preference_level >= ranking_level_disapproval )
+                    {
+                        if ( global_logging_info == global_true ) { log_out << "[disapproval for choice " << actual_choice << " at ranking level " << preference_level << "]" << std::endl ; } ;
+                    } else
+                    {
+                        global_approval_half_count_for_choice[ actual_choice ] ++ ;
+                        if ( global_logging_info == global_true ) { log_out << "[split approval/disapproval for choice " << actual_choice << " at ranking level " << preference_level << "]" << std::endl ; } ;
+                    }
+                }
 
                 if ( global_elimination_result_type == global_voteinfo_code_for_winner_star_voting )
                 {
@@ -9900,6 +9943,9 @@ void method_star_voting( )
     int count_of_choices_with_largest_score_count ;
     int count_of_choices_with_second_largest_score_count ;
     int winner_of_elimination_rounds ;
+    int largest_approval_count ;
+    int choice_with_largest_approval_count ;
+    int count_of_choices_with_largest_approval_count ;
 
 
 // -----------------------------------------------
@@ -9914,6 +9960,42 @@ void method_star_voting( )
 //  Calculate "score" counts.
 
     elim_find_fewest_first_choice( ) ;
+
+
+// -----------------------------------------------
+//  If Approval voting is requested, calculate the
+//  Approval winner, and report the result.
+
+    if ( global_true_or_false_request_approval_voting == global_true )
+    {
+        largest_approval_count = 0 ;
+        choice_with_largest_approval_count = 0 ;
+        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        {
+            global_approval_count_for_choice[ actual_choice ] = global_approval_count_for_choice[ actual_choice ] + int( global_approval_half_count_for_choice[ actual_choice ] / 2.0 ) ;
+            if ( global_approval_count_for_choice[ actual_choice ] > largest_approval_count )
+            {
+                largest_approval_count = global_approval_count_for_choice[ actual_choice ] ;
+                choice_with_largest_approval_count = actual_choice ;
+                count_of_choices_with_largest_approval_count = 1 ;
+                if ( global_logging_info == global_true ) { log_out << "[top approval count for choice " << actual_choice << " is " << global_approval_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+            } else if ( global_approval_count_for_choice[ actual_choice ] == largest_approval_count )
+            {
+                choice_with_largest_approval_count = actual_choice ;
+                count_of_choices_with_largest_approval_count ++ ;
+                if ( global_logging_info == global_true ) { log_out << "[top approval count (again) for choice " << actual_choice << " is " << global_approval_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+            }
+        }
+        if ( count_of_choices_with_largest_approval_count == 1 )
+        {
+            global_choice_with_largest_approval_count = choice_with_largest_approval_count ;
+            if ( global_logging_info == global_true ) { log_out << "[Approval winner is choice " << choice_with_largest_approval_count << "]" << std::endl ; } ;
+        } else
+        {
+            global_choice_with_largest_approval_count = global_voteinfo_code_for_tie ;
+            if ( global_logging_info == global_true ) { log_out << "[Approval voting, result is a tie]" << std::endl ; } ;
+        }
+    }
 
 
 // -----------------------------------------------
@@ -9954,15 +10036,13 @@ void method_star_voting( )
 //  in a real poll or election where tactical
 //  voting is allowed.
 
-//  todo: verify this new code is working correctly
-
     if ( count_of_choices_with_largest_score_count == 1 )
     {
-        put_next_result_info_number( global_voteinfo_code_for_winner_borda_count ) ;
-        put_next_result_info_number( choice_with_largest_score ) ;
+        global_choice_borda_count_winner = choice_with_largest_score ;
         if ( global_logging_info == global_true ) { log_out << "[Borda count winner is choice " << convert_integer_to_text( choice_with_largest_score ) << "]" << std::endl ; } ;
     } else
     {
+        global_choice_borda_count_winner = global_voteinfo_code_for_tie ;
         if ( global_logging_info == global_true ) { log_out << "[Borda count has tied result]" << std::endl ; } ;
     }
 
@@ -10220,11 +10300,18 @@ void calc_eliminate_methods() {
 
 // -----------------------------------------------
 //  If requested, find the winner according to
-//  STAR voting.
+//  STAR voting, and also Approval voting and
+//  the Borda count.
 
     if ( global_true_or_false_request_star_voting == global_true )
     {
+        global_true_or_false_request_approval_voting = global_true ;
         method_star_voting( ) ;
+        put_next_result_info_number( global_voteinfo_code_for_winner_approval_voting ) ;
+        put_next_result_info_number( global_choice_with_largest_approval_count ) ;
+        put_next_result_info_number( global_voteinfo_code_for_winner_borda_count ) ;
+        put_next_result_info_number( global_choice_borda_count_winner ) ;
+        global_true_or_false_request_approval_voting = global_false ;
     }
 
 
