@@ -1563,6 +1563,7 @@ void write_final_results( )
             if ( previous_choice_count > 0 )
             {
                 svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
+                svg_out << "<circle style=" << '"' << "fill:" << global_color_hex_for_method[ method_id ] << ";stroke:none;fill-opacity:1" << '"' << " id=" << '"' << global_name_for_method[ method_id ] << '"' << " cx=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " cy=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << " r=" << '"' << "0.6" << '"' << " />" << std::endl ;
             }
             if ( ( choice_count == 2 ) || ( choice_count == global_choice_count_list[ global_number_of_choice_counts_specified ] ) )
             {
