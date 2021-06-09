@@ -1495,56 +1495,16 @@ void write_final_results( )
 
 // color finder: https://html-color.codes
 
-// from a suggested palette: #e41a1c #377eb8 #4daf4a #984ea3 #ff7f00 #ffff33 #a65628 #f781bf #999999'
-
-    global_color_hex_for_method[ global_method_kemeny ] = "#ff7f00" ;
-    global_color_hex_for_method[ global_method_ipe ] = "#377eb8" ;
-    global_color_hex_for_method[ global_method_rcipe ] = "#4daf4a" ;
-    global_color_hex_for_method[ global_method_star ] = "#984ea3" ;
-    global_color_hex_for_method[ global_method_borda ] = "#e41a1c" ;
-    global_color_hex_for_method[ global_method_irvbtr ] = "#ffff00" ;
-    global_color_hex_for_method[ global_method_irv ] = "#f451a7" ;
-    global_color_hex_for_method[ global_method_plurality ] = "#a65628" ;
-    global_color_hex_for_method[ global_method_approval ] = "#808080" ;
-    global_color_hex_for_method[ global_method_ple ] = "#999999" ;
-
-// blue: 004586
-// gold: ffd320
-// red/orange: ff420e
-// dark green: 579d1c
-// brown/purple: 7e0021
-
-// aquamarine/teal: 7fffd4
-// tourquoiseblue/cyan: 00ffef
-// orchid: ba55d3
-// deeppink: ff1493
-// springbud/lime green: a7fc00
-
-// sandybrown/tan: f4a460
-// deepskyblue: 00bfff
-
-//    global_color_hex_for_method[ global_method_kemeny ] = "#579d1c" ;
-//    global_color_hex_for_method[ global_method_ipe ] = "#ffd320" ;
-//    global_color_hex_for_method[ global_method_rcipe ] = "#004586" ;
-//    global_color_hex_for_method[ global_method_star ] = "#00ffef" ;
-//    global_color_hex_for_method[ global_method_borda ] = "#7e0021" ;
-//    global_color_hex_for_method[ global_method_irvbtr ] = "#a7fc00" ;
-//    global_color_hex_for_method[ global_method_irv ] = "#ff420e" ;
-//    global_color_hex_for_method[ global_method_plurality ] = "#ba55d3" ;
-//    global_color_hex_for_method[ global_method_ple ] = "#ff1493" ;
-//    global_color_hex_for_method[ global_method_approval ] = "#7fffd4" ;
-
-//  older colors:
-//    global_color_hex_for_method[ global_method_kemeny ] = "#800080" ;
-//    global_color_hex_for_method[ global_method_ipe ] = "#00ff00" ;
-//    global_color_hex_for_method[ global_method_rcipe ] = "#0000ff" ;
-//    global_color_hex_for_method[ global_method_star ] = "#c4aead" ;
-//    global_color_hex_for_method[ global_method_borda ] = "#00ffff" ;
-//    global_color_hex_for_method[ global_method_irvbtr ] = "#ff00ff" ;
-//    global_color_hex_for_method[ global_method_irv ] = "#ffa500" ;
-//    global_color_hex_for_method[ global_method_plurality ] = "#ff0000" ;
-//    global_color_hex_for_method[ global_method_ple ] = "#000ff0" ;
-//    global_color_hex_for_method[ global_method_approval ] = "#9400d3" ;
+    global_color_hex_for_method[ global_method_kemeny ] = "#377eb8" ; // blue
+    global_color_hex_for_method[ global_method_ipe ] = "#4daf4a" ; // green
+    global_color_hex_for_method[ global_method_rcipe ] = "#f451a7" ; // pinkish magenta
+    global_color_hex_for_method[ global_method_star ] = "#a65628" ; // brown
+    global_color_hex_for_method[ global_method_borda ] = "#e41a1c" ; // red
+    global_color_hex_for_method[ global_method_irvbtr ] = "#ff7f00" ; // orange
+    global_color_hex_for_method[ global_method_irv ] = "#984ea3" ; // purple
+    global_color_hex_for_method[ global_method_plurality ] = "#808080" ; // grey
+    global_color_hex_for_method[ global_method_approval ] = "#dbdb00" ; // yellow
+    global_color_hex_for_method[ global_method_ple ] = "#999999" ; // unused
 
     svg_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << std::endl ;
     svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer3" << '"' << " inkscape:label=" << '"' << "Layer 3" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 0,0 100,0 100,100 0,100 0,0" << '"' << "/></g>" << std::endl ;
