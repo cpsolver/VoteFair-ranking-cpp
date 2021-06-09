@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 10 ;
+int global_number_of_tests_per_choice_count = 1000 ;
 
 
 // -----------------------------------------------
@@ -147,7 +147,7 @@ int global_minimum_case_id = 100000 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 10 ;
+int global_number_of_methods = 11 ;
 const int global_method_kemeny = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
@@ -157,7 +157,8 @@ const int global_method_irv = 6 ;
 const int global_method_borda = 7 ;
 const int global_method_approval = 8 ;
 const int global_method_plurality = 9 ;
-const int global_method_ple = 10 ;
+const int global_method_condorcet = 10 ;
+const int global_method_ple = 11 ;
 
 std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
@@ -168,6 +169,7 @@ std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_borda = "Borda/NT" ;
 std::string global_name_for_method_approval = "Appr/NT" ;
 std::string global_name_for_method_plurality = "Plur" ;
+std::string global_name_for_method_condorcet = "COND" ;
 std::string global_name_for_method_ple = "PLE" ;
 
 
@@ -198,6 +200,7 @@ int global_choice_count_case_specific ;
 int global_choice_omitted ;
 int global_clone_choice_number_next ;
 int global_vf_test_count ;
+int global_condorcet_test_count ;
 int global_iia_test_count ;
 int global_clone_test_count ;
 int global_count_of_cases_involving_tie ;
@@ -237,6 +240,7 @@ std::string global_color_hex_for_method[ 20 ] ;
 
 int global_choice_on_ballot_at_ranking_level[ 200 ][ 20 ] ;
 int calculated_vf_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
+int calculated_condorcet_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 int global_calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 float global_calculated_iia_result_match_with_tenths[ 20 ][ 20 ] ;
 int global_calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
@@ -249,6 +253,8 @@ int global_count_of_vf_tests_match_for_method[ 20 ] ;
 int global_count_of_vf_tests_fail_match_for_method[ 20 ] ;
 int global_count_of_vf_tests_tied_for_method[ 20 ] ;
 int global_count_of_vf_tests_unexpected_for_method[ 20 ] ;
+int global_count_of_condorcet_tests_match_for_method[ 20 ] ;
+int global_count_of_condorcet_tests_fail_match_for_method[ 20 ] ;
 int global_count_of_iia_tests_match_for_method[ 20 ] ;
 int global_count_of_iia_group_match_for_method[ 20 ] ;
 int global_count_of_iia_tests_fail_match_for_method[ 20 ] ;
@@ -301,6 +307,7 @@ const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 const int global_voteinfo_code_for_winner_borda_count = -61 ;
 const int global_voteinfo_code_for_flag_as_interesting = -62 ;
 const int global_voteinfo_code_for_winner_approval_voting = -63 ;
+const int global_voteinfo_code_for_winner_condorcet = -64 ;
 
 
 // -----------------------------------------------
@@ -667,6 +674,11 @@ void handle_calculated_results( )
                 global_choice_winner_from_method[ global_method_ple ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_ple ] << " " << global_choice_winner_from_method[ global_method_ple ] << "]" ;
 
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_condorcet )
+            {
+                global_choice_winner_from_method[ global_method_condorcet ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_condorcet ] << " " << global_choice_winner_from_method[ global_method_condorcet ] << "]" ;
+
             } else if ( current_result_code == global_voteinfo_code_for_start_of_plurality_results )
             {
                 true_or_false_within_plurality_result = global_true ;
@@ -761,6 +773,30 @@ void handle_calculated_results( )
             {
                 global_count_of_vf_tests_tied_for_method[ method_id ] ++ ;
                 log_out << "[" << global_name_for_method[ method_id ] << " tied]" ;
+            }
+        }
+    }
+
+
+// -----------------------------------------------
+//  Count the number of cases that match, or fail
+//  to match, the Condorcet winner.
+
+    if ( global_case_type == global_case_all_choices )
+    {
+        if ( global_choice_winner_from_method[ global_method_condorcet ] > 0 )
+        {
+            global_condorcet_test_count ++ ;
+            for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+            {
+                if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method[ global_method_condorcet ] )
+                {
+                    global_count_of_condorcet_tests_match_for_method[ method_id ] ++ ;
+                } else
+                {
+                    global_count_of_condorcet_tests_fail_match_for_method[ method_id ] ++ ;
+                    log_out << "[" << global_name_for_method[ method_id ] << " fails]" ;
+                }
             }
         }
     }
@@ -925,10 +961,13 @@ void write_test_results( )
 
     int method_id = 0 ;
     int count_of_vf_tests = 0 ;
+    int count_of_condorcet_tests = 0 ;
     int calculated_vf_result_match = 0 ;
     int calculated_vf_result_fail_match = 0 ;
     int calculated_vf_result_ties = 0 ;
     int calculated_vf_result_match_no_ties = 0 ;
+    int calculated_condorcet_result_match = 0 ;
+    int calculated_condorcet_result_fail_match = 0 ;
     int count_of_iia_tests = 0 ;
     int calculated_iia_result_match = 0 ;
     int calculated_iia_result_fail_match = 0 ;
@@ -953,6 +992,7 @@ void write_test_results( )
     log_out << "number of ballots: " << global_maximum_ballot_number << std::endl ;
     log_out << "number of clones (excluding original): " << global_number_of_clones << std::endl ;
     log_out << "number of VF-match tests: " << global_vf_test_count << std::endl ;
+    log_out << "number of Condorcet-match tests: " << global_condorcet_test_count << std::endl ;
     log_out << "number of IIA tests: " << global_iia_test_count << std::endl ;
     log_out << "number of clone independence tests: " << global_clone_test_count << std::endl ;
     log_out << "number of cases limit per choice count: " << global_number_of_tests_per_choice_count << std::endl ;
@@ -1015,6 +1055,28 @@ void write_test_results( )
     {
         log_out << global_name_for_method[ method_id ] << " has zero clone test count" ;
     }
+    log_out << std::endl << std::endl ;
+
+
+// -----------------------------------------------
+//  For test comparisons with Condorcet winners,
+//  calculate and write those results.
+
+    log_out << "Match Condorcet winner?" << std::endl ;
+    if ( global_condorcet_test_count > 0 )
+    {
+        for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
+        {
+            calculated_condorcet_result_match = int( ( 100 * global_count_of_condorcet_tests_match_for_method[ method_id ] ) / global_condorcet_test_count ) ;
+            calculated_condorcet_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_condorcet_result_match ;
+            calculated_condorcet_result_fail_match = int( ( 100 * global_count_of_condorcet_tests_fail_match_for_method[ method_id ] ) / global_condorcet_test_count ) ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree: " << calculated_condorcet_result_match << "  " << calculated_condorcet_result_fail_match << std::endl ;
+        }
+    } else
+    {
+        log_out << global_name_for_method[ method_id ] << " has zero Condorcet test count" << std::endl ;
+    }
+
     log_out << std::endl << std::endl ;
 
 
@@ -1566,6 +1628,7 @@ int main( ) {
     global_choice_count_list[ 0 ] = 0 ;
     global_name_for_method[ global_method_kemeny ] = global_name_for_method_kemeny ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
+    global_name_for_method[ global_method_condorcet ] = global_name_for_method_condorcet ;
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
     global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
