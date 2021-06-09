@@ -419,6 +419,7 @@ const int global_voteinfo_code_for_winner_irv_bottom_two_runoff = -60 ;
 const int global_voteinfo_code_for_winner_borda_count = -61 ;
 const int global_voteinfo_code_for_flag_as_interesting = -62 ;
 const int global_voteinfo_code_for_winner_approval_voting = -63 ;
+const int global_voteinfo_code_for_winner_condorcet = -64 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -573,6 +574,7 @@ int global_true_or_false_continuing_subset_includes_choice[ 99 ] ;
 int global_pairwise_opposition_or_support_count_for_choice[ 99 ] ;
 int global_list_of_choices_having_pairwise_opposition_or_support[ 99 ] ;
 int global_loss_count_for_choice[ 99 ] ;
+int global_win_count_for_choice[ 99 ] ;
 int global_list_of_top_ranked_choices[ 99 ] ;
 int global_list_of_choices_with_fewest_first_choice_counts[ 99 ] ;
 int global_star_score_count_for_choice[ 99 ] ;
@@ -9006,6 +9008,92 @@ void elim_find_smallest_pairwise_support( )
 //        elim_find_smallest_pairwise_support
 
 
+
+
+// -----------------------------------------------
+// -----------------------------------------------
+//        find_condorcet_winner
+//
+//  This function finds the Condorcet winner, if
+//  there is one.
+//
+// -----------------------------------------------
+// -----------------------------------------------
+
+void find_condorcet_winner( )
+{
+
+    int pair_counter ;
+    int adjusted_first_choice ;
+    int adjusted_second_choice ;
+    int actual_first_choice ;
+    int actual_second_choice ;
+    int actual_choice ;
+    int condorcet_winner ;
+
+
+// -----------------------------------------------
+//  Initialization.
+
+    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    {
+        global_win_count_for_choice[ actual_choice ] = 0 ;
+    }
+
+
+// -----------------------------------------------
+//  Count the pairwise wins for each choice.
+
+    for ( pair_counter = 1 ; pair_counter <= global_pair_counter_maximum ; pair_counter ++ )
+    {
+        adjusted_first_choice = global_adjusted_first_choice_number_in_pair[ pair_counter ] ;
+        adjusted_second_choice = global_adjusted_second_choice_number_in_pair[ pair_counter ] ;
+        actual_first_choice = global_actual_choice_for_adjusted_choice[ adjusted_first_choice ] ;
+        actual_second_choice = global_actual_choice_for_adjusted_choice[ adjusted_second_choice ] ;
+        if ( global_tally_first_over_second_in_pair[ pair_counter ] > global_tally_second_over_first_in_pair[ pair_counter ] )
+        {
+            global_win_count_for_choice[ actual_first_choice ] ++ ;
+            if ( global_logging_info == global_true ) { log_out << "[pairwise, choice " << convert_integer_to_text( actual_first_choice ) << " over choice " << convert_integer_to_text( actual_second_choice ) << "]" << std::endl ; } ;
+        } else if ( global_tally_second_over_first_in_pair[ pair_counter ] > global_tally_first_over_second_in_pair[ pair_counter ] )
+        {
+            global_win_count_for_choice[ actual_second_choice ] ++ ;
+            if ( global_logging_info == global_true ) { log_out << "[pairwise, choice " << convert_integer_to_text( actual_second_choice ) << " over choice " << convert_integer_to_text( actual_first_choice ) << "]" << std::endl ; } ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  If a choice won all of its pairwise contests,
+//  it's the Condorcet winner.  Otherwise, there
+//  is no Condorcet winner.
+
+    condorcet_winner = 0 ;
+    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    {
+        if ( global_logging_info == global_true ) { log_out << "[pairwise win count for choice " << convert_integer_to_text( actual_choice ) << " is " << global_win_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+        if ( global_win_count_for_choice[ actual_choice ] == global_full_choice_count - 1 )
+        {
+            condorcet_winner = actual_choice ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  Write the result.
+
+    put_next_result_info_number( global_voteinfo_code_for_winner_condorcet ) ;
+    put_next_result_info_number( condorcet_winner ) ;
+    if ( global_logging_info == global_true ) { log_out << std::endl << "[condorcet winner is choice " << convert_integer_to_text( condorcet_winner ) << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  End of function find_condorcet_winner
+
+    return ;
+
+}
+
+
 // -----------------------------------------------
 // -----------------------------------------------
 //        method_instant_pairwise_elimination
@@ -10223,6 +10311,7 @@ void calc_eliminate_methods() {
     int winner_ipe = 0 ;
     int winner_irv = 0 ;
     int winner_plurality = 0 ;
+    int winner_condorcet = 0 ;
     int actual_choice ;
     int pair_counter ;
     int adjusted_first_choice ;
@@ -10268,6 +10357,12 @@ void calc_eliminate_methods() {
         method_ranked_choice_including_pairwise_elimination( ) ;
         winner_rcipe = global_output_results[ global_pointer_to_output_results - 1 ] ;
     }
+
+
+// -----------------------------------------------
+//  Find the Condorcet winner.
+
+    find_condorcet_winner( ) ;
 
 
 // -----------------------------------------------
