@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 1000 ;
+int global_number_of_tests_per_choice_count = 10 ;
 
 
 // -----------------------------------------------
@@ -1516,10 +1516,18 @@ void write_final_results( )
         {
             continue ;
         }
+        if ( method_id == global_method_approval )
+        {
+            continue ;
+        }
         previous_choice_count = 0 ;
         for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
+            if ( choice_count != 6 )
+            {
+                continue ;
+            }
             if ( previous_choice_count > 0 )
             {
                 svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
@@ -1587,6 +1595,9 @@ int main( ) {
     global_choice_count_list[ 7 ] = 8 ;
     global_choice_count_list[ 8 ] = 9 ;
     global_number_of_choice_counts_specified = 8 ;
+
+    global_choice_count_list[ 1 ] = 6 ;
+    global_number_of_choice_counts_specified = 1 ;
 
 //    global_choice_count_list[ 1 ] = 2 ;
 //    global_choice_count_list[ 2 ] = 5 ;
