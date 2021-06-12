@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 1000 ;
+int global_number_of_tests_per_choice_count = 10 ;
 
 
 // -----------------------------------------------
@@ -147,7 +147,7 @@ int global_minimum_case_id = 100000 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 11 ;
+int global_number_of_methods = 8 ;
 const int global_method_kemeny = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
@@ -155,10 +155,17 @@ const int global_method_star = 4 ;
 const int global_method_irvbtr = 5 ;
 const int global_method_irv = 6 ;
 const int global_method_borda = 7 ;
-const int global_method_approval = 8 ;
-const int global_method_plurality = 9 ;
-const int global_method_condorcet = 10 ;
-const int global_method_ple = 11 ;
+const int global_method_plurality = 8 ;
+
+//  Ignore results for pseudo-method PLE
+//  which was used to verify how often every round
+//  of elimination included a Condorcet loser.
+const int global_method_ple = 0 ;
+
+//  Ignore results for approval voting because
+//  unfair to meaningfully convert from ranked
+//  ballot to approval ballot.
+const int global_method_approval = 0 ;
 
 std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
@@ -206,6 +213,7 @@ int global_clone_test_count ;
 int global_count_of_cases_involving_tie ;
 int global_pointer_to_choice_count_list ;
 int global_flag_as_interesting ;
+int global_choice_winner_from_method_condorcet ;
 
 
 // -----------------------------------------------
@@ -245,6 +253,7 @@ int global_calculated_iia_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 float global_calculated_iia_result_match_with_tenths[ 20 ][ 20 ] ;
 int global_calculated_clone_result_match_for_method_and_choice_count[ 20 ][ 20 ] ;
 float global_calculated_clone_result_match_with_tenths[ 20 ][ 20 ] ;
+float global_calculated_condorcet_result_match_with_tenths[ 20 ][ 20 ] ;
 int global_choice_number_at_position[ 99 ] ;
 int global_usage_count_for_choice_and_rank[ 99 ][ 99 ] ;
 int global_choice_winner_all_choices_for_method[ 20 ] ;
@@ -264,6 +273,7 @@ int global_count_of_iia_group_tied_for_method[ 20 ] ;
 int global_count_of_iia_tests_unexpected_for_method[ 20 ] ;
 int global_count_of_clone_tests_match_for_method[ 20 ] ;
 int global_count_of_clone_tests_fail_match_for_method[ 20 ] ;
+int global_count_of_clone_tests_clone_displaces_for_method[ 20 ] ;
 int global_count_of_clone_tests_tied_for_method[ 20 ] ;
 int global_count_of_clone_tests_clone_help_for_method[ 20 ] ;
 int global_count_of_clone_tests_clone_hurt_for_method[ 20 ] ;
@@ -543,6 +553,7 @@ void handle_calculated_results( )
     {
         global_choice_winner_from_method[ method_id ] = 0 ;
     }
+    global_choice_winner_from_method_condorcet = 0 ;
 
 
 // -----------------------------------------------
@@ -611,7 +622,7 @@ void handle_calculated_results( )
                 {
                     global_choice_winner_from_method[ method_id ] = 0 ;
                 }
-
+                global_choice_winner_from_method_condorcet = 0 ;
             } else if ( current_result_code == global_voteinfo_code_for_start_of_votefair_popularity_ranking_sequence_results )
             {
                 count_position_at_start_of_votefair_popularity_sequence = count_of_result_codes ;
@@ -676,8 +687,8 @@ void handle_calculated_results( )
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_condorcet )
             {
-                global_choice_winner_from_method[ global_method_condorcet ] = current_result_code ;
-                log_out << "[" << global_name_for_method[ global_method_condorcet ] << " " << global_choice_winner_from_method[ global_method_condorcet ] << "]" ;
+                global_choice_winner_from_method_condorcet = current_result_code ;
+                log_out << "[COND " << global_choice_winner_from_method_condorcet << "]" ;
 
             } else if ( current_result_code == global_voteinfo_code_for_start_of_plurality_results )
             {
@@ -784,18 +795,18 @@ void handle_calculated_results( )
 
     if ( global_case_type == global_case_all_choices )
     {
-        if ( global_choice_winner_from_method[ global_method_condorcet ] > 0 )
+        if ( global_choice_winner_from_method_condorcet > 0 )
         {
             global_condorcet_test_count ++ ;
             for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
             {
-                if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method[ global_method_condorcet ] )
+                if ( global_choice_winner_from_method[ method_id ] == global_choice_winner_from_method_condorcet )
                 {
                     global_count_of_condorcet_tests_match_for_method[ method_id ] ++ ;
                 } else
                 {
                     global_count_of_condorcet_tests_fail_match_for_method[ method_id ] ++ ;
-                    log_out << "[" << global_name_for_method[ method_id ] << " fails]" ;
+                    log_out << "[" << global_name_for_method[ method_id ] << " fails cond.]" ;
                 }
             }
         }
@@ -885,6 +896,8 @@ void handle_calculated_results( )
 //  with all the choices.  If not, track
 //  whether the added clone helps or hurts the
 //  similar choice.
+//  Also do a separate count for failures in which
+//  the clone wins instead of the similar choice.
 
     if ( global_case_type == global_case_clones_included )
     {
@@ -898,19 +911,22 @@ void handle_calculated_results( )
             {
                 global_count_of_clone_tests_tied_for_method[ method_id ] ++ ;
                 log_out << "[" << global_name_for_method[ method_id ] << " CL tied]" ;
+            } else if ( ( global_choice_winner_from_method[ method_id ] > global_maximum_choice_number ) &&  ( global_choice_winner_all_choices_for_method[ method_id ] == 1 ) )
+            {
+                global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ++ ;
+                log_out << "[" << global_name_for_method[ method_id ] << " displaces]" ;
             } else
             {
                 global_count_of_clone_tests_fail_match_for_method[ method_id ] ++ ;
                 log_out << "[" << global_name_for_method[ method_id ] << " CL fails]" ;
-                if ( global_choice_winner_all_choices_for_method[ method_id ] == 1 )
-                {
-                    global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ++ ;
-                    log_out << "[" << global_name_for_method[ method_id ] << " hurts]" ;
-                }
                 if ( global_choice_winner_from_method[ method_id ] == 1 )
                 {
                     global_count_of_clone_tests_clone_help_for_method[ method_id ] ++ ;
-                    log_out << "[" << global_name_for_method[ method_id ] << " helps]" ;
+                    log_out << "[" << global_name_for_method[ method_id ] << " helps similar]" ;
+                } else if ( global_choice_winner_all_choices_for_method[ method_id ] == 1 )
+                {
+                    global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ++ ;
+                    log_out << "[" << global_name_for_method[ method_id ] << " hurts similar]" ;
                 }
             }
         }
@@ -977,6 +993,7 @@ void write_test_results( )
     int calculated_clone_result_match = 0 ;
     int calculated_clone_result_clone_help = 0 ;
     int calculated_clone_result_clone_hurt = 0 ;
+    int calculated_clone_result_displaces = 0 ;
     int calculated_clone_result_fail_match = 0 ;
     int calculated_clone_result_ties = 0 ;
     int calculated_clone_result_match_no_ties = 0 ;
@@ -1031,21 +1048,31 @@ void write_test_results( )
 // -----------------------------------------------
 //  For tests of clone independence, calculate
 //  and write those results.
+//  The official (Wikipedia) definition of clone
+//  independence counts as a failure the case in
+//  which the clone wins instead of the similar
+//  candidate.
+//  As of 2021-June-11 these results report the
+//  modified version of Clone Independence in which
+//  such cases count as a success.
+//  An election-method expert on Reddit requested
+//  this alternate interpretation.
 
     log_out << "Clone Independence success and failure rates:" << std::endl ;
     if ( global_clone_test_count > 0 )
     {
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            calculated_clone_result_match = int( ( 100 * global_count_of_clone_tests_match_for_method[ method_id ] ) / global_clone_test_count ) ;
+            calculated_clone_result_match = int( ( 100 * ( global_count_of_clone_tests_match_for_method[ method_id ] + global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ) ) / global_clone_test_count ) ;
             global_calculated_clone_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_clone_result_match ;
-            float_number = global_count_of_clone_tests_match_for_method[ method_id ] ;
+            float_number = global_count_of_clone_tests_match_for_method[ method_id ] + global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ;
             global_calculated_clone_result_match_with_tenths[ method_id ][ global_maximum_choice_number ] = ( int( ( 1000.0 * float_number ) / global_clone_test_count ) ) / 10.0 ;
-            calculated_clone_result_fail_match = int( ( 100 *  global_count_of_clone_tests_fail_match_for_method[ method_id ] ) / global_clone_test_count ) ;
+            calculated_clone_result_fail_match = int( ( 100 * ( global_count_of_clone_tests_fail_match_for_method[ method_id ] - global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ) ) / global_clone_test_count ) ;
             calculated_clone_result_ties = int( ( 100 *  global_count_of_clone_tests_tied_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_help = int( ( 100 *  global_count_of_clone_tests_clone_help_for_method[ method_id ] ) / global_clone_test_count ) ;
+            calculated_clone_result_displaces = int( ( 100 *  global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_hurt = int( ( 100 *  global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ) / global_clone_test_count ) ;
-            log_out << global_name_for_method[ method_id ] << " agree/disagree/tie (help) (hurt): " << calculated_clone_result_match << "  " << calculated_clone_result_fail_match << "  " << calculated_clone_result_ties << "  (" << calculated_clone_result_clone_help << ")  (" << calculated_clone_result_clone_hurt << ")" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree/tie (help) (displaces) (hurt): " << calculated_clone_result_match << "  " << calculated_clone_result_fail_match << "  " << calculated_clone_result_ties << "  (" << calculated_clone_result_clone_help << ")  (" << calculated_clone_result_displaces << ")  (" << calculated_clone_result_clone_hurt << ")" << std::endl ;
             if ( global_count_of_clone_tests_unexpected_for_method[ method_id ] > 0 )
             {
                 log_out << "unexpected clone test results count: " << global_count_of_clone_tests_unexpected_for_method[ method_id ] << std::endl ;
@@ -1070,7 +1097,9 @@ void write_test_results( )
             calculated_condorcet_result_match = int( ( 100 * global_count_of_condorcet_tests_match_for_method[ method_id ] ) / global_condorcet_test_count ) ;
             calculated_condorcet_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_condorcet_result_match ;
             calculated_condorcet_result_fail_match = int( ( 100 * global_count_of_condorcet_tests_fail_match_for_method[ method_id ] ) / global_condorcet_test_count ) ;
-            log_out << global_name_for_method[ method_id ] << " agree/disagree: " << calculated_condorcet_result_match << "  " << calculated_condorcet_result_fail_match << std::endl ;
+            float_number = global_count_of_condorcet_tests_match_for_method[ method_id ] ;
+            global_calculated_condorcet_result_match_with_tenths[ method_id ][ global_maximum_choice_number ] = ( int( ( 1000.0 * float_number ) / global_condorcet_test_count ) ) / 10.0 ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree: " << calculated_condorcet_result_match << "  " << calculated_condorcet_result_fail_match << " (failed " << global_count_of_condorcet_tests_fail_match_for_method[ method_id ] << "/" << global_condorcet_test_count << ")" << std::endl ;
         }
     } else
     {
@@ -1120,8 +1149,9 @@ void write_test_results( )
 //     do_all_tests_for_specified_choice_count
 //
 //  Do all the tests using a specified number of
-//  choices (candidates if this is simulating
-//  a governmental election).
+//  choices (which is the number of candidates if
+//  this software is simulating governmental
+//  elections).
 //
 // -----------------------------------------------
 // -----------------------------------------------
@@ -1160,14 +1190,19 @@ void do_all_tests_for_specified_choice_count( ) {
         global_count_of_iia_tests_unexpected_for_method[ method_id ] = 0 ;
         global_count_of_clone_tests_match_for_method[ method_id ] = 0 ;
         global_count_of_clone_tests_fail_match_for_method[ method_id ] = 0 ;
+        global_count_of_clone_tests_clone_displaces_for_method[ method_id ] = 0 ;
         global_count_of_clone_tests_tied_for_method[ method_id ] = 0 ;
         global_count_of_clone_tests_clone_help_for_method[ method_id ] = 0 ;
         global_count_of_clone_tests_clone_hurt_for_method[ method_id ] = 0 ;
         global_count_of_clone_tests_unexpected_for_method[ method_id ] = 0 ;
+        global_count_of_condorcet_tests_match_for_method[ method_id ] = 0 ;
+        global_count_of_condorcet_tests_fail_match_for_method[ method_id ] = 0 ;
     }
+    global_choice_winner_from_method_condorcet = 0 ;
     global_vf_test_count = 0 ;
     global_iia_test_count = 0 ;
     global_clone_test_count = 0 ;
+    global_condorcet_test_count = 0 ;
     global_count_of_cases_involving_tie = 0 ;
     global_case_type = global_case_all_choices ;
     global_choice_omitted = 0 ;
@@ -1496,25 +1531,28 @@ void write_final_results( )
 // -----------------------------------------------
 //  Write the final results in "comma-separated
 //  variables" (CSV) format.
-//  Two choices for IIA are not included because
-//  that test cannot be done.
+//  Two-choice (candidate) tests for IIA are not
+//  included because that test cannot be done.
 
     log_out << "Summary in spreadsheet-chartable format:" << std::endl << std::endl ;
 
-    for ( test_type = 1 ; test_type <= 2 ; test_type ++ )
+    for ( test_type = 1 ; test_type <= 3 ; test_type ++ )
     {
         if ( test_type == 1 )
         {
             log_out << "Independence of Irrelevant Alternatives" << std::endl ;
-        } else
+        } else if ( test_type == 2 )
         {
             log_out << "Clone Independence" << std::endl ;
+        } else if ( test_type == 3 )
+        {
+            log_out << "Condorcet compliance" << std::endl ;
         }
         log_out << "Method" ;
         for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
-            if ( ( test_type == 2 ) || ( choice_count != 2 ) )
+            if ( ( test_type != 1 ) || ( choice_count != 2 ) )
             {
                 log_out << "," << choice_count << " choices" ;
             }
@@ -1522,22 +1560,21 @@ void write_final_results( )
         log_out << std::endl ;
         for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
         {
-            if ( method_id == global_method_ple )
-            {
-                continue ;
-            }
             log_out << global_name_for_method[ method_id ] ;
             for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
             {
                 choice_count = global_choice_count_list[ pointer ] ;
-                if ( ( test_type == 2 ) || ( choice_count != 2 ) )
+                if ( ( test_type != 1 ) || ( choice_count != 2 ) )
                 {
                     if ( test_type == 1 )
                     {
                         log_out << "," << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] ;
-                    } else
+                    } else if ( test_type == 2 )
                     {
                         log_out << "," << global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ;
+                    } else if ( test_type == 3 )
+                    {
+                        log_out << "," << global_calculated_condorcet_result_match_with_tenths [ method_id ][ choice_count ] ;
                     }
                 }
             }
@@ -1574,22 +1611,10 @@ void write_final_results( )
     svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
-        if ( method_id == global_method_ple )
-        {
-            continue ;
-        }
-        if ( method_id == global_method_approval )
-        {
-            continue ;
-        }
         previous_choice_count = 0 ;
         for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
-            if ( choice_count != 6 )
-            {
-                continue ;
-            }
             if ( previous_choice_count > 0 )
             {
                 svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
@@ -1628,7 +1653,6 @@ int main( ) {
     global_choice_count_list[ 0 ] = 0 ;
     global_name_for_method[ global_method_kemeny ] = global_name_for_method_kemeny ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
-    global_name_for_method[ global_method_condorcet ] = global_name_for_method_condorcet ;
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
     global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
@@ -1649,24 +1673,23 @@ int main( ) {
 //  Specify which choice (candidate) counts are to
 //  be tested.
 
-    global_choice_count_list[ 1 ] = 2 ;
-    global_choice_count_list[ 2 ] = 3 ;
-    global_choice_count_list[ 3 ] = 4 ;
-    global_choice_count_list[ 4 ] = 5 ;
-    global_choice_count_list[ 5 ] = 6 ;
-    global_choice_count_list[ 6 ] = 7 ;
-    global_choice_count_list[ 7 ] = 8 ;
-    global_choice_count_list[ 8 ] = 9 ;
-    global_number_of_choice_counts_specified = 8 ;
-
-    global_choice_count_list[ 1 ] = 6 ;
-    global_number_of_choice_counts_specified = 1 ;
-
 //    global_choice_count_list[ 1 ] = 2 ;
-//    global_choice_count_list[ 2 ] = 5 ;
-//    global_choice_count_list[ 3 ] = 7 ;
-//    global_choice_count_list[ 4 ] = 9 ;
-//    global_number_of_choice_counts_specified = 4 ;
+//    global_choice_count_list[ 2 ] = 3 ;
+//    global_choice_count_list[ 3 ] = 4 ;
+//    global_choice_count_list[ 4 ] = 5 ;
+//    global_choice_count_list[ 5 ] = 6 ;
+//    global_choice_count_list[ 6 ] = 7 ;
+//    global_choice_count_list[ 7 ] = 8 ;
+//    global_choice_count_list[ 8 ] = 9 ;
+//    global_number_of_choice_counts_specified = 8 ;
+
+//    global_choice_count_list[ 1 ] = 6 ;
+//    global_number_of_choice_counts_specified = 1 ;
+
+    global_choice_count_list[ 1 ] = 2 ;
+    global_choice_count_list[ 2 ] = 6 ;
+    global_choice_count_list[ 3 ] = 9 ;
+    global_number_of_choice_counts_specified = 3 ;
 
 
 // -----------------------------------------------
