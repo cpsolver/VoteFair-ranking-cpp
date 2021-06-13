@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 10 ;
+int global_number_of_tests_per_choice_count = 100 ;
 
 
 // -----------------------------------------------
@@ -1524,8 +1524,14 @@ void write_final_results( )
     int test_type ;
     int method_id ;
     int choice_count ;
-    int previous_choice_count ;
+    int previous_choice_count = 0 ;
     int pointer ;
+    int x_position_for_label ;
+    int y_position_for_label ;
+    int x_position_for_circle ;
+    int y_position_for_circle ;
+    int previous_x_position_for_circle ;
+    int previous_y_position_for_circle ;
 
 
 // -----------------------------------------------
@@ -1606,8 +1612,8 @@ void write_final_results( )
     global_color_hex_for_method[ global_method_ple ] = "#999999" ; // unused
 
     svg_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << std::endl ;
-    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer3" << '"' << " inkscape:label=" << '"' << "Layer 3" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 0,0 100,0 100,100 0,100 0,0" << '"' << "/></g>" << std::endl ;
-    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer2" << '"' << " inkscape:label=" << '"' << "Layer 2" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 50,50 50,0 100,0 100,50 50,50" << '"' << "/></g>" << std::endl ;
+    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer3" << '"' << " inkscape:label=" << '"' << "Layer 3" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 0,0 100,0 100,100 0,100 0,0" << '"' << "/></g>" << std::endl ;
+    svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer2" << '"' << " inkscape:label=" << '"' << "Layer 2" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<path style=" << '"' << "fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M 50,50 50,0 100,0 100,50 50,50" << '"' << "/></g>" << std::endl ;
     svg_out <<"<g inkscape:groupmode=" << '"' << "layer" << '"' << " id=" << '"' << "layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << "<g>" << std::endl ;
     for ( method_id = 1 ; method_id <= global_number_of_methods ; method_id ++ )
     {
@@ -1615,16 +1621,22 @@ void write_final_results( )
         for ( pointer = 1 ; pointer <= global_number_of_choice_counts_specified ; pointer ++ )
         {
             choice_count = global_choice_count_list[ pointer ] ;
+            x_position_for_circle = global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] ;
+            y_position_for_circle = 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ;
             if ( previous_choice_count > 0 )
             {
-                svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << " " << global_calculated_iia_result_match_with_tenths[ method_id ][ previous_choice_count ] << "," << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ previous_choice_count ] ) << '"' << "/>" << std::endl ;
-                svg_out << "<circle style=" << '"' << "fill:" << global_color_hex_for_method[ method_id ] << ";stroke:none;fill-opacity:1" << '"' << " id=" << '"' << global_name_for_method[ method_id ] << '"' << " cx=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " cy=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << " r=" << '"' << "0.6" << '"' << " />" << std::endl ;
+                svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << x_position_for_circle << "," << y_position_for_circle << " " << previous_x_position_for_circle << "," << previous_y_position_for_circle << '"' << "/>" << std::endl ;
             }
-            if ( ( choice_count == 2 ) || ( choice_count == global_choice_count_list[ global_number_of_choice_counts_specified ] ) )
+            svg_out << "<circle style=" << '"' << "fill:" << global_color_hex_for_method[ method_id ] << ";stroke:none;fill-opacity:1" << '"' << " id=" << '"' << global_name_for_method[ method_id ] << '"' << " cx=" << '"' << x_position_for_circle << '"' << " cy=" << '"' << y_position_for_circle << '"' << " r=" << '"' << "0.6" << '"' << " />" << std::endl ;
+            if ( ( choice_count == global_choice_count_list[ 1 ] ) || ( choice_count == global_choice_count_list[ global_number_of_choice_counts_specified ] ) )
             {
-                svg_out << "<text style=" << '"' << "font-size:1px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << global_calculated_iia_result_match_with_tenths[ method_id ][ choice_count ] << '"' << " y=" << '"' << ( 100 - global_calculated_clone_result_match_with_tenths[ method_id ][ choice_count ] ) << '"' << ">" << global_name_for_method[ method_id ] << "," << choice_count << "</tspan></text>" << std:: endl ;
+                x_position_for_label = x_position_for_circle + 0.6 ;
+                y_position_for_label = y_position_for_circle - 0.6 ;
+                svg_out << "<text style=" << '"' << "font-size:1px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << x_position_for_label << '"' << " y=" << '"' << y_position_for_label << '"' << ">" << global_name_for_method[ method_id ] << "," << choice_count << "</tspan></text>" << std:: endl ;
             }
             previous_choice_count = choice_count ;
+            previous_x_position_for_circle = x_position_for_circle ;
+            previous_y_position_for_circle = y_position_for_circle ;
         }
     }
     svg_out << "</g>" << std::endl ;
