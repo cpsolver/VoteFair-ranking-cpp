@@ -8906,8 +8906,9 @@ void elim_find_pairwise_opposition_or_support( )
 
 
 // -----------------------------------------------
-//  Calculate the pairwise opposition count for
-//  each choice for which the value of
+//  Calculate the pairwise opposition count, or
+//  pairwise support count if that is flagged,
+//  for each choice for which the value of
 //  "global_true_or_false_continuing_subset_includes_choice"
 //  is true, and only consider contributions from
 //  other choices that have not yet been eliminated.
@@ -9101,10 +9102,11 @@ void find_condorcet_winner( )
 //  This function implements the method named
 //  "Instant Pairwise Elimination" (IPE).  It
 //  does rounds of elimination and eliminates the
-//  choice with the largest pairwise opposition
-//  count.  If there is a tie, it eliminates the
-//  choice with the smallest pairwise support
-//  count.
+//  Condorcet loser or otherwise (when there is
+//  not such a choice) eliminates the choice with
+//  the largest pairwise opposition count.  If
+//  there is a tie, it eliminates the choice with
+//  the smallest pairwise support count.
 //
 // -----------------------------------------------
 // -----------------------------------------------
@@ -9115,6 +9117,8 @@ void method_instant_pairwise_elimination( )
     int actual_choice ;
     int elimination_round_count ;
     int pointer_to_list_of_tied_choices ;
+    int condorcet_loser ;
+    int choice_with_largest_opposition_count ;
 
 
 // -----------------------------------------------
@@ -9147,6 +9151,13 @@ void method_instant_pairwise_elimination( )
 
 
 // -----------------------------------------------
+//  Identify a Condorcet loser -- "pairwise losing
+//  candidate" -- if there is one.
+
+        condorcet_loser = elim_find_pairwise_loser( ) ;
+
+
+// -----------------------------------------------
 //  Copy into the list
 //  "global_true_or_false_continuing_subset_includes_choice"
 //  the choices that are continuing (not yet eliminated).
@@ -9161,18 +9172,48 @@ void method_instant_pairwise_elimination( )
 
 // -----------------------------------------------
 //  Identify which choice has the largest pairwise
-//  opposition count.  If there is only one such
-//  choice, eliminate it.
-//  If there is a pairwise losing choice (a
-//  Condorcet loser), then it will be eliminated
-//  here.
+//  opposition count.
 
+        choice_with_largest_opposition_count = 0 ;
         elim_find_largest_pairwise_opposition( ) ;
         if ( global_count_of_choices_at_pairwise_max_opposition_or_min_support == 1 )
         {
-            actual_choice = global_list_of_choices_having_pairwise_opposition_or_support[ 1 ] ;
-            if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has the single largest pairwise opposition count]" << std::endl ; } ;
-            global_choice_to_eliminate = actual_choice ;
+            choice_with_largest_opposition_count = global_list_of_choices_having_pairwise_opposition_or_support[ 1 ] ;
+        }
+
+
+// -----------------------------------------------
+//  For analysis purposes, identify when the
+//  Condorcet loser is not the same choice as the
+//  choice with the largest opposition count.
+
+        if ( ( condorcet_loser > 0 ) && ( choice_with_largest_opposition_count > 0 ) && ( choice_with_largest_opposition_count != condorcet_loser ) )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[choice " << condorcet_loser << " is a Condorcet loser but does not have the single largest pairwise opposition count]" << std::endl ; } ;
+        }
+
+
+// -----------------------------------------------
+//  If there is a Condorcet loser, eliminate that
+//  choice.
+
+        if ( condorcet_loser > 0 )
+        {
+            global_choice_to_eliminate = condorcet_loser ;
+            elim_choice_to_eliminate( ) ;
+            if ( global_logging_info == global_true ) { log_out << "[choice " << condorcet_loser << " is eliminated as the Condorcet loser]" << std::endl ; } ;
+            continue ;
+        }
+
+
+// -----------------------------------------------
+//  If there is only one choice with the largest
+//  pairwise opposition count, eliminate it.
+
+        if ( choice_with_largest_opposition_count > 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[choice " << choice_with_largest_opposition_count << " has the single largest pairwise opposition count]" << std::endl ; } ;
+            global_choice_to_eliminate = choice_with_largest_opposition_count ;
             elim_choice_to_eliminate( ) ;
             continue ;
         }
