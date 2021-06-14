@@ -1,151 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="11in" height="8.5in" viewBox="0 0 110 110">layer1" inkscape:label="Layer 1" style="display:inline">
-<g inkscape:groupmode="layer" id="layer3" inkscape:label="Layer 3" style="display:inline"><g><path style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" d="M 0,0 100,0 100,100 0,100 0,0"/></g>
-<g inkscape:groupmode="layer" id="layer2" inkscape:label="Layer 2" style="display:inline"><g><path style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" d="M 50,50 50,0 100,0 100,50 50,50"/></g>
+<g inkscape:groupmode="layer" id="layer3" inkscape:label="Layer 3" style="display:inline"><path style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" d="M 0,0 100,0 100,100 0,100 0,0"/></g>
+<g inkscape:groupmode="layer" id="layer2" inkscape:label="Layer 2" style="display:inline"><path style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" d="M 50,50 50,0 100,0 100,50 50,50"/></g>
 <g inkscape:groupmode="layer" id="layer1" inkscape:label="Layer 1" style="display:inline"><g>
-<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="100" y="48">C-K,2</tspan></text>
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 97.3,34.4 100,48"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="97.3" cy="34.4" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 88.8,28.3 97.3,34.4"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="88.8" cy="28.3" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84.7,19.9 88.8,28.3"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="84.7" cy="19.9" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 85.5,19.2 84.7,19.9"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="85.5" cy="19.2" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.8,18.8 85.5,19.2"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="80.8" cy="18.8" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.7,15.3 80.8,18.8"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="80.7" cy="15.3" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 77.5,14.6 80.7,15.3"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="C-K" cx="77.5" cy="14.6" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="77.5" y="14.6">C-K,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="100" y="0">IPE,2</tspan></text>
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 97.3,0.300003 100,0"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="97.3" cy="0.300003" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 89.2,2.2 97.3,0.300003"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="89.2" cy="2.2" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 85.5,2.5 89.2,2.2"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="85.5" cy="2.5" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84.3,4.9 85.5,2.5"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="84.3" cy="4.9" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 78.5,5.4 84.3,4.9"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="78.5" cy="5.4" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 78.4,6.4 78.5,5.4"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="78.4" cy="6.4" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 77,5.1 78.4,6.4"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="IPE" cx="77" cy="5.1" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="77" y="5.1">IPE,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="100" y="0">RCIPE,2</tspan></text>
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 97.3,0.800003 100,0"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="97.3" cy="0.800003" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 86,2.8 97.3,0.800003"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="86" cy="2.8" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,2.9 86,2.8"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="84" cy="2.9" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.9,4.1 84,2.9"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="80.9" cy="4.1" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 71.6,5.8 80.9,4.1"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="71.6" cy="5.8" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 70.7,3.7 71.6,5.8"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="70.7" cy="3.7" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 68,5.1 70.7,3.7"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="RCIPE" cx="68" cy="5.1" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="68" y="5.1">RCIPE,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="100" y="0">STAR/sim/NT,2</tspan></text>
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 97.3,3.8 100,0"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="97.3" cy="3.8" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 85.5,11.1 97.3,3.8"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="85.5" cy="11.1" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 82.6,11.4 85.5,11.1"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="82.6" cy="11.4" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.7,11 82.6,11.4"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="80.7" cy="11" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 74.4,12.8 80.7,11"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="74.4" cy="12.8" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 74,12.1 74.4,12.8"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="74" cy="12.1" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 72.7,12.8 74,12.1"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="72.7" cy="12.8" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="72.7" y="12.8">STAR/sim/NT,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#ffff00;"><tspan x="100" y="28.6">IRV-BTR,2</tspan></text>
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 95.4,21.5 100,28.6"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="95.4" cy="21.5" r="0.6" />
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79,18.7 95.4,21.5"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="79" cy="18.7" r="0.6" />
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 75.6,15.7 79,18.7"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="75.6" cy="15.7" r="0.6" />
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 68,15.3 75.6,15.7"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="68" cy="15.3" r="0.6" />
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 58.9,11.3 68,15.3"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="58.9" cy="11.3" r="0.6" />
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 60.2,9.8 58.9,11.3"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="60.2" cy="9.8" r="0.6" />
-<path style="fill:none;stroke:#ffff00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 56.4,9.4 60.2,9.8"/>
-<circle style="fill:#ffff00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="56.4" cy="9.4" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ffff00;"><tspan x="56.4" y="9.4">IRV-BTR,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#f451a7;"><tspan x="100" y="30.6">IRV,2</tspan></text>
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 95.3,21.8 100,30.6"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="95.3" cy="21.8" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79.5,18 95.3,21.8"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="79.5" cy="18" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 76.4,15.5 79.5,18"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="76.4" cy="15.5" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 68.4,14.7 76.4,15.5"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="68.4" cy="14.7" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 59.6,11 68.4,14.7"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="59.6" cy="11" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 60.1,9.8 59.6,11"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="60.1" cy="9.8" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 55.9,9.3 60.1,9.8"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="IRV" cx="55.9" cy="9.3" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#f451a7;"><tspan x="55.9" y="9.3">IRV,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="100" y="48">Borda/NT,2</tspan></text>
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 86.4,42.7 100,48"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="86.4" cy="42.7" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 81.3,38.2 86.4,42.7"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="81.3" cy="38.2" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.5,33.4 81.3,38.2"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="80.5" cy="33.4" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 81.8,31.9 80.5,33.4"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="81.8" cy="31.9" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.5,30.4 81.8,31.9"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="80.5" cy="30.4" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80.7,28.9 80.5,30.4"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="80.7" cy="28.9" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79.8,29.3 80.7,28.9"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="79.8" cy="29.3" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="79.8" y="29.3">Borda/NT,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="100" y="65.6">Appr/NT,2</tspan></text>
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79.3,60.9 100,65.6"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="79.3" cy="60.9" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 61.3,71.3 79.3,60.9"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="61.3" cy="71.3" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 59.1,65.3 61.3,71.3"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="59.1" cy="65.3" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 59,73.4 59.1,65.3"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="59" cy="73.4" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 54.7,66.7 59,73.4"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="54.7" cy="66.7" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 56.3,71 54.7,66.7"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="56.3" cy="71" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 56.5,66.4 56.3,71"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Appr/NT" cx="56.5" cy="66.4" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="56.5" y="66.4">Appr/NT,9</tspan></text>
-<text style="font-size:1px;font-weight:bold;fill:#a65628;"><tspan x="100" y="46.2">Plur,2</tspan></text>
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 88.9,31.6 100,46.2"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="88.9" cy="31.6" r="0.6" />
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 85.6,23.1 88.9,31.6"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="85.6" cy="23.1" r="0.6" />
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 91.5,18.2 85.6,23.1"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="91.5" cy="18.2" r="0.6" />
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 88.5,14.6 91.5,18.2"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="88.5" cy="14.6" r="0.6" />
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 92.9,11.5 88.5,14.6"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="92.9" cy="11.5" r="0.6" />
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 96.9,9.2 92.9,11.5"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="96.9" cy="9.2" r="0.6" />
-<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 97.3,12 96.9,9.2"/>
-<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="Plur" cx="97.3" cy="12" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#a65628;"><tspan x="97.3" y="12">Plur,9</tspan></text>
+<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="100" y="0">C-K,2</tspan></text>
+<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,5 100,0"/>
+<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="84" cy="5" r="0.6" />
+<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 77,6 84,5"/>
+<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="77" cy="6" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="77" y="5">C-K,9</tspan></text>
+<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="100" y="0">IPE,2</tspan></text>
+<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 83,4 100,0"/>
+<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="83" cy="4" r="0.6" />
+<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 77,6 83,4"/>
+<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="77" cy="6" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="77" y="5">IPE,9</tspan></text>
+<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="RCIPE" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#f451a7;"><tspan x="100" y="0">RCIPE,2</tspan></text>
+<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80,0 100,0"/>
+<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="RCIPE" cx="80" cy="0" r="0.6" />
+<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 68,0 80,0"/>
+<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="RCIPE" cx="68" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#f451a7;"><tspan x="68" y="0">RCIPE,9</tspan></text>
+<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#a65628;"><tspan x="100" y="0">STAR/sim/NT,2</tspan></text>
+<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79,9 100,0"/>
+<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="79" cy="9" r="0.6" />
+<path style="fill:none;stroke:#a65628;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 74,9 79,9"/>
+<circle style="fill:#a65628;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="74" cy="9" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#a65628;"><tspan x="74" y="8">STAR/sim/NT,9</tspan></text>
+<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="100" cy="5" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="100" y="4">IRV-BTR,2</tspan></text>
+<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 66,8 100,5"/>
+<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="66" cy="8" r="0.6" />
+<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 57,5 66,8"/>
+<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="57" cy="5" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="57" y="4">IRV-BTR,9</tspan></text>
+<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="100" cy="12" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="100" y="11">IRV,2</tspan></text>
+<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 67,7 100,12"/>
+<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="67" cy="7" r="0.6" />
+<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 57,5 67,7"/>
+<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="57" cy="5" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="57" y="4">IRV,9</tspan></text>
+<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="100" y="0">Borda/NT,2</tspan></text>
+<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 81,18 100,0"/>
+<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="81" cy="18" r="0.6" />
+<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79,16 81,18"/>
+<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="79" cy="16" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="79" y="15">Borda/NT,9</tspan></text>
+<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="100" cy="44" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="100" y="43">Plur,2</tspan></text>
+<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 91,14 100,44"/>
+<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="91" cy="14" r="0.6" />
+<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 97,10 91,14"/>
+<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="97" cy="10" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="97" y="9">Plur,9</tspan></text>
 </g>
 </svg>
