@@ -1,111 +1,12 @@
 TEST CONDITIONS:
-number of choices: 6
-number of ballots: 11
-number of clones (excluding original): 2
-number of VF-match tests: 821
-number of Condorcet-match tests: 629
-number of IIA tests: 820
-number of clone independence tests: 820
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 439
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 84  15  0
-IPE agree/disagree/tie: 83  16  0
-RCIPE agree/disagree/tie: 79  20  0
-STAR/sim/NT agree/disagree/tie: 80  19  0
-IRV-BTR agree/disagree/tie: 67  32  0
-IRV agree/disagree/tie: 67  32  0
-Borda/NT agree/disagree/tie: 82  17  0
-Appr/NT agree/disagree/tie: 57  41  0
-Plur agree/disagree/tie: 91  7  0
-COND agree/disagree/tie: 77  22  0
-PLE agree/disagree/tie: 47  52  0
-
-
-Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 79  19  0  (0)  (16)
-IPE agree/disagree/tie (help) (hurt): 95  3  1  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 95  4  0  (0)  (3)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 89  10  0  (3)  (3)
-IRV-BTR agree/disagree/tie (help) (hurt): 84  15  0  (0)  (11)
-IRV agree/disagree/tie (help) (hurt): 85  14  0  (0)  (11)
-Borda/NT agree/disagree/tie (help) (hurt): 66  26  6  (0)  (15)
-Appr/NT agree/disagree/tie (help) (hurt): 29  34  36  (3)  (5)
-Plur agree/disagree/tie (help) (hurt): 84  4  10  (0)  (4)
-COND agree/disagree/tie (help) (hurt): 64  0  35  (0)  (0)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match Condorcet winner?
-C-K agree/disagree: 100  0
-IPE agree/disagree: 100  0
-RCIPE agree/disagree: 99  0
-STAR/sim/NT agree/disagree: 98  1
-IRV-BTR agree/disagree: 86  13
-IRV agree/disagree: 86  13
-Borda/NT agree/disagree: 85  14
-Appr/NT agree/disagree: 53  46
-Plur agree/disagree: 69  30
-COND agree/disagree: 100  0
-PLE agree/disagree: 51  48
-
-
-Match with VoteFair popularity ranking result?
-C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 89  8  2
-RCIPE agree/disagree/tied: 88  11  0
-STAR/sim/NT agree/disagree/tied: 89  10  0
-IRV-BTR agree/disagree/tied: 77  22  0
-IRV agree/disagree/tied: 76  23  0
-Borda/NT agree/disagree/tied: 76  14  9
-Appr/NT agree/disagree/tied: 47  24  28
-Plur agree/disagree/tied: 63  36  0
-COND agree/disagree/tied: 76  0  23
-PLE agree/disagree/tied: 39  0  60
-
-
-Summary in spreadsheet-chartable format:
-
-Independence of Irrelevant Alternatives
-Method,6 choices
-C-K,84.2
-IPE,83.4
-RCIPE,79.6
-STAR/sim/NT,80.2
-IRV-BTR,67.6
-IRV,67.4
-Borda/NT,82
-Appr/NT,57.9
-Plur,91.7
-COND,77.9
-
-
-Clone Independence
-Method,6 choices
-C-K,79.3
-IPE,95.1
-RCIPE,95.9
-STAR/sim/NT,89.5
-IRV-BTR,84.8
-IRV,85.3
-Borda/NT,66.4
-Appr/NT,29.1
-Plur,84.7
-COND,64.6
-
-
-
-TEST CONDITIONS:
 number of choices: 2
 number of ballots: 11
 number of clones (excluding original): 2
-number of VF-match tests: 500
-number of IIA tests: 500
-number of clone independence tests: 500
-number of cases limit per choice count: 1000
+number of VF-match tests: 1000
+number of Condorcet-match tests: 1000
+number of IIA tests: 1000
+number of clone independence tests: 1000
+number of cases limit per choice count: 2000
 number of cases dismissed because of tied result: 0
 PLUR method ignores all but first-ranked choice
 
@@ -118,22 +19,29 @@ STAR/sim/NT agree/disagree/tie: 100  0  0
 IRV-BTR agree/disagree/tie: 100  0  0
 IRV agree/disagree/tie: 100  0  0
 Borda/NT agree/disagree/tie: 100  0  0
-Appr/NT agree/disagree/tie: 100  0  0
 Plur agree/disagree/tie: 100  0  0
-PLE agree/disagree/tie: 100  0  0
 
 
 Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 52  48  0  (0)  (48)
-IPE agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 100  0  0  (0)  (0)
-IRV-BTR agree/disagree/tie (help) (hurt): 71  28  0  (0)  (28)
-IRV agree/disagree/tie (help) (hurt): 69  30  0  (0)  (30)
-Borda/NT agree/disagree/tie (help) (hurt): 52  48  0  (0)  (48)
-Appr/NT agree/disagree/tie (help) (hurt): 34  27  37  (1)  (21)
-Plur agree/disagree/tie (help) (hurt): 53  35  10  (0)  (35)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
+C-K agree/disagree/tie (help) (displaces) (hurt): 100  -48  0  (0)  (48)  (0)
+IPE agree/disagree/tie (help) (displaces) (hurt): 100  0  0  (0)  (0)  (0)
+RCIPE agree/disagree/tie (help) (displaces) (hurt): 100  0  0  (0)  (0)  (0)
+STAR/sim/NT agree/disagree/tie (help) (displaces) (hurt): 100  0  0  (0)  (0)  (0)
+IRV-BTR agree/disagree/tie (help) (displaces) (hurt): 94  -14  0  (0)  (20)  (5)
+IRV agree/disagree/tie (help) (displaces) (hurt): 87  -3  0  (0)  (16)  (12)
+Borda/NT agree/disagree/tie (help) (displaces) (hurt): 100  -48  0  (0)  (48)  (0)
+Plur agree/disagree/tie (help) (displaces) (hurt): 55  32  8  (0)  (2)  (35)
+
+
+Match Condorcet winner?
+C-K agree/disagree: 100  0 (failed 0/1000)
+IPE agree/disagree: 100  0 (failed 0/1000)
+RCIPE agree/disagree: 100  0 (failed 0/1000)
+STAR/sim/NT agree/disagree: 100  0 (failed 0/1000)
+IRV-BTR agree/disagree: 100  0 (failed 0/1000)
+IRV agree/disagree: 100  0 (failed 0/1000)
+Borda/NT agree/disagree: 100  0 (failed 0/1000)
+Plur agree/disagree: 100  0 (failed 0/1000)
 
 
 Match with VoteFair popularity ranking result?
@@ -144,326 +52,78 @@ STAR/sim/NT agree/disagree/tied: 100  0  0
 IRV-BTR agree/disagree/tied: 100  0  0
 IRV agree/disagree/tied: 100  0  0
 Borda/NT agree/disagree/tied: 100  0  0
-Appr/NT agree/disagree/tied: 100  0  0
 Plur agree/disagree/tied: 100  0  0
-PLE agree/disagree/tied: 100  0  0
 
-
-TEST CONDITIONS:
-number of choices: 3
-number of ballots: 11
-number of clones (excluding original): 2
-number of VF-match tests: 752
-number of IIA tests: 751
-number of clone independence tests: 751
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 243
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 97  2  0
-IPE agree/disagree/tie: 97  2  0
-RCIPE agree/disagree/tie: 97  2  0
-STAR/sim/NT agree/disagree/tie: 97  2  0
-IRV-BTR agree/disagree/tie: 95  4  0
-IRV agree/disagree/tie: 95  4  0
-Borda/NT agree/disagree/tie: 86  13  0
-Appr/NT agree/disagree/tie: 79  20  0
-Plur agree/disagree/tie: 88  11  0
-PLE agree/disagree/tie: 97  2  0
-
-
-Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 65  34  0  (0)  (33)
-IPE agree/disagree/tie (help) (hurt): 99  0  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 99  0  0  (0)  (0)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 96  3  0  (1)  (1)
-IRV-BTR agree/disagree/tie (help) (hurt): 78  21  0  (0)  (20)
-IRV agree/disagree/tie (help) (hurt): 78  21  0  (0)  (21)
-Borda/NT agree/disagree/tie (help) (hurt): 57  37  4  (0)  (30)
-Appr/NT agree/disagree/tie (help) (hurt): 39  21  39  (0)  (10)
-Plur agree/disagree/tie (help) (hurt): 68  16  15  (0)  (16)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 98  1  0
-RCIPE agree/disagree/tied: 98  1  0
-STAR/sim/NT agree/disagree/tied: 98  1  0
-IRV-BTR agree/disagree/tied: 97  2  0
-IRV agree/disagree/tied: 96  3  0
-Borda/NT agree/disagree/tied: 88  3  7
-Appr/NT agree/disagree/tied: 81  1  16
-Plur agree/disagree/tied: 91  8  0
-PLE agree/disagree/tied: 97  0  2
-
-
-TEST CONDITIONS:
-number of choices: 4
-number of ballots: 11
-number of clones (excluding original): 2
-number of VF-match tests: 790
-number of IIA tests: 789
-number of clone independence tests: 789
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 265
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 88  11  0
-IPE agree/disagree/tie: 89  10  0
-RCIPE agree/disagree/tie: 86  13  0
-STAR/sim/NT agree/disagree/tie: 85  14  0
-IRV-BTR agree/disagree/tie: 79  20  0
-IRV agree/disagree/tie: 79  20  0
-Borda/NT agree/disagree/tie: 81  18  0
-Appr/NT agree/disagree/tie: 61  38  0
-Plur agree/disagree/tie: 85  12  1
-PLE agree/disagree/tie: 76  23  0
-
-
-Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 71  28  0  (0)  (25)
-IPE agree/disagree/tie (help) (hurt): 97  1  0  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 97  2  0  (0)  (2)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 88  11  0  (3)  (3)
-IRV-BTR agree/disagree/tie (help) (hurt): 81  18  0  (0)  (16)
-IRV agree/disagree/tie (help) (hurt): 82  17  0  (0)  (15)
-Borda/NT agree/disagree/tie (help) (hurt): 61  32  5  (0)  (21)
-Appr/NT agree/disagree/tie (help) (hurt): 28  38  32  (5)  (10)
-Plur agree/disagree/tie (help) (hurt): 76  12  10  (0)  (12)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 91  7  1
-RCIPE agree/disagree/tied: 92  7  0
-STAR/sim/NT agree/disagree/tied: 93  6  0
-IRV-BTR agree/disagree/tied: 86  13  0
-IRV agree/disagree/tied: 85  14  0
-Borda/NT agree/disagree/tied: 79  9  11
-Appr/NT agree/disagree/tied: 58  15  25
-Plur agree/disagree/tied: 73  26  0
-PLE agree/disagree/tied: 76  0  23
-
-
-TEST CONDITIONS:
-number of choices: 5
-number of ballots: 11
-number of clones (excluding original): 2
-number of VF-match tests: 802
-number of IIA tests: 801
-number of clone independence tests: 801
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 390
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 84  15  0
-IPE agree/disagree/tie: 85  14  0
-RCIPE agree/disagree/tie: 84  15  0
-STAR/sim/NT agree/disagree/tie: 82  17  0
-IRV-BTR agree/disagree/tie: 75  24  0
-IRV agree/disagree/tie: 76  23  0
-Borda/NT agree/disagree/tie: 80  19  0
-Appr/NT agree/disagree/tie: 59  40  0
-Plur agree/disagree/tie: 91  8  0
-PLE agree/disagree/tie: 61  38  0
-
-
-Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 80  19  0  (0)  (17)
-IPE agree/disagree/tie (help) (hurt): 97  1  0  (0)  (0)
-RCIPE agree/disagree/tie (help) (hurt): 97  2  0  (0)  (2)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 88  11  0  (3)  (4)
-IRV-BTR agree/disagree/tie (help) (hurt): 84  15  0  (0)  (11)
-IRV agree/disagree/tie (help) (hurt): 84  15  0  (0)  (11)
-Borda/NT agree/disagree/tie (help) (hurt): 66  26  6  (0)  (16)
-Appr/NT agree/disagree/tie (help) (hurt): 34  24  40  (2)  (3)
-Plur agree/disagree/tie (help) (hurt): 81  8  9  (0)  (8)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 91  7  1
-RCIPE agree/disagree/tied: 92  7  0
-STAR/sim/NT agree/disagree/tied: 91  8  0
-IRV-BTR agree/disagree/tied: 83  16  0
-IRV agree/disagree/tied: 83  16  0
-Borda/NT agree/disagree/tied: 78  14  7
-Appr/NT agree/disagree/tied: 53  17  29
-Plur agree/disagree/tied: 70  29  0
-PLE agree/disagree/tied: 60  0  39
 
 
 TEST CONDITIONS:
 number of choices: 6
 number of ballots: 11
 number of clones (excluding original): 2
-number of VF-match tests: 820
-number of IIA tests: 819
-number of clone independence tests: 819
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 444
+number of VF-match tests: 1640
+number of Condorcet-match tests: 1240
+number of IIA tests: 1640
+number of clone independence tests: 1639
+number of cases limit per choice count: 2000
+number of cases dismissed because of tied result: 881
 PLUR method ignores all but first-ranked choice
 
 
 Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 85  14  0
-IPE agree/disagree/tie: 84  15  0
+C-K agree/disagree/tie: 84  15  0
+IPE agree/disagree/tie: 83  16  0
 RCIPE agree/disagree/tie: 80  19  0
-STAR/sim/NT agree/disagree/tie: 80  19  0
-IRV-BTR agree/disagree/tie: 68  31  0
-IRV agree/disagree/tie: 68  31  0
+STAR/sim/NT agree/disagree/tie: 79  20  0
+IRV-BTR agree/disagree/tie: 66  33  0
+IRV agree/disagree/tie: 67  32  0
 Borda/NT agree/disagree/tie: 81  18  0
-Appr/NT agree/disagree/tie: 59  39  1
-Plur agree/disagree/tie: 88  10  1
-PLE agree/disagree/tie: 49  50  0
+Plur agree/disagree/tie: 91  7  0
 
 
 Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 80  18  1  (0)  (16)
-IPE agree/disagree/tie (help) (hurt): 95  3  1  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 95  4  0  (0)  (3)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 89  10  0  (3)  (3)
-IRV-BTR agree/disagree/tie (help) (hurt): 84  15  0  (0)  (11)
-IRV agree/disagree/tie (help) (hurt): 85  14  0  (0)  (11)
-Borda/NT agree/disagree/tie (help) (hurt): 68  26  5  (0)  (15)
-Appr/NT agree/disagree/tie (help) (hurt): 26  37  36  (4)  (6)
-Plur agree/disagree/tie (help) (hurt): 85  4  10  (0)  (4)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
+C-K agree/disagree/tie (help) (displaces) (hurt): 94  -9  0  (0)  (14)  (2)
+IPE agree/disagree/tie (help) (displaces) (hurt): 95  2  1  (0)  (0)  (1)
+RCIPE agree/disagree/tie (help) (displaces) (hurt): 99  -3  0  (0)  (3)  (0)
+STAR/sim/NT agree/disagree/tie (help) (displaces) (hurt): 90  6  0  (1)  (2)  (0)
+IRV-BTR agree/disagree/tie (help) (displaces) (hurt): 92  0  0  (0)  (7)  (4)
+IRV agree/disagree/tie (help) (displaces) (hurt): 92  0  0  (0)  (7)  (4)
+Borda/NT agree/disagree/tie (help) (displaces) (hurt): 81  -3  7  (0)  (14)  (0)
+Plur agree/disagree/tie (help) (displaces) (hurt): 85  2  10  (0)  (2)  (4)
+
+
+Match Condorcet winner?
+C-K agree/disagree: 100  0 (failed 0/1240)
+IPE agree/disagree: 100  0 (failed 0/1240)
+RCIPE agree/disagree: 99  0 (failed 12/1240)
+STAR/sim/NT agree/disagree: 98  1 (failed 16/1240)
+IRV-BTR agree/disagree: 85  14 (failed 177/1240)
+IRV agree/disagree: 85  14 (failed 181/1240)
+Borda/NT agree/disagree: 83  16 (failed 208/1240)
+Plur agree/disagree: 70  29 (failed 370/1240)
 
 
 Match with VoteFair popularity ranking result?
 C-K agree/disagree/tied: 100  0  0
 IPE agree/disagree/tied: 90  6  2
 RCIPE agree/disagree/tied: 88  11  0
-STAR/sim/NT agree/disagree/tied: 90  9  0
-IRV-BTR agree/disagree/tied: 79  20  0
-IRV agree/disagree/tied: 78  21  0
-Borda/NT agree/disagree/tied: 75  15  9
-Appr/NT agree/disagree/tied: 46  25  28
-Plur agree/disagree/tied: 64  35  0
-PLE agree/disagree/tied: 41  0  58
+STAR/sim/NT agree/disagree/tied: 91  8  0
+IRV-BTR agree/disagree/tied: 76  23  0
+IRV agree/disagree/tied: 76  23  0
+Borda/NT agree/disagree/tied: 74  17  8
+Plur agree/disagree/tied: 63  36  0
 
-
-TEST CONDITIONS:
-number of choices: 7
-number of ballots: 11
-number of clones (excluding original): 2
-number of VF-match tests: 840
-number of IIA tests: 840
-number of clone independence tests: 839
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 441
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 80  19  0
-IPE agree/disagree/tie: 78  21  0
-RCIPE agree/disagree/tie: 71  28  0
-STAR/sim/NT agree/disagree/tie: 74  25  0
-IRV-BTR agree/disagree/tie: 58  41  0
-IRV agree/disagree/tie: 59  40  0
-Borda/NT agree/disagree/tie: 80  19  0
-Appr/NT agree/disagree/tie: 54  45  0
-Plur agree/disagree/tie: 92  7  0
-PLE agree/disagree/tie: 47  52  0
-
-
-Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 81  18  0  (0)  (14)
-IPE agree/disagree/tie (help) (hurt): 94  3  2  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 94  5  0  (0)  (5)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 87  12  0  (4)  (3)
-IRV-BTR agree/disagree/tie (help) (hurt): 88  11  0  (0)  (9)
-IRV agree/disagree/tie (help) (hurt): 89  10  0  (0)  (9)
-Borda/NT agree/disagree/tie (help) (hurt): 69  23  6  (0)  (13)
-Appr/NT agree/disagree/tie (help) (hurt): 33  24  41  (2)  (2)
-Plur agree/disagree/tie (help) (hurt): 88  2  9  (0)  (2)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 86  10  3
-RCIPE agree/disagree/tied: 84  15  0
-STAR/sim/NT agree/disagree/tied: 86  13  0
-IRV-BTR agree/disagree/tied: 69  30  0
-IRV agree/disagree/tied: 69  30  0
-Borda/NT agree/disagree/tied: 71  20  8
-Appr/NT agree/disagree/tied: 43  22  34
-Plur agree/disagree/tied: 56  43  0
-PLE agree/disagree/tied: 20  0  79
-
-
-TEST CONDITIONS:
-number of choices: 8
-number of ballots: 11
-number of clones (excluding original): 2
-number of VF-match tests: 848
-number of IIA tests: 848
-number of clone independence tests: 848
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 520
-PLUR method ignores all but first-ranked choice
-
-
-Independence of Irrelevant Alternatives (IIA) success and failure rates:
-C-K agree/disagree/tie: 80  19  0
-IPE agree/disagree/tie: 78  21  0
-RCIPE agree/disagree/tie: 70  29  0
-STAR/sim/NT agree/disagree/tie: 74  25  0
-IRV-BTR agree/disagree/tie: 60  39  0
-IRV agree/disagree/tie: 60  39  0
-Borda/NT agree/disagree/tie: 80  19  0
-Appr/NT agree/disagree/tie: 56  43  0
-Plur agree/disagree/tie: 96  3  0
-PLE agree/disagree/tie: 54  45  0
-
-
-Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 84  14  0  (0)  (12)
-IPE agree/disagree/tie (help) (hurt): 93  3  2  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 96  3  0  (0)  (3)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 87  12  0  (4)  (3)
-IRV-BTR agree/disagree/tie (help) (hurt): 90  9  0  (0)  (7)
-IRV agree/disagree/tie (help) (hurt): 90  9  0  (0)  (7)
-Borda/NT agree/disagree/tie (help) (hurt): 71  23  5  (0)  (10)
-Appr/NT agree/disagree/tie (help) (hurt): 29  30  40  (2)  (2)
-Plur agree/disagree/tie (help) (hurt): 90  1  7  (0)  (1)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
-
-
-Match with VoteFair popularity ranking result?
-C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 86  9  3
-RCIPE agree/disagree/tied: 82  17  0
-STAR/sim/NT agree/disagree/tied: 85  14  0
-IRV-BTR agree/disagree/tied: 70  29  0
-IRV agree/disagree/tied: 70  29  0
-Borda/NT agree/disagree/tied: 71  20  7
-Appr/NT agree/disagree/tied: 42  25  32
-Plur agree/disagree/tied: 54  45  0
-PLE agree/disagree/tied: 12  0  87
 
 
 TEST CONDITIONS:
 number of choices: 9
 number of ballots: 11
 number of clones (excluding original): 2
-number of VF-match tests: 855
-number of IIA tests: 854
-number of clone independence tests: 854
-number of cases limit per choice count: 1000
-number of cases dismissed because of tied result: 599
+number of VF-match tests: 1712
+number of Condorcet-match tests: 1052
+number of IIA tests: 1711
+number of clone independence tests: 1711
+number of cases limit per choice count: 2000
+number of cases dismissed because of tied result: 1173
 PLUR method ignores all but first-ranked choice
 
 
@@ -471,65 +131,79 @@ Independence of Irrelevant Alternatives (IIA) success and failure rates:
 C-K agree/disagree/tie: 77  22  0
 IPE agree/disagree/tie: 77  22  0
 RCIPE agree/disagree/tie: 68  31  0
-STAR/sim/NT agree/disagree/tie: 72  27  0
-IRV-BTR agree/disagree/tie: 56  43  0
-IRV agree/disagree/tie: 55  44  0
+STAR/sim/NT agree/disagree/tie: 74  25  0
+IRV-BTR agree/disagree/tie: 57  42  0
+IRV agree/disagree/tie: 57  42  0
 Borda/NT agree/disagree/tie: 79  20  0
-Appr/NT agree/disagree/tie: 56  43  0
 Plur agree/disagree/tie: 97  2  0
-PLE agree/disagree/tie: 66  33  0
 
 
 Clone Independence success and failure rates:
-C-K agree/disagree/tie (help) (hurt): 85  14  0  (0)  (11)
-IPE agree/disagree/tie (help) (hurt): 94  2  2  (0)  (1)
-RCIPE agree/disagree/tie (help) (hurt): 94  5  0  (0)  (5)
-STAR/sim/NT agree/disagree/tie (help) (hurt): 87  12  0  (3)  (3)
-IRV-BTR agree/disagree/tie (help) (hurt): 90  9  0  (0)  (7)
-IRV agree/disagree/tie (help) (hurt): 90  9  0  (0)  (7)
-Borda/NT agree/disagree/tie (help) (hurt): 70  22  6  (0)  (11)
-Appr/NT agree/disagree/tie (help) (hurt): 33  25  40  (1)  (2)
-Plur agree/disagree/tie (help) (hurt): 88  2  9  (0)  (2)
-PLE agree/disagree/tie (help) (hurt): 0  0  100  (0)  (0)
+C-K agree/disagree/tie (help) (displaces) (hurt): 93  -1  0  (0)  (7)  (2)
+IPE agree/disagree/tie (help) (displaces) (hurt): 94  2  3  (0)  (0)  (1)
+RCIPE agree/disagree/tie (help) (displaces) (hurt): 99  -2  0  (0)  (2)  (0)
+STAR/sim/NT agree/disagree/tie (help) (displaces) (hurt): 90  7  0  (1)  (1)  (0)
+IRV-BTR agree/disagree/tie (help) (displaces) (hurt): 94  1  0  (0)  (4)  (3)
+IRV agree/disagree/tie (help) (displaces) (hurt): 94  1  0  (0)  (4)  (3)
+Borda/NT agree/disagree/tie (help) (displaces) (hurt): 83  1  6  (0)  (8)  (0)
+Plur agree/disagree/tie (help) (displaces) (hurt): 89  0  8  (0)  (0)  (1)
+
+
+Match Condorcet winner?
+C-K agree/disagree: 100  0 (failed 0/1052)
+IPE agree/disagree: 100  0 (failed 0/1052)
+RCIPE agree/disagree: 97  2 (failed 31/1052)
+STAR/sim/NT agree/disagree: 98  1 (failed 12/1052)
+IRV-BTR agree/disagree: 81  18 (failed 198/1052)
+IRV agree/disagree: 81  18 (failed 199/1052)
+Borda/NT agree/disagree: 82  17 (failed 181/1052)
+Plur agree/disagree: 61  38 (failed 409/1052)
 
 
 Match with VoteFair popularity ranking result?
 C-K agree/disagree/tied: 100  0  0
-IPE agree/disagree/tied: 85  10  3
-RCIPE agree/disagree/tied: 79  20  0
+IPE agree/disagree/tied: 86  9  4
+RCIPE agree/disagree/tied: 80  19  0
 STAR/sim/NT agree/disagree/tied: 85  14  0
-IRV-BTR agree/disagree/tied: 64  35  0
-IRV agree/disagree/tied: 64  35  0
-Borda/NT agree/disagree/tied: 67  24  7
-Appr/NT agree/disagree/tied: 40  23  36
-Plur agree/disagree/tied: 47  52  0
-PLE agree/disagree/tied: 5  0  94
+IRV-BTR agree/disagree/tied: 66  33  0
+IRV agree/disagree/tied: 66  33  0
+Borda/NT agree/disagree/tied: 68  24  7
+Plur agree/disagree/tied: 52  47  0
 
 
 Summary in spreadsheet-chartable format:
 
 Independence of Irrelevant Alternatives
-Method,3 choices,4 choices,5 choices,6 choices,7 choices,8 choices,9 choices
-C-K,97.3,88.8,84.7,85.5,80.8,80.7,77.5
-IPE,97.3,89.2,85.5,84.3,78.5,78.4,77
-RCIPE,97.3,86,84,80.9,71.6,70.7,68
-STAR/sim/NT,97.3,85.5,82.6,80.7,74.4,74,72.7
-IRV-BTR,95.4,79,75.6,68,58.9,60.2,56.4
-IRV,95.3,79.5,76.4,68.4,59.6,60.1,55.9
-Borda/NT,86.4,81.3,80.5,81.8,80.5,80.7,79.8
-Appr/NT,79.3,61.3,59.1,59,54.7,56.3,56.5
-Plur,88.9,85.6,91.5,88.5,92.9,96.9,97.3
+Method,6 choices,9 choices
+C-K,84.5,77.9
+IPE,83.7,77.8
+RCIPE,80.1,68.2
+STAR/sim/NT,79.6,74.1
+IRV-BTR,66.9,57.2
+IRV,67,57.3
+Borda/NT,81.4,79.7
+Plur,91.8,97.2
 
 
 Clone Independence
-Method,2 choices,3 choices,4 choices,5 choices,6 choices,7 choices,8 choices,9 choices
-C-K,52,65.6,71.7,80.1,80.8,81.2,84.7,85.4
-IPE,100,99.7,97.8,97.5,95.1,94.6,93.6,94.9
-RCIPE,100,99.2,97.2,97.1,95.9,94.2,96.3,94.9
-STAR/sim/NT,100,96.2,88.9,88.6,89,87.2,87.9,87.2
-IRV-BTR,71.4,78.5,81.3,84.3,84.7,88.7,90.2,90.6
-IRV,69.4,78.2,82,84.5,85.3,89,90.2,90.7
-Borda/NT,52,57.3,61.8,66.6,68.1,69.6,71.1,70.7
-Appr/NT,34.4,39.1,28.7,34.7,26.6,33.3,29,33.6
-Plur,53.8,68.4,76.9,81.8,85.4,88.5,90.8,88
+Method,2 choices,6 choices,9 choices
+C-K,100,94.6,93.7
+IPE,100,95.4,94
+RCIPE,100,99.8,99.6
+STAR/sim/NT,100,90.6,90.7
+IRV-BTR,94.1,92,94.3
+IRV,87.1,92.3,94.3
+Borda/NT,100,81.8,83.8
+Plur,55.8,85.7,89.8
 
+
+Condorcet compliance
+Method,2 choices,6 choices,9 choices
+C-K,100,100,100
+IPE,100,100,100
+RCIPE,100,99,97
+STAR/sim/NT,100,98.7,98.8
+IRV-BTR,100,85.7,81.1
+IRV,100,85.4,81
+Borda/NT,100,83.2,82.7
+Plur,100,70.1,61.1
