@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 10 ;
+int global_number_of_tests_per_choice_count = 2000 ;
 
 
 // -----------------------------------------------
@@ -1604,12 +1604,12 @@ void write_final_results( )
     global_color_hex_for_method[ global_method_kemeny ] = "#377eb8" ; // blue
     global_color_hex_for_method[ global_method_ipe ] = "#4daf4a" ; // green
     global_color_hex_for_method[ global_method_rcipe ] = "#f451a7" ; // pinkish magenta
-    global_color_hex_for_method[ global_method_star ] = "#a65628" ; // brown
+    global_color_hex_for_method[ global_method_star ] = "#dbdb00" ; // yellow
     global_color_hex_for_method[ global_method_borda ] = "#e41a1c" ; // red
     global_color_hex_for_method[ global_method_irvbtr ] = "#ff7f00" ; // orange
     global_color_hex_for_method[ global_method_irv ] = "#984ea3" ; // purple
     global_color_hex_for_method[ global_method_plurality ] = "#808080" ; // grey
-    global_color_hex_for_method[ global_method_approval ] = "#dbdb00" ; // yellow
+    global_color_hex_for_method[ global_method_approval ] = "#999999" ; // unused
     global_color_hex_for_method[ global_method_ple ] = "#999999" ; // unused
 
     svg_out << "<?xml version=" << '"' << "1.0" << '"' << " encoding=" << '"' << "UTF-8" << '"' << " standalone=" << '"' << "no" << '"' << "?>" << std::endl << "<svg width=" << '"' << "11in" << '"' << " height=" << '"' << "8.5in" << '"' << " viewBox=" << '"' << "0 0 110 110" << '"' << ">layer1" << '"' << " inkscape:label=" << '"' << "Layer 1" << '"' << " style=" << '"' << "display:inline" << '"' << ">" << std::endl ;
