@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 100 ;
+int global_number_of_tests_per_choice_count = 10 ;
 
 
 // -----------------------------------------------
@@ -293,12 +293,12 @@ std::string global_string_voteinfo_code_for_end_of_all_vote_info = "-8" ;
 std::string global_string_voteinfo_code_for_end_of_ballot = "-10" ;
 std::string global_string_voteinfo_code_for_ballot_count = "-11" ;
 std::string global_string_voteinfo_code_for_preference_level = "-12" ;
-
-std::string global_voteinfo_code_for_request_instant_runoff_voting = "-50" ;
-std::string global_voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
-std::string global_voteinfo_code_for_request_rcipe_voting = "-52" ;
-std::string global_voteinfo_code_for_request_star_voting = "-56" ;
-std::string global_voteinfo_code_for_request_pairwise_loser_elimination = "-58" ;
+std::string global_string_voteinfo_code_for_request_instant_runoff_voting = "-50" ;
+std::string global_string_voteinfo_code_for_request_instant_pairwise_elimination = "-51" ;
+std::string global_string_voteinfo_code_for_request_rcipe_voting = "-52" ;
+std::string global_string_voteinfo_code_for_request_star_voting = "-56" ;
+std::string global_string_voteinfo_code_for_request_pairwise_loser_elimination = "-58" ;
+std::string global_string_voteinfo_code_for_request_logging_off = "-65" ;
 
 const int global_voteinfo_code_for_case_number = -3 ;
 const int global_voteinfo_code_for_choice = -13 ;
@@ -1270,13 +1270,14 @@ void do_all_tests_for_specified_choice_count( ) {
 
         std::fstream outfile ;
         outfile.open ( "temp_generated_random_ballots.txt" , std::fstream::out ) ;
+        outfile << global_string_voteinfo_code_for_request_logging_off << std::endl ;
         outfile << global_string_voteinfo_code_for_start_of_all_vote_info << std::endl ;
         outfile << global_string_voteinfo_code_for_case_number << " " << global_case_id << std::endl ;
-        outfile << global_voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
-        outfile << global_voteinfo_code_for_request_instant_runoff_voting << std::endl ;
-        outfile << global_voteinfo_code_for_request_rcipe_voting << std::endl ;
-        outfile << global_voteinfo_code_for_request_star_voting << std::endl ;
-        outfile << global_voteinfo_code_for_request_pairwise_loser_elimination << std::endl ;
+        outfile << global_string_voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
+        outfile << global_string_voteinfo_code_for_request_instant_runoff_voting << std::endl ;
+        outfile << global_string_voteinfo_code_for_request_rcipe_voting << std::endl ;
+        outfile << global_string_voteinfo_code_for_request_star_voting << std::endl ;
+        outfile << global_string_voteinfo_code_for_request_pairwise_loser_elimination << std::endl ;
         outfile << global_string_voteinfo_code_for_question_number << " " << global_question_number << std::endl ;
         outfile << global_string_voteinfo_code_for_number_of_choices << " " << global_choice_count_case_specific << std::endl ;
 
