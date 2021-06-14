@@ -420,6 +420,7 @@ const int global_voteinfo_code_for_winner_borda_count = -61 ;
 const int global_voteinfo_code_for_flag_as_interesting = -62 ;
 const int global_voteinfo_code_for_winner_approval_voting = -63 ;
 const int global_voteinfo_code_for_winner_condorcet = -64 ;
+const int global_voteinfo_code_for_request_logging_off = -65 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -829,12 +830,6 @@ void do_initialization( )
 
 
 // -----------------------------------------------
-//  Clear, or set, flags.
-
-    global_logging_info = global_true ;
-
-
-// -----------------------------------------------
 //  Initialize zero and empty values.
 
     global_length_of_vote_info_list = 0 ;
@@ -1141,7 +1136,7 @@ void read_data( )
                 try
                 {
                     next_number = convert_text_to_integer( pointer_to_word ) ;
-                    log_out << "[" << next_number << "]  " ;
+                    if ( global_logging_info == global_true ) { log_out << "[" << next_number << "]  " ; } ;
                 }
                 catch( ... )
                 {
@@ -1149,6 +1144,16 @@ void read_data( )
                     if ( global_logging_info == global_true ) { log_out << "[Warning: Input line contains non-numeric characters (" << pointer_to_word << "), so this case (" << global_case_number << ") cannot be calculated]\n" ; } ;
                     exit( EXIT_FAILURE ) ;
                 }
+            }
+
+
+// -----------------------------------------------
+//  If there is a request for no logging,
+//  shut off logging now.
+
+            if ( next_number == global_voteinfo_code_for_request_logging_off )
+            {
+                global_logging_info = global_false ;
             }
 
 
@@ -1195,7 +1200,7 @@ void read_data( )
             pointer_to_word = strtok( NULL, " ,." ) ;
 //            std::cout << "Number count = " << input_number_count << std::endl ;
         }
-        log_out << "\n[done handling input line]\n" ;
+        if ( global_logging_info == global_true ) { log_out << "\n[done handling input line]\n" ; }
 
 
 // -----------------------------------------------
@@ -1203,7 +1208,7 @@ void read_data( )
 //  the input file.
 
     }
-    log_out << "[done getting input data]\n" ;
+    if ( global_logging_info == global_true ) { log_out << "[done getting input data]\n" ; }
 
 
 // -----------------------------------------------
@@ -1872,6 +1877,16 @@ void check_vote_info_numbers( )
 
 
 // -----------------------------------------------
+//  Allow the logging info to be ignored -- for
+//  faster execution when the details are not
+//  important.
+
+        } else if ( current_vote_info_number == global_voteinfo_code_for_request_logging_off )
+        {
+            global_logging_info = global_false ;
+
+
+// -----------------------------------------------
 //  Handle the code for requests to calculate
 //  elimination-based voting methods such as
 //  RCIPE (Ranked Choice Including Pairwise
@@ -2367,6 +2382,10 @@ void normalize_ranking( )
 //  Hide (or show) details.
 
     true_or_false_log_details = global_false ;
+    if ( global_logging_info == global_false )
+    {
+        true_or_false_log_details = global_false ;
+    }
 
 
 // -----------------------------------------------
@@ -3653,7 +3672,7 @@ void calc_all_sequence_scores( )
     true_or_false_log_details = global_true ;
     if ( true_or_false_log_details == global_true )
     {
-        log_out << "[all scores, final popularity ranking:]\n" ;
+        if ( global_logging_info == global_true ) { log_out << "[all scores, final popularity ranking:]\n" ; } ;
         internal_view_matrix( ) ;
     }
 
@@ -4010,6 +4029,9 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
         {
             log_out << "[choice-score, details hidden (change flag value to view details)]\n" ;
         }
+    } else
+    {
+        true_or_false_log_details = global_false ;
     }
 
 
@@ -4080,7 +4102,7 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
             global_log_info_choice_at_position[ sequence_position ] = actual_choice ;
         }
-        log_out << "[choice-score, initial ranking:]\n" ;
+        if ( global_logging_info == global_true ) { log_out << "[choice-score, initial ranking:]\n" ; } ;
         internal_view_matrix( ) ;
     }
 
@@ -5237,8 +5259,11 @@ void calc_votefair_insertion_sort_popularity_rank( )
 //  This choice can slow down the software
 //  because it creates a large log file.
 
-    true_or_false_log_details = global_false ;
     true_or_false_log_details = global_true ;
+    if ( global_logging_info == global_false )
+    {
+        true_or_false_log_details = global_false ;
+    }
     if ( global_logging_info == global_true )
     {
         log_out << "\n[insertion sort, beginning calc_votefair_insertion_sort_popularity_rank function]\n" ;
