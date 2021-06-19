@@ -1067,12 +1067,12 @@ void write_test_results( )
             global_calculated_clone_result_match_for_method_and_choice_count[ method_id ][ global_maximum_choice_number ] = calculated_clone_result_match ;
             float_number = global_count_of_clone_tests_match_for_method[ method_id ] + global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ;
             global_calculated_clone_result_match_with_tenths[ method_id ][ global_maximum_choice_number ] = ( int( ( 1000.0 * float_number ) / global_clone_test_count ) ) / 10.0 ;
-            calculated_clone_result_fail_match = int( ( 100 * ( global_count_of_clone_tests_fail_match_for_method[ method_id ] - global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ) ) / global_clone_test_count ) ;
+            calculated_clone_result_fail_match = int( ( 100 * ( global_count_of_clone_tests_fail_match_for_method[ method_id ] ) ) / global_clone_test_count ) ;
             calculated_clone_result_ties = int( ( 100 *  global_count_of_clone_tests_tied_for_method[ method_id ] ) / global_clone_test_count ) ;
-            calculated_clone_result_clone_help = int( ( 100 *  global_count_of_clone_tests_clone_help_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_displaces = int( ( 100 *  global_count_of_clone_tests_clone_displaces_for_method[ method_id ] ) / global_clone_test_count ) ;
+            calculated_clone_result_clone_help = int( ( 100 *  global_count_of_clone_tests_clone_help_for_method[ method_id ] ) / global_clone_test_count ) ;
             calculated_clone_result_clone_hurt = int( ( 100 *  global_count_of_clone_tests_clone_hurt_for_method[ method_id ] ) / global_clone_test_count ) ;
-            log_out << global_name_for_method[ method_id ] << " agree/disagree/tie (help) (displaces) (hurt): " << calculated_clone_result_match << "  " << calculated_clone_result_fail_match << "  " << calculated_clone_result_ties << "  (" << calculated_clone_result_clone_help << ")  (" << calculated_clone_result_displaces << ")  (" << calculated_clone_result_clone_hurt << ")" << std::endl ;
+            log_out << global_name_for_method[ method_id ] << " agree/disagree/tie (displaces) (help) (hurt): " << calculated_clone_result_match << "  " << calculated_clone_result_fail_match << "  " << calculated_clone_result_ties << calculated_clone_result_displaces << ")  (" << "  (" << calculated_clone_result_clone_help << ")  ("  << calculated_clone_result_clone_hurt << ")" << std::endl ;
             if ( global_count_of_clone_tests_unexpected_for_method[ method_id ] > 0 )
             {
                 log_out << "unexpected clone test results count: " << global_count_of_clone_tests_unexpected_for_method[ method_id ] << std::endl ;
