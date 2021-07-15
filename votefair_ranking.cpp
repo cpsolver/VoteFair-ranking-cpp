@@ -9293,21 +9293,21 @@ void method_pairwise_support_count( )
             if ( global_tally_first_over_second_in_pair[ pair_counter ] < smallest_single_pairwise_count )
             {
                 smallest_single_pairwise_count = global_tally_first_over_second_in_pair[ pair_counter ] ;
-                choice_with_smallest_single_pairwise_count = actual_first_choice ;
                 count_of_choices_at_smallest_count = 1 ;
+                global_list_of_tied_choices[ count_of_choices_at_smallest_count ] = actual_first_choice ;
             } else if ( global_tally_first_over_second_in_pair[ pair_counter ] == smallest_single_pairwise_count )
             {
-                choice_with_smallest_single_pairwise_count = 0 ;
                 count_of_choices_at_smallest_count ++ ;
+                global_list_of_tied_choices[ count_of_choices_at_smallest_count ] = actual_first_choice ;
             } else if ( global_tally_second_over_first_in_pair[ pair_counter ] < smallest_single_pairwise_count )
             {
                 smallest_single_pairwise_count = global_tally_second_over_first_in_pair[ pair_counter ] ;
-                choice_with_smallest_single_pairwise_count = actual_second_choice ;
                 count_of_choices_at_smallest_count = 1 ;
+                global_list_of_tied_choices[ count_of_choices_at_smallest_count ] = actual_second_choice ;
             } else if ( global_tally_second_over_first_in_pair[ pair_counter ] == smallest_single_pairwise_count )
             {
-                choice_with_smallest_single_pairwise_count = 0 ;
                 count_of_choices_at_smallest_count ++ ;
+                global_list_of_tied_choices[ count_of_choices_at_smallest_count ] = actual_second_choice ;
             }
         }
         if ( global_logging_info == global_true ) { log_out << "[count of choices with smallest single pairwise count is " << count_of_choices_at_smallest_count << "]" << std::endl ; } ;
@@ -9324,14 +9324,15 @@ void method_pairwise_support_count( )
 //  If the tie does not involve all the choices,
 //  eliminate all the tied choices.
 
-        if ( count_of_bottom_choices < global_full_choice_count )
+        if ( count_of_choices_at_smallest_count < global_count_of_continuing_choices )
         {
             if ( global_logging_info == global_true ) { log_out << "[the bottom choices are tied so all of the bottom choices are being eliminated]" << std::endl ; } ;
-            for ( pointer_to_list_of_choices = 1 ; pointer_to_list_of_choices <= count_of_bottom_choices ; pointer_to_list_of_choices ++ )
+            for ( pointer_to_list_of_choices = 1 ; pointer_to_list_of_choices <= count_of_choices_at_smallest_count ; pointer_to_list_of_choices ++ )
             {
                 actual_choice = global_list_of_tied_choices[ pointer_to_list_of_choices ] ;
-                global_true_or_false_continuing_for_choice[ actual_choice ] = global_false ;
                 if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " is eliminated]" << std::endl ; } ;
+                global_choice_to_eliminate = actual_choice ;
+                elim_choice_to_eliminate( ) ;
             }
             continue ;
         }
