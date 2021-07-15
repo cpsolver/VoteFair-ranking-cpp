@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 2000 ;
+int global_number_of_tests_per_choice_count = 100 ;
 
 
 // -----------------------------------------------
@@ -147,15 +147,16 @@ int global_minimum_case_id = 100000 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 8 ;
+int global_number_of_methods = 9 ;
 const int global_method_kemeny = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
-const int global_method_star = 4 ;
-const int global_method_irvbtr = 5 ;
-const int global_method_irv = 6 ;
-const int global_method_borda = 7 ;
-const int global_method_plurality = 8 ;
+const int global_method_rcipe2 = 4 ;
+const int global_method_star = 5 ;
+const int global_method_irvbtr = 6 ;
+const int global_method_irv = 7 ;
+const int global_method_borda = 8 ;
+const int global_method_plurality = 9 ;
 
 //  Ignore results for pseudo-method PLE
 //  which was used to verify how often every round
@@ -170,6 +171,7 @@ const int global_method_approval = 0 ;
 std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
+std::string global_name_for_method_rcipe2 = "RCIPE2" ;
 std::string global_name_for_method_irvbtr = "IRV-BTR" ;
 std::string global_name_for_method_star = "STAR/sim/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
@@ -318,6 +320,7 @@ const int global_voteinfo_code_for_winner_borda_count = -61 ;
 const int global_voteinfo_code_for_flag_as_interesting = -62 ;
 const int global_voteinfo_code_for_winner_approval_voting = -63 ;
 const int global_voteinfo_code_for_winner_condorcet = -64 ;
+const int global_voteinfo_code_for_winner_pairwise_support_count = -66 ;
 
 
 // -----------------------------------------------
@@ -654,6 +657,11 @@ void handle_calculated_results( )
             {
                 global_choice_winner_from_method[ global_method_rcipe ] = current_result_code ;
                 log_out << "[" << global_name_for_method[ global_method_rcipe ] << " " << global_choice_winner_from_method[ global_method_rcipe ] << "]" ;
+
+            } else if ( previous_result_code == global_voteinfo_code_for_winner_pairwise_support_count )
+            {
+                global_choice_winner_from_method[ global_method_rcipe2 ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_rcipe2 ] << " " << global_choice_winner_from_method[ global_method_rcipe2 ] << "]" ;
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
             {
@@ -1270,7 +1278,11 @@ void do_all_tests_for_specified_choice_count( ) {
 
         std::fstream outfile ;
         outfile.open ( "temp_generated_random_ballots.txt" , std::fstream::out ) ;
-        outfile << global_string_voteinfo_code_for_request_logging_off << std::endl ;
+
+//  The next line suppresses writing details to the log file,
+//  which is useful when lots of cases are being run, and debugging is not needed.
+//        outfile << global_string_voteinfo_code_for_request_logging_off << std::endl ;
+
         outfile << global_string_voteinfo_code_for_start_of_all_vote_info << std::endl ;
         outfile << global_string_voteinfo_code_for_case_number << " " << global_case_id << std::endl ;
         outfile << global_string_voteinfo_code_for_request_instant_pairwise_elimination << std::endl ;
@@ -1603,7 +1615,8 @@ void write_final_results( )
 
     global_color_hex_for_method[ global_method_kemeny ] = "#377eb8" ; // blue
     global_color_hex_for_method[ global_method_ipe ] = "#4daf4a" ; // green
-    global_color_hex_for_method[ global_method_rcipe ] = "#f451a7" ; // pinkish magenta
+    global_color_hex_for_method[ global_method_rcipe ] = "#f89acb" ; // lighter pinkish magenta
+    global_color_hex_for_method[ global_method_rcipe2 ] = "#ea0f82" ; // darker pinkish magenta
     global_color_hex_for_method[ global_method_star ] = "#dbdb00" ; // yellow
     global_color_hex_for_method[ global_method_borda ] = "#e41a1c" ; // red
     global_color_hex_for_method[ global_method_irvbtr ] = "#ff7f00" ; // orange
@@ -1667,6 +1680,7 @@ int main( ) {
     global_name_for_method[ global_method_kemeny ] = global_name_for_method_kemeny ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
+    global_name_for_method[ global_method_rcipe2 ] = global_name_for_method_rcipe2 ;
     global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
     global_name_for_method[ global_method_star ] = global_name_for_method_star ;
