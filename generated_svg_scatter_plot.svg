@@ -5,59 +5,66 @@
 <g inkscape:groupmode="layer" id="layer1" inkscape:label="Layer 1" style="display:inline"><g>
 <circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="100" cy="0" r="0.6" />
 <text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="100" y="0">C-K,2</tspan></text>
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,5 100,0"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="84" cy="5" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 79,5 84,5"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="79" cy="5" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="79" y="4">C-K,9</tspan></text>
+<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 81,4 100,0"/>
+<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="81" cy="4" r="0.6" />
+<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 75,2 81,4"/>
+<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="75" cy="2" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="75" y="1">C-K,9</tspan></text>
 <circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="100" cy="0" r="0.6" />
 <text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="100" y="0">IPE,2</tspan></text>
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 82,4 100,0"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="82" cy="4" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 76,6 82,4"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="76" cy="6" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="76" y="5">IPE,9</tspan></text>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="RCIPE" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#f451a7;"><tspan x="100" y="0">RCIPE,2</tspan></text>
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 77,0 100,0"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="RCIPE" cx="77" cy="0" r="0.6" />
-<path style="fill:none;stroke:#f451a7;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 68,0 77,0"/>
-<circle style="fill:#f451a7;stroke:none;fill-opacity:1" id="RCIPE" cx="68" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#f451a7;"><tspan x="68" y="0">RCIPE,9</tspan></text>
+<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,3 100,0"/>
+<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="84" cy="3" r="0.6" />
+<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 76,3 84,3"/>
+<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="76" cy="3" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="76" y="2">IPE,9</tspan></text>
+<circle style="fill:#f89acb;stroke:none;fill-opacity:1" id="RCIPE" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#f89acb;"><tspan x="100" y="0">RCIPE,2</tspan></text>
+<path style="fill:none;stroke:#f89acb;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 74,0 100,0"/>
+<circle style="fill:#f89acb;stroke:none;fill-opacity:1" id="RCIPE" cx="74" cy="0" r="0.6" />
+<path style="fill:none;stroke:#f89acb;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 62,0 74,0"/>
+<circle style="fill:#f89acb;stroke:none;fill-opacity:1" id="RCIPE" cx="62" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#f89acb;"><tspan x="62" y="0">RCIPE,9</tspan></text>
+<circle style="fill:#ea0f82;stroke:none;fill-opacity:1" id="RCIPE2" cx="100" cy="0" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#ea0f82;"><tspan x="100" y="0">RCIPE2,2</tspan></text>
+<path style="fill:none;stroke:#ea0f82;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 78,2 100,0"/>
+<circle style="fill:#ea0f82;stroke:none;fill-opacity:1" id="RCIPE2" cx="78" cy="2" r="0.6" />
+<path style="fill:none;stroke:#ea0f82;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 75,4 78,2"/>
+<circle style="fill:#ea0f82;stroke:none;fill-opacity:1" id="RCIPE2" cx="75" cy="4" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#ea0f82;"><tspan x="75" y="3">RCIPE2,9</tspan></text>
 <circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="100" cy="0" r="0.6" />
 <text style="font-size:1px;font-weight:bold;fill:#dbdb00;"><tspan x="100" y="0">STAR/sim/NT,2</tspan></text>
-<path style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 78,9 100,0"/>
-<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="78" cy="9" r="0.6" />
-<path style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 75,8 78,9"/>
-<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="75" cy="8" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#dbdb00;"><tspan x="75" y="7">STAR/sim/NT,9</tspan></text>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="100" cy="5" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="100" y="4">IRV-BTR,2</tspan></text>
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 67,6 100,5"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="67" cy="6" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 55,5 67,6"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="55" cy="5" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="55" y="4">IRV-BTR,9</tspan></text>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="100" cy="12" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="100" y="11">IRV,2</tspan></text>
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 67,6 100,12"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="67" cy="6" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 55,5 67,6"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="55" cy="5" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="55" y="4">IRV,9</tspan></text>
+<path style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 82,9 100,0"/>
+<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="82" cy="9" r="0.6" />
+<path style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 70,9 82,9"/>
+<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="70" cy="9" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#dbdb00;"><tspan x="70" y="8">STAR/sim/NT,9</tspan></text>
+<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="100" cy="8" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="100" y="7">IRV-BTR,2</tspan></text>
+<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 60,9 100,8"/>
+<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="60" cy="9" r="0.6" />
+<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 52,5 60,9"/>
+<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="52" cy="5" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="52" y="4">IRV-BTR,9</tspan></text>
+<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="100" cy="14" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="100" y="13">IRV,2</tspan></text>
+<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 59,8 100,14"/>
+<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="59" cy="8" r="0.6" />
+<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 52,5 59,8"/>
+<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="52" cy="5" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="52" y="4">IRV,9</tspan></text>
 <circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="100" cy="0" r="0.6" />
 <text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="100" y="0">Borda/NT,2</tspan></text>
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80,18 100,0"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="80" cy="18" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 81,15 80,18"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="81" cy="15" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="81" y="14">Borda/NT,9</tspan></text>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="100" cy="44" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="100" y="43">Plur,2</tspan></text>
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 89,12 100,44"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="89" cy="12" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 96,9 89,12"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="96" cy="9" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="96" y="8">Plur,9</tspan></text>
+<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,15 100,0"/>
+<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="84" cy="15" r="0.6" />
+<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80,24 84,15"/>
+<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="80" cy="24" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="80" y="23">Borda/NT,9</tspan></text>
+<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="100" cy="56" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="100" y="55">Plur,2</tspan></text>
+<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 92,8 100,56"/>
+<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="92" cy="8" r="0.6" />
+<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 98,4 92,8"/>
+<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="98" cy="4" r="0.6" />
+<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="98" y="3">Plur,9</tspan></text>
 </g>
 </svg>
