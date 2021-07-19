@@ -1,70 +1,386 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="11in" height="8.5in" viewBox="0 0 110 110">layer1" inkscape:label="Layer 1" style="display:inline">
-<g inkscape:groupmode="layer" id="layer3" inkscape:label="Layer 3" style="display:inline"><path style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" d="M 0,0 100,0 100,100 0,100 0,0"/></g>
-<g inkscape:groupmode="layer" id="layer2" inkscape:label="Layer 2" style="display:inline"><path style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;" d="M 50,50 50,0 100,0 100,50 50,50"/></g>
-<g inkscape:groupmode="layer" id="layer1" inkscape:label="Layer 1" style="display:inline"><g>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="100" y="0">C-K,2</tspan></text>
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 81,4 100,0"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="81" cy="4" r="0.6" />
-<path style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 75,2 81,4"/>
-<circle style="fill:#377eb8;stroke:none;fill-opacity:1" id="C-K" cx="75" cy="2" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#377eb8;"><tspan x="75" y="1">C-K,9</tspan></text>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="100" y="0">IPE,2</tspan></text>
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,3 100,0"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="84" cy="3" r="0.6" />
-<path style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 76,3 84,3"/>
-<circle style="fill:#4daf4a;stroke:none;fill-opacity:1" id="IPE" cx="76" cy="3" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#4daf4a;"><tspan x="76" y="2">IPE,9</tspan></text>
-<circle style="fill:#f89acb;stroke:none;fill-opacity:1" id="RCIPE" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#f89acb;"><tspan x="100" y="0">RCIPE,2</tspan></text>
-<path style="fill:none;stroke:#f89acb;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 74,0 100,0"/>
-<circle style="fill:#f89acb;stroke:none;fill-opacity:1" id="RCIPE" cx="74" cy="0" r="0.6" />
-<path style="fill:none;stroke:#f89acb;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 62,0 74,0"/>
-<circle style="fill:#f89acb;stroke:none;fill-opacity:1" id="RCIPE" cx="62" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#f89acb;"><tspan x="62" y="0">RCIPE,9</tspan></text>
-<circle style="fill:#ea0f82;stroke:none;fill-opacity:1" id="RCIPE2" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ea0f82;"><tspan x="100" y="0">RCIPE2,2</tspan></text>
-<path style="fill:none;stroke:#ea0f82;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 78,2 100,0"/>
-<circle style="fill:#ea0f82;stroke:none;fill-opacity:1" id="RCIPE2" cx="78" cy="2" r="0.6" />
-<path style="fill:none;stroke:#ea0f82;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 75,4 78,2"/>
-<circle style="fill:#ea0f82;stroke:none;fill-opacity:1" id="RCIPE2" cx="75" cy="4" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ea0f82;"><tspan x="75" y="3">RCIPE2,9</tspan></text>
-<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#dbdb00;"><tspan x="100" y="0">STAR/sim/NT,2</tspan></text>
-<path style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 82,9 100,0"/>
-<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="82" cy="9" r="0.6" />
-<path style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 70,9 82,9"/>
-<circle style="fill:#dbdb00;stroke:none;fill-opacity:1" id="STAR/sim/NT" cx="70" cy="9" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#dbdb00;"><tspan x="70" y="8">STAR/sim/NT,9</tspan></text>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="100" cy="8" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="100" y="7">IRV-BTR,2</tspan></text>
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 60,9 100,8"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="60" cy="9" r="0.6" />
-<path style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 52,5 60,9"/>
-<circle style="fill:#ff7f00;stroke:none;fill-opacity:1" id="IRV-BTR" cx="52" cy="5" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#ff7f00;"><tspan x="52" y="4">IRV-BTR,9</tspan></text>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="100" cy="14" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="100" y="13">IRV,2</tspan></text>
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 59,8 100,14"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="59" cy="8" r="0.6" />
-<path style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 52,5 59,8"/>
-<circle style="fill:#984ea3;stroke:none;fill-opacity:1" id="IRV" cx="52" cy="5" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#984ea3;"><tspan x="52" y="4">IRV,9</tspan></text>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="100" cy="0" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="100" y="0">Borda/NT,2</tspan></text>
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 84,15 100,0"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="84" cy="15" r="0.6" />
-<path style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 80,24 84,15"/>
-<circle style="fill:#e41a1c;stroke:none;fill-opacity:1" id="Borda/NT" cx="80" cy="24" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#e41a1c;"><tspan x="80" y="23">Borda/NT,9</tspan></text>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="100" cy="56" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="100" y="55">Plur,2</tspan></text>
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 92,8 100,56"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="92" cy="8" r="0.6" />
-<path style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" d="M 98,4 92,8"/>
-<circle style="fill:#808080;stroke:none;fill-opacity:1" id="Plur" cx="98" cy="4" r="0.6" />
-<text style="font-size:1px;font-weight:bold;fill:#808080;"><tspan x="98" y="3">Plur,9</tspan></text>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="11in"
+   height="8.5in"
+   viewBox="0 0 110 110"
+   version="1.1"
+   id="svg147"
+   sodipodi:docname="generated_svg_scatter_plot.svg"
+   inkscape:export-filename="F:\Important\GitHub\VoteFair-ranking-cpp\generated_svg_scatter_plot.png"
+   inkscape:export-xdpi="600"
+   inkscape:export-ydpi="600"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"><metadata
+   id="metadata153">
+  <rdf:RDF>
+    <cc:Work
+       rdf:about="">
+      <dc:format>image/svg+xml</dc:format>
+      <dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+    </cc:Work>
+  </rdf:RDF>
+</metadata>
+<defs
+   id="defs151" />
+<sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1600"
+   inkscape:window-height="877"
+   id="namedview149"
+   showgrid="false"
+   inkscape:zoom="2.2978071"
+   inkscape:cx="722.1499"
+   inkscape:cy="147.77105"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="layer1" />
+layer1&quot; inkscape:label=&quot;Layer 1&quot; style=&quot;display:inline&quot;&gt;
+<g
+   inkscape:groupmode="layer"
+   id="layer3"
+   inkscape:label="Layer 3"
+   style="display:inline">
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;"
+     d="M 0,0 100,0 100,100 0,100 0,0"
+     id="path2" />
+</g>
+<g
+   inkscape:groupmode="layer"
+   id="layer2"
+   inkscape:label="Layer 2"
+   style="display:inline">
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.2;stroke-miterlimit:4;"
+     d="M 50,50 50,0 100,0 100,50 50,50"
+     id="path5" />
+</g>
+<g
+   inkscape:groupmode="layer"
+   id="layer1"
+   inkscape:label="Layer 1"
+   style="display:inline">
+  <g
+     id="g144">
+    <circle
+       style="fill:#377eb8;stroke:none;fill-opacity:1"
+       id="C-K"
+       cx="100"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#377eb8;"
+       id="text11"><tspan
+         x="100"
+         y="0"
+         id="tspan9">C-K,2</tspan></text>
+    <path
+       style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 84,3 100,0"
+       id="path13" />
+    <circle
+       style="fill:#377eb8;stroke:none;fill-opacity:1"
+       id="circle15"
+       cx="84"
+       cy="3"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#377eb8;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 75,5 84,3"
+       id="path17" />
+    <circle
+       style="fill:#377eb8;stroke:none;fill-opacity:1"
+       id="circle19"
+       cx="75"
+       cy="5"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#377eb8;"
+       id="text23"><tspan
+         x="75"
+         y="4"
+         id="tspan21">C-K,9</tspan></text>
+    <circle
+       style="fill:#f89acb;stroke:none;fill-opacity:1"
+       id="IPE"
+       cx="100"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#f89acb;"
+       id="text28"><tspan
+         x="100"
+         y="0"
+         id="tspan26">IPE,2</tspan></text>
+    <path
+       style="fill:none;stroke:#f89acb;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 83,3 100,0"
+       id="path30" />
+    <circle
+       style="fill:#f89acb;stroke:none;fill-opacity:1"
+       id="circle32"
+       cx="83"
+       cy="3"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#f89acb;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 72,6 83,3"
+       id="path34" />
+    <circle
+       style="fill:#f89acb;stroke:none;fill-opacity:1"
+       id="circle36"
+       cx="72"
+       cy="6"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#f89acb;"
+       id="text40"><tspan
+         x="72"
+         y="5"
+         id="tspan38">IPE,9</tspan></text>
+    <circle
+       style="fill:#ff7f00;stroke:none;fill-opacity:1"
+       id="RCIPE"
+       cx="100"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#ff7f00;"
+       id="text45"><tspan
+         x="100"
+         y="0"
+         id="tspan43">RCIPE,2</tspan></text>
+    <path
+       style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 78,0 100,0"
+       id="path47" />
+    <circle
+       style="fill:#ff7f00;stroke:none;fill-opacity:1"
+       id="circle49"
+       cx="78"
+       cy="0"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#ff7f00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 64,0 78,0"
+       id="path51" />
+    <circle
+       style="fill:#ff7f00;stroke:none;fill-opacity:1"
+       id="circle53"
+       cx="64"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#ff7f00;"
+       id="text57"><tspan
+         x="64"
+         y="0"
+         id="tspan55">RCIPE,9</tspan></text>
+    <circle
+       style="fill:#4daf4a;stroke:none;fill-opacity:1"
+       id="RCIPE2"
+       cx="100"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#4daf4a;"
+       id="text62"><tspan
+         x="100"
+         y="0"
+         id="tspan60">RCIPE2,2</tspan></text>
+    <path
+       style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 80,1 100,0"
+       id="path64" />
+    <circle
+       style="fill:#4daf4a;stroke:none;fill-opacity:1"
+       id="circle66"
+       cx="80"
+       cy="1"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#4daf4a;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 68,2 80,1"
+       id="path68" />
+    <circle
+       style="fill:#4daf4a;stroke:none;fill-opacity:1"
+       id="circle70"
+       cx="68"
+       cy="2"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#4daf4a;"
+       id="text74"><tspan
+         x="68"
+         y="1"
+         id="tspan72">RCIPE2,9</tspan></text>
+    <circle
+       style="fill:#dbdb00;stroke:none;fill-opacity:1"
+       id="STAR/sim/NT"
+       cx="100"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#dbdb00;"
+       id="text79"><tspan
+         x="100"
+         y="0"
+         id="tspan77">STAR/sim/NT,2</tspan></text>
+    <path
+       style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 78,10 100,0"
+       id="path81" />
+    <circle
+       style="fill:#dbdb00;stroke:none;fill-opacity:1"
+       id="circle83"
+       cx="78"
+       cy="10"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#dbdb00;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 70,8 78,10"
+       id="path85" />
+    <circle
+       style="fill:#dbdb00;stroke:none;fill-opacity:1"
+       id="circle87"
+       cx="70"
+       cy="8"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#dbdb00;"
+       id="text91"><tspan
+         x="70"
+         y="7"
+         id="tspan89">STAR/sim/NT,9</tspan></text>
+    <circle
+       style="fill:#984ea3;stroke:none;fill-opacity:1"
+       id="IRV"
+       cx="100"
+       cy="13"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#984ea3;"
+       id="text96"><tspan
+         x="100"
+         y="12"
+         id="tspan94">IRV,2</tspan></text>
+    <path
+       style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 64,8 100,13"
+       id="path98" />
+    <circle
+       style="fill:#984ea3;stroke:none;fill-opacity:1"
+       id="circle100"
+       cx="64"
+       cy="8"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#984ea3;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 55,4 64,8"
+       id="path102" />
+    <circle
+       style="fill:#984ea3;stroke:none;fill-opacity:1"
+       id="circle104"
+       cx="55"
+       cy="4"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#984ea3;"
+       id="text108"><tspan
+         x="55"
+         y="3"
+         id="tspan106">IRV,9</tspan></text>
+    <circle
+       style="fill:#e41a1c;stroke:none;fill-opacity:1"
+       id="Borda/NT"
+       cx="100"
+       cy="0"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#e41a1c;"
+       id="text113"><tspan
+         x="100"
+         y="0"
+         id="tspan111">Borda/NT,2</tspan></text>
+    <path
+       style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 78,19 100,0"
+       id="path115" />
+    <circle
+       style="fill:#e41a1c;stroke:none;fill-opacity:1"
+       id="circle117"
+       cx="78"
+       cy="19"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#e41a1c;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 81,17 78,19"
+       id="path119" />
+    <circle
+       style="fill:#e41a1c;stroke:none;fill-opacity:1"
+       id="circle121"
+       cx="81"
+       cy="17"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#e41a1c;"
+       id="text125"><tspan
+         x="81"
+         y="16"
+         id="tspan123">Borda/NT,9</tspan></text>
+    <circle
+       style="fill:#808080;stroke:none;fill-opacity:1"
+       id="Plur"
+       cx="100"
+       cy="40"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#808080;"
+       id="text130"><tspan
+         x="100"
+         y="39"
+         id="tspan128">Plur,2</tspan></text>
+    <path
+       style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 89,10 100,40"
+       id="path132" />
+    <circle
+       style="fill:#808080;stroke:none;fill-opacity:1"
+       id="circle134"
+       cx="89"
+       cy="10"
+       r="0.6" />
+    <path
+       style="fill:none;stroke:#808080;stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;"
+       d="M 96,9 89,10"
+       id="path136" />
+    <circle
+       style="fill:#808080;stroke:none;fill-opacity:1"
+       id="circle138"
+       cx="96"
+       cy="9"
+       r="0.6" />
+    <text
+       style="font-size:1px;font-weight:bold;fill:#808080;"
+       id="text142"><tspan
+         x="96"
+         y="8"
+         id="tspan140">Plur,9</tspan></text>
+  </g>
 </g>
 </svg>
