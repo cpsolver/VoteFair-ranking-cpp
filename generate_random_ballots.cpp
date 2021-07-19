@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 100 ;
+int global_number_of_tests_per_choice_count = 500 ;
 
 
 // -----------------------------------------------
@@ -135,6 +135,24 @@ int global_choice_count_list[ 20 ] ;
 
 
 // -----------------------------------------------
+//  Define true and false constants (for easier
+//  conversion between programming languages).
+
+const int global_false = 0 ;
+const int global_true = 1 ;
+
+
+// -----------------------------------------------
+//  Specify whether to suppress writing details
+//  to the log file.  This suppression is useful
+//  when lots of cases are being run, and
+//  debugging is not needed.
+
+// int global_true_or_false_show_details_in_log_file = global_true ;
+int global_true_or_false_show_details_in_log_file = global_false ;
+
+
+// -----------------------------------------------
 //  Ensure that the case numbers have the same
 //  number of digits.  This number can be changed.
 //  Note that some tests use multiple cases.
@@ -147,16 +165,20 @@ int global_minimum_case_id = 100000 ;
 //  methods, and specify how many methods there
 //  are.
 
-int global_number_of_methods = 9 ;
+int global_number_of_methods = 8 ;
 const int global_method_kemeny = 1 ;
 const int global_method_ipe = 2 ;
 const int global_method_rcipe = 3 ;
 const int global_method_rcipe2 = 4 ;
 const int global_method_star = 5 ;
-const int global_method_irvbtr = 6 ;
-const int global_method_irv = 7 ;
-const int global_method_borda = 8 ;
-const int global_method_plurality = 9 ;
+const int global_method_irv = 6 ;
+const int global_method_borda = 7 ;
+const int global_method_plurality = 8 ;
+
+//  Ignore results for IRV-BTR because the results
+//  are so similar to IRV, and the scatter plot
+//  becomes crowded.
+const int global_method_irvbtr = 0 ;
 
 //  Ignore results for pseudo-method PLE
 //  which was used to verify how often every round
@@ -172,10 +194,10 @@ std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
 std::string global_name_for_method_rcipe = "RCIPE" ;
 std::string global_name_for_method_rcipe2 = "RCIPE2" ;
-std::string global_name_for_method_irvbtr = "IRV-BTR" ;
 std::string global_name_for_method_star = "STAR/sim/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_borda = "Borda/NT" ;
+std::string global_name_for_method_irvbtr = "IRV-BTR" ;
 std::string global_name_for_method_approval = "Appr/NT" ;
 std::string global_name_for_method_plurality = "Plur" ;
 std::string global_name_for_method_condorcet = "COND" ;
@@ -187,14 +209,6 @@ std::string global_name_for_method_ple = "PLE" ;
 //  Specify constants.
 
 const int global_question_number = 1 ;
-
-
-// -----------------------------------------------
-//  Define true and false constants (for easier
-//  conversion between programming languages).
-
-const int global_false = 0 ;
-const int global_true = 1 ;
 
 
 // -----------------------------------------------
@@ -1281,7 +1295,10 @@ void do_all_tests_for_specified_choice_count( ) {
 
 //  The next line suppresses writing details to the log file,
 //  which is useful when lots of cases are being run, and debugging is not needed.
-//        outfile << global_string_voteinfo_code_for_request_logging_off << std::endl ;
+        if ( global_true_or_false_show_details_in_log_file == global_false )
+        {
+            outfile << global_string_voteinfo_code_for_request_logging_off << std::endl ;
+        }
 
         outfile << global_string_voteinfo_code_for_start_of_all_vote_info << std::endl ;
         outfile << global_string_voteinfo_code_for_case_number << " " << global_case_id << std::endl ;
@@ -1614,14 +1631,15 @@ void write_final_results( )
 // color finder: https://html-color.codes
 
     global_color_hex_for_method[ global_method_kemeny ] = "#377eb8" ; // blue
-    global_color_hex_for_method[ global_method_ipe ] = "#4daf4a" ; // green
-    global_color_hex_for_method[ global_method_rcipe ] = "#f89acb" ; // lighter pinkish magenta
-    global_color_hex_for_method[ global_method_rcipe2 ] = "#ea0f82" ; // darker pinkish magenta
+    global_color_hex_for_method[ global_method_ipe ] = "#f89acb" ; // lighter pinkish magenta
+    global_color_hex_for_method[ global_method_rcipe ] = "#ff7f00" ; // orange
+    global_color_hex_for_method[ global_method_rcipe2 ] = "#4daf4a" ; // green
     global_color_hex_for_method[ global_method_star ] = "#dbdb00" ; // yellow
     global_color_hex_for_method[ global_method_borda ] = "#e41a1c" ; // red
-    global_color_hex_for_method[ global_method_irvbtr ] = "#ff7f00" ; // orange
     global_color_hex_for_method[ global_method_irv ] = "#984ea3" ; // purple
     global_color_hex_for_method[ global_method_plurality ] = "#808080" ; // grey
+
+    global_color_hex_for_method[ global_method_irvbtr ] = "#ea0f82" ; // darker pinkish magenta
     global_color_hex_for_method[ global_method_approval ] = "#999999" ; // unused
     global_color_hex_for_method[ global_method_ple ] = "#999999" ; // unused
 
