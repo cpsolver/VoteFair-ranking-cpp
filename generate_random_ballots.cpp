@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 500 ;
+int global_number_of_tests_per_choice_count = 1000 ;
 
 
 // -----------------------------------------------
@@ -163,17 +163,20 @@ int global_minimum_case_id = 100000 ;
 // -----------------------------------------------
 //  Assign numbers and names to the vote-counting
 //  methods, and specify how many methods there
-//  are.
+//  are.  This order determines both the order of
+//  the calculations (which has no effect on the
+//  results) and the layering of the data on the
+//  scatter plot.
 
 int global_number_of_methods = 8 ;
-const int global_method_kemeny = 1 ;
-const int global_method_ipe = 2 ;
-const int global_method_rcipe = 3 ;
-const int global_method_rcipe2 = 4 ;
-const int global_method_star = 5 ;
-const int global_method_irv = 6 ;
-const int global_method_borda = 7 ;
-const int global_method_plurality = 8 ;
+const int global_method_plurality = 1 ;
+const int global_method_borda = 2 ;
+const int global_method_irv = 3 ;
+const int global_method_star = 4 ;
+const int global_method_rcipe2 = 5 ;
+const int global_method_rcipe = 6 ;
+const int global_method_ipe = 7 ;
+const int global_method_kemeny = 8 ;
 
 //  Ignore results for IRV-BTR because the results
 //  are so similar to IRV, and the scatter plot
@@ -192,8 +195,8 @@ const int global_method_approval = 0 ;
 
 std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
-std::string global_name_for_method_rcipe = "RCIPE" ;
-std::string global_name_for_method_rcipe2 = "RCIPE2" ;
+std::string global_name_for_method_rcipe = "RCIPEv1" ;
+std::string global_name_for_method_rcipe2 = "RCIPEv2" ;
 std::string global_name_for_method_star = "STAR/sim/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_borda = "Borda/NT" ;
@@ -1660,11 +1663,14 @@ void write_final_results( )
                 svg_out << "<path style=" << '"' << "fill:none;stroke:" << global_color_hex_for_method[ method_id ] << ";stroke-width:0.3;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;" << '"' << " d=" << '"' << "M " << x_position_for_circle << "," << y_position_for_circle << " " << previous_x_position_for_circle << "," << previous_y_position_for_circle << '"' << "/>" << std::endl ;
             }
             svg_out << "<circle style=" << '"' << "fill:" << global_color_hex_for_method[ method_id ] << ";stroke:none;fill-opacity:1" << '"' << " id=" << '"' << global_name_for_method[ method_id ] << '"' << " cx=" << '"' << x_position_for_circle << '"' << " cy=" << '"' << y_position_for_circle << '"' << " r=" << '"' << "0.6" << '"' << " />" << std::endl ;
-            if ( ( choice_count == global_choice_count_list[ 1 ] ) || ( choice_count == global_choice_count_list[ global_number_of_choice_counts_specified ] ) )
+            x_position_for_label = x_position_for_circle + 0.6 ;
+            y_position_for_label = y_position_for_circle - 0.6 ;
+            if ( choice_count == global_choice_count_list[ 1 ] )
             {
-                x_position_for_label = x_position_for_circle + 0.6 ;
-                y_position_for_label = y_position_for_circle - 0.6 ;
-                svg_out << "<text style=" << '"' << "font-size:1px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << x_position_for_label << '"' << " y=" << '"' << y_position_for_label << '"' << ">" << global_name_for_method[ method_id ] << "," << choice_count << "</tspan></text>" << std:: endl ;
+                svg_out << "<text style=" << '"' << "font-size:1px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << x_position_for_label << '"' << " y=" << '"' << y_position_for_label << '"' << ">" << choice_count << "</tspan></text>" << std:: endl ;
+            } else if ( choice_count == global_choice_count_list[ 2 ] )
+            {
+                svg_out << "<text style=" << '"' << "font-size:1px;font-weight:bold;fill:" << global_color_hex_for_method[ method_id ] << ";" << '"' << "><tspan x=" << '"' << x_position_for_label << '"' << " y=" << '"' << y_position_for_label << '"' << ">" << global_name_for_method[ method_id ] << "</tspan></text>" << std:: endl ;
             }
             previous_choice_count = choice_count ;
             previous_x_position_for_circle = x_position_for_circle ;
