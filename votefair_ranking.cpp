@@ -9483,6 +9483,20 @@ void method_pairwise_support_count( )
 
 
 // -----------------------------------------------
+//  Log the support counts, which otherwise are
+//  not shown when there is a pairwise losing
+//  choice.
+
+        for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+        {
+            if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
+            {
+                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has pairwise support count " << global_integer_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
+            }
+        }
+
+
+// -----------------------------------------------
 //  If there is a "pairwise losing candidate" --
 //  a Condorcet loser -- eliminate it.
 
@@ -9517,7 +9531,6 @@ void method_pairwise_support_count( )
         {
             if ( global_true_or_false_continuing_for_choice[ actual_choice ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[choice " << actual_choice << " has pairwise support count " << global_integer_count_for_choice[ actual_choice ] << "]" << std::endl ; } ;
                 if ( global_integer_count_for_choice[ actual_choice ] < smallest_pairwise_support_count )
                 {
                     smallest_pairwise_support_count = global_integer_count_for_choice[ actual_choice ] ;
