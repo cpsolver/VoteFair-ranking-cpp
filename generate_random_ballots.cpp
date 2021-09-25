@@ -117,7 +117,7 @@ int global_number_of_clones = 2 ;
 //  This number is an estimate.  The actual number
 //  of tests are indicated in the results.
 
-int global_number_of_tests_per_choice_count = 1000 ;
+int global_number_of_tests_per_choice_count = 10 ;
 
 
 // -----------------------------------------------
@@ -168,15 +168,21 @@ int global_minimum_case_id = 100000 ;
 //  results) and the layering of the data on the
 //  scatter plot.
 
-int global_number_of_methods = 8 ;
+int global_number_of_methods = 7 ;
 const int global_method_plurality = 1 ;
 const int global_method_borda = 2 ;
 const int global_method_irv = 3 ;
 const int global_method_star = 4 ;
-const int global_method_rcipe2 = 5 ;
-const int global_method_rcipe = 6 ;
-const int global_method_ipe = 7 ;
-const int global_method_kemeny = 8 ;
+const int global_method_rcipe = 5 ;
+const int global_method_ipe = 6 ;
+const int global_method_kemeny = 7 ;
+
+//  Ignore results for what was intended to be
+//  a RCIPE version 2 method, because it was
+//  too easily mistaken for being the "borda
+//  elimination" method.
+
+const int global_method_psc = 0 ;
 
 //  Ignore results for IRV-BTR because the results
 //  are so similar to IRV, and the scatter plot
@@ -195,8 +201,8 @@ const int global_method_approval = 0 ;
 
 std::string global_name_for_method_kemeny = "C-K" ;
 std::string global_name_for_method_ipe = "IPE" ;
-std::string global_name_for_method_rcipe = "RCIPEv1" ;
-std::string global_name_for_method_rcipe2 = "RCIPEv2" ;
+std::string global_name_for_method_rcipe = "RCIPE" ;
+std::string global_name_for_method_psc = "PSC" ;
 std::string global_name_for_method_star = "STAR/sim/NT" ;
 std::string global_name_for_method_irv = "IRV" ;
 std::string global_name_for_method_borda = "Borda/NT" ;
@@ -677,8 +683,8 @@ void handle_calculated_results( )
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_pairwise_support_count )
             {
-                global_choice_winner_from_method[ global_method_rcipe2 ] = current_result_code ;
-                log_out << "[" << global_name_for_method[ global_method_rcipe2 ] << " " << global_choice_winner_from_method[ global_method_rcipe2 ] << "]" ;
+                global_choice_winner_from_method[ global_method_psc ] = current_result_code ;
+                log_out << "[" << global_name_for_method[ global_method_psc ] << " " << global_choice_winner_from_method[ global_method_psc ] << "]" ;
 
             } else if ( previous_result_code == global_voteinfo_code_for_winner_instant_runoff_voting )
             {
@@ -1634,9 +1640,9 @@ void write_final_results( )
 // color finder: https://html-color.codes
 
     global_color_hex_for_method[ global_method_kemeny ] = "#377eb8" ; // blue
-    global_color_hex_for_method[ global_method_ipe ] = "#f89acb" ; // lighter pinkish magenta
+    global_color_hex_for_method[ global_method_ipe ] = "#4daf4a" ; // green
     global_color_hex_for_method[ global_method_rcipe ] = "#ff7f00" ; // orange
-    global_color_hex_for_method[ global_method_rcipe2 ] = "#4daf4a" ; // green
+    global_color_hex_for_method[ global_method_psc ] = "#f89acb" ; // lighter pinkish magenta
     global_color_hex_for_method[ global_method_star ] = "#dbdb00" ; // yellow
     global_color_hex_for_method[ global_method_borda ] = "#e41a1c" ; // red
     global_color_hex_for_method[ global_method_irv ] = "#984ea3" ; // purple
@@ -1704,7 +1710,7 @@ int main( ) {
     global_name_for_method[ global_method_kemeny ] = global_name_for_method_kemeny ;
     global_name_for_method[ global_method_ipe ] = global_name_for_method_ipe ;
     global_name_for_method[ global_method_rcipe ] = global_name_for_method_rcipe ;
-    global_name_for_method[ global_method_rcipe2 ] = global_name_for_method_rcipe2 ;
+    global_name_for_method[ global_method_psc ] = global_name_for_method_psc ;
     global_name_for_method[ global_method_irvbtr ] = global_name_for_method_irvbtr ;
     global_name_for_method[ global_method_irv ] = global_name_for_method_irv ;
     global_name_for_method[ global_method_star ] = global_name_for_method_star ;
