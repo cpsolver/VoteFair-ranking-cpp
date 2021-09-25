@@ -567,6 +567,8 @@ int global_true_or_false_request_approval_voting ;
 int global_count_irv_rounds_with_ties ;
 int global_choice_with_largest_approval_count ;
 int global_choice_borda_count_winner ;
+int global_count_of_unique_pattern_numbers ;
+int global_count_of_top_ranked_continuing_choices ;
 
 int global_integer_count_for_choice[ 99 ] ;
 int global_list_of_choices_with_largest_or_smallest_count[ 99 ] ;
@@ -582,12 +584,17 @@ int global_list_of_choices_having_pairwise_opposition_or_support[ 99 ] ;
 int global_loss_count_for_choice[ 99 ] ;
 int global_win_count_for_choice[ 99 ] ;
 int global_list_of_top_ranked_choices[ 99 ] ;
+int global_true_or_false_is_top_ranked_choice[ 99 ] ;
+int global_pattern_number_for_pattern_number_pointer[ 99 ] ;
+int global_ballot_count_for_pattern_number_pointer[ 99 ] ;
+int global_count_of_choices_at_shared_top_preference_level[ 99 ] ;
 int global_list_of_choices_with_fewest_first_choice_counts[ 99 ] ;
 int global_star_score_count_for_choice[ 99 ] ;
 int global_approval_count_for_choice[ 99 ] ;
 int global_approval_half_count_for_choice[ 99 ] ;
 
 const int global_maximum_fraction_denominator = 10 ;
+const int global_maximum_pattern_numbers = 99 ;
 
 int global_fractional_count_for_choice_and_denominator[ 99 ][ 10 ] ;
 
@@ -9040,6 +9047,124 @@ void elim_find_smallest_pairwise_support( )
 
 // -----------------------------------------------
 // -----------------------------------------------
+//        count_shared_top_preference_level_groups
+//
+//  This function counts groups of ballots on
+//  which the same remaining choices are ranked
+//  at the same (shared) top preference level.
+//  This information will be used to allocate
+//  the ballots in whole and equal numbers when
+//  counting how many ballots rank each choice
+//  at the top preference level.
+//
+// -----------------------------------------------
+// -----------------------------------------------
+
+void count_shared_top_preference_level_groups( )
+{
+
+    int actual_choice ;
+    int pattern_number ;
+    int pattern_number_pointer ;
+    int remaining_pattern_number ;
+    int pointer_to_top_ranked_continuing_choices ;
+    int pointer_to_matching_pattern_number ;
+    int count_of_choices_at_shared_top_preference_level ;
+
+
+// -----------------------------------------------
+//  Initialization.
+
+    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    {
+        global_true_or_false_is_top_ranked_choice[ actual_choice ] = global_false ;
+    }
+
+
+// -----------------------------------------------
+//  Create an array that tracks which remaining
+//  choices share the top ranking level.
+
+    for ( pointer_to_top_ranked_continuing_choices = 1 ; pointer_to_top_ranked_continuing_choices <= global_count_of_top_ranked_continuing_choices ; pointer_to_top_ranked_continuing_choices ++ )
+    {
+        actual_choice = global_list_of_top_ranked_choices[ pointer_to_top_ranked_continuing_choices ] ;
+        global_true_or_false_is_top_ranked_choice[ actual_choice ] = global_true ;
+//        if ( global_logging_info == global_true ) { log_out << "[shared top choice " << actual_choice << "]" << std::endl ; } ;
+    }
+
+
+// -----------------------------------------------
+//  Calculate a pattern number that is unique for
+//  the combination of shared top ranked choices.
+//  This pattern-number generation method accesses
+//  the choice numbers in sorted order so that
+//  the same choices yield the same pattern number
+//  even if the ballot info specifies them in a
+//  different order.
+
+    count_of_choices_at_shared_top_preference_level = 0 ;
+    pattern_number = 0 ;
+    for ( actual_choice = 1 ; actual_choice <= global_full_choice_count ; actual_choice ++ )
+    {
+        if ( global_true_or_false_is_top_ranked_choice[ actual_choice ] == global_true )
+        {
+            pattern_number = ( pattern_number * ( global_full_choice_count + 1 ) ) + actual_choice ;
+            count_of_choices_at_shared_top_preference_level ++ ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  If this pattern number has been encountered
+//  previously, point to it. Otherwise set the
+//  pointer to zero.
+
+    pointer_to_matching_pattern_number = 0 ;
+    for ( pattern_number_pointer = 1 ; pattern_number_pointer <= global_count_of_unique_pattern_numbers ; pattern_number_pointer ++ )
+    {
+        if ( pattern_number == global_pattern_number_for_pattern_number_pointer[ pattern_number_pointer ] )
+        {
+            pointer_to_matching_pattern_number = pattern_number_pointer ;
+            break ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  Increase the ballot count for how many ballots
+//  have the same choices sharing the top ranking
+//  level. Save this ballot count for later use.
+
+    if ( pointer_to_matching_pattern_number > 0 )
+    {
+        global_ballot_count_for_pattern_number_pointer[ pointer_to_matching_pattern_number ] += global_ballot_info_repeat_count ;
+    } else
+    {
+        if ( global_count_of_unique_pattern_numbers < global_maximum_pattern_numbers )
+        {
+            global_count_of_unique_pattern_numbers ++ ;
+            pointer_to_matching_pattern_number = global_count_of_unique_pattern_numbers ;
+            global_pattern_number_for_pattern_number_pointer[ pointer_to_matching_pattern_number ] = pattern_number ;
+            global_ballot_count_for_pattern_number_pointer[ pointer_to_matching_pattern_number ] = global_ballot_info_repeat_count ;
+            global_count_of_choices_at_shared_top_preference_level[ pointer_to_matching_pattern_number ] = count_of_choices_at_shared_top_preference_level ;
+        } else
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error: there are too many unique groups of ballots that rank the same remaining choices at the same preference level]" << std::endl ; } ;
+        }
+    }
+    if ( global_logging_info == global_true ) { log_out << "[ballot count having pattern number " << pattern_number << " is now " << global_ballot_count_for_pattern_number_pointer[ pointer_to_matching_pattern_number ] << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  End of function count_shared_top_preference_level_groups.
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
 //        elim_find_fewest_first_choice
 //
 //  This function counts the number of ballots on
@@ -9082,6 +9207,11 @@ void elim_find_fewest_first_choice( )
     int ranking_level_approval ;
     int ranking_level_disapproval ;
     int integer_half_full_choice_count ;
+    int ballot_count_for_shared_preference_level ;
+    int remaining_pattern_number ;
+    int pattern_number_pointer ;
+    int count_of_votes_to_each_choice_at_shared_preference_level ;
+    int count_of_choices_at_shared_preference_level ;
 
 
 // -----------------------------------------------
@@ -9092,6 +9222,7 @@ void elim_find_fewest_first_choice( )
     {
         global_first_choice_count_for_choice[ actual_choice ] = 0 ;
     }
+    global_count_of_unique_pattern_numbers = 0 ;
 
 
 // -----------------------------------------------
@@ -9231,8 +9362,10 @@ void elim_find_fewest_first_choice( )
                     for ( pointer_to_top_ranked_continuing_choices = 1 ; pointer_to_top_ranked_continuing_choices <= count_of_top_ranked_continuing_choices ; pointer_to_top_ranked_continuing_choices ++ )
                     {
                         top_ranked_continuing_choice = global_list_of_top_ranked_choices[ pointer_to_top_ranked_continuing_choices ] ;
-global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice ][ count_of_top_ranked_continuing_choices ] ++ ;
+                        global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice ][ count_of_top_ranked_continuing_choices ] += global_ballot_info_repeat_count ;
                     }
+                    global_count_of_top_ranked_continuing_choices = count_of_top_ranked_continuing_choices ;
+                    count_shared_top_preference_level_groups( ) ;
                 } else
                 {
                     if ( global_logging_info == global_true ) { log_out << "[a ballot contains more than " << global_maximum_fraction_denominator << " continuing choices at the same currently highest ranking level so this ballot is being ignored during this elimination round]" << std::endl ; } ;
@@ -9326,6 +9459,34 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 
 
 // -----------------------------------------------
+//  Get the counts from the groups of ballots that
+//  ranked the same choices at the same top
+//  preference level.
+
+//  todo: test this method, and compare to fractional or decimal method
+
+    for ( pattern_number_pointer = 1 ; pattern_number_pointer <= global_count_of_unique_pattern_numbers ; pattern_number_pointer ++ )
+    {
+        ballot_count_for_shared_preference_level = global_ballot_count_for_pattern_number_pointer[ pattern_number_pointer ] ;
+        remaining_pattern_number = global_pattern_number_for_pattern_number_pointer[ pattern_number_pointer ] ;
+        if ( global_logging_info == global_true ) { log_out << "[ballot count for pattern number " << remaining_pattern_number << " is " << ballot_count_for_shared_preference_level << "]" << std::endl ; } ;
+        count_of_choices_at_shared_preference_level = global_count_of_choices_at_shared_top_preference_level[ pattern_number_pointer ] ;
+        count_of_votes_to_each_choice_at_shared_preference_level = int( ballot_count_for_shared_preference_level / count_of_choices_at_shared_preference_level ) ;
+        while ( remaining_pattern_number > 0 )
+        {
+            actual_choice = remaining_pattern_number % ( global_full_choice_count + 1 ) ;
+            remaining_pattern_number = ( remaining_pattern_number - actual_choice ) / ( global_full_choice_count + 1 ) ;
+
+//            if ( global_logging_info == global_true ) { log_out << "[next choice in pattern number is " << actual_choice << "]" << std::endl ; } ;
+
+//  todo: uncomment when ready to test
+//  global_first_choice_count_for_choice[ actual_choice ] += count_of_votes_to_each_choice_at_shared_preference_level ;
+
+        }
+    }
+
+
+// -----------------------------------------------
 //  Identify which choice has the smallest
 //  first-choice count.  Allow for the possibility
 //  of a tie.
@@ -9371,8 +9532,7 @@ global_fractional_count_for_choice_and_denominator[ top_ranked_continuing_choice
 //        method_pairwise_support_count
 //
 //  This function implements the
-//  Ranked Choice Including Pairwise Elimination version 2
-//  -- RCIPE2 -- method.
+//  Pairwise Support Count method.
 //  It does rounds of elimination in which it
 //  eliminates pairwise losing candidates (also
 //  known as Condorcet losers) when they occur,
@@ -9411,7 +9571,7 @@ void method_pairwise_support_count( )
 // -----------------------------------------------
 //  Initialization.
 
-    global_elimination_type_requested = "RCIPE2" ;
+    global_elimination_type_requested = "PSC" ;
     global_elimination_result_type = global_voteinfo_code_for_winner_pairwise_support_count ;
     elim_initialize( ) ;
 
@@ -9422,7 +9582,7 @@ void method_pairwise_support_count( )
 
     for ( elimination_round_count = 1 ; elimination_round_count <= global_full_choice_count + 1 ; elimination_round_count ++ )
     {
-        if ( global_logging_info == global_true ) { log_out << "\n[begin loop that does one RCIPE2 elimination]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "\n[begin loop that does one PSC elimination]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -9511,7 +9671,7 @@ void method_pairwise_support_count( )
         }
         if ( pairwise_loser > 0 )
         {
-            if ( global_logging_info == global_true ) { log_out << "[choice " << pairwise_loser << " is pairwise loser in RCIPE2]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[choice " << pairwise_loser << " is pairwise loser in PSC]" << std::endl ; } ;
             global_choice_to_eliminate = pairwise_loser ;
             elim_choice_to_eliminate( ) ;
             continue ;
@@ -9687,7 +9847,7 @@ void method_pairwise_support_count( )
         put_next_result_info_number( global_elimination_result_type ) ;
         put_next_result_info_number( global_voteinfo_code_for_tie ) ;
         global_string_same_or_diff = "tied_support_count" ;
-        if ( global_logging_info == global_true ) { log_out << "[in method RCIPE2, case " << global_case_number << ", there is a tie that cannot be resolved]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[in method PSC, case " << global_case_number << ", there is a tie that cannot be resolved]" << std::endl ; } ;
         return ;
 
 
@@ -9701,7 +9861,7 @@ void method_pairwise_support_count( )
 // -----------------------------------------------
 //  Log the result.
 
-    if ( global_logging_info == global_true ) { log_out << "\n[RCIPE2 ch " << global_full_choice_count << " bal " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
+    if ( global_logging_info == global_true ) { log_out << "\n[PSC ch " << global_full_choice_count << " bal " << global_current_total_vote_count << " " << global_string_same_or_diff << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -10724,7 +10884,7 @@ void calc_eliminate_methods() {
 
     int winner_ple = 0 ;
     int winner_rcipe = 0 ;
-    int winner_rcipe2 = 0 ;
+    int winner_psc = 0 ;
     int winner_ipe = 0 ;
     int winner_irv = 0 ;
     int winner_plurality = 0 ;
@@ -10774,7 +10934,7 @@ void calc_eliminate_methods() {
         method_ranked_choice_including_pairwise_elimination( ) ;
         winner_rcipe = global_output_results[ global_pointer_to_output_results - 1 ] ;
         method_pairwise_support_count( ) ;
-        winner_rcipe2 = global_output_results[ global_pointer_to_output_results - 1 ] ;
+        winner_psc = global_output_results[ global_pointer_to_output_results - 1 ] ;
     }
 
 
