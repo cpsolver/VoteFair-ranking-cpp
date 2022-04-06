@@ -1654,7 +1654,7 @@ void check_vote_info_numbers( )
             if ( global_ballot_info_repeat_count < 1 )
             {
                 if ( global_logging_info == global_true ) { log_out << "[ballot count number is less than one (" << global_ballot_info_repeat_count << ")]" ; } ;
-                global_possible_error_message = "Error: Ballot count number is less than one (" + convert_integer_to_text( global_question_number ) + ")." ;
+                global_possible_error_message = "Error: Ballot count number is less than one (" + convert_integer_to_text( global_ballot_info_repeat_count ) + ")." ;
                 return ;
             }
             if ( global_logging_info == global_true ) { log_out << "[bc " << global_ballot_info_repeat_count << "]" ; } ;
