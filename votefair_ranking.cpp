@@ -422,6 +422,8 @@ const int global_voteinfo_code_for_winner_approval_voting = -63 ;
 const int global_voteinfo_code_for_winner_condorcet = -64 ;
 const int global_voteinfo_code_for_request_logging_off = -65 ;
 const int global_voteinfo_code_for_winner_pairwise_support_count = -66 ;
+const int global_voteinfo_code_for_number_of_equivalent_seats = -67 ;
+const int global_voteinfo_code_for_request_quota_hare_not_droop = -68 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
