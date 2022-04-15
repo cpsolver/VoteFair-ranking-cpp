@@ -424,6 +424,14 @@ const int global_voteinfo_code_for_request_logging_off = -65 ;
 const int global_voteinfo_code_for_winner_pairwise_support_count = -66 ;
 const int global_voteinfo_code_for_number_of_equivalent_seats = -67 ;
 const int global_voteinfo_code_for_request_quota_hare_not_droop = -68 ;
+const int global_voteinfo_code_for_winner_next_seat = -69 ;
+const int global_voteinfo_code_for_begin_tied_for_next_seat = -70 ;
+const int global_voteinfo_code_for_end_tied_for_next_seat = -71 ;
+const int global_voteinfo_code_for_counting_cycle_number = -72 ;
+const int global_voteinfo_code_for_pairwise_losing_candidate = -73 ;
+const int global_voteinfo_code_for_eliminated_candidate = -74 ;
+const int global_voteinfo_code_for_quota_count_this_cycle = -75 ;
+const int global_voteinfo_code_for_candidate_and_transfer_count = -76 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
