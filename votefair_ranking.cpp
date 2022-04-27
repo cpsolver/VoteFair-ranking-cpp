@@ -1213,7 +1213,7 @@ void read_data( )
 //  that should not be stored in the input data
 //  list, ignore both the code and the number.
 
-            if ( ( previous_number == global_text_voteinfo_code_for_number_of_equivalent_seats ) || ( next_number == global_text_voteinfo_code_for_number_of_equivalent_seats ) )
+            if ( ( previous_number == global_voteinfo_code_for_number_of_equivalent_seats ) || ( next_number == global_voteinfo_code_for_number_of_equivalent_seats ) )
             {
 	            input_number_count ++ ;
 	            previous_number = next_number ;
