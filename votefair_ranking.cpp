@@ -809,6 +809,34 @@ void do_initialization( )
     global_voteinfo_code_for_alias_word[ "request-no-pairwise-counts" ] = -47 ;
     global_voteinfo_code_for_alias_word[ "number-rep-levels-to-compute" ] = -48 ;
     global_voteinfo_code_for_alias_word[ "request-text-output" ] = -49 ;
+    global_voteinfo_code_for_alias_word[ "request-instant-runoff-voting" ] = -50 ;
+    global_voteinfo_code_for_alias_word[ "request-instant-pairwise-elimination" ] = -51 ;
+    global_voteinfo_code_for_alias_word[ "request-rcipe-voting" ] = -52 ;
+    global_voteinfo_code_for_alias_word[ "winner-instant-runoff-voting" ] = -53 ;
+    global_voteinfo_code_for_alias_word[ "winner-instant-pairwise-elimination" ] = -54 ;
+    global_voteinfo_code_for_alias_word[ "winner-rcipe-voting" ] = -55 ;
+    global_voteinfo_code_for_alias_word[ "request-star-voting" ] = -56 ;
+    global_voteinfo_code_for_alias_word[ "winner-star-voting" ] = -57 ;
+    global_voteinfo_code_for_alias_word[ "request-pairwise-loser-elimination" ] = -58 ;
+    global_voteinfo_code_for_alias_word[ "winner-pairwise-loser-elimination" ] = -59 ;
+    global_voteinfo_code_for_alias_word[ "winner-irv-bottom-two-runoff" ] = -60 ;
+    global_voteinfo_code_for_alias_word[ "winner-borda-count" ] = -61 ;
+    global_voteinfo_code_for_alias_word[ "flag-as-interesting" ] = -62 ;
+    global_voteinfo_code_for_alias_word[ "winner-approval-voting" ] = -63 ;
+    global_voteinfo_code_for_alias_word[ "winner-condorcet" ] = -64 ;
+    global_voteinfo_code_for_alias_word[ "request-logging-off" ] = -65 ;
+    global_voteinfo_code_for_alias_word[ "winner-pairwise-support-count" ] = -66 ;
+    global_voteinfo_code_for_alias_word[ "number-of-equivalent-seats" ] = -67 ;
+    global_voteinfo_code_for_alias_word[ "request-quota-droop-not-hare" ] = -68 ;
+    global_voteinfo_code_for_alias_word[ "winner-next-seat" ] = -69 ;
+    global_voteinfo_code_for_alias_word[ "begin-tied-for-next-seat" ] = -70 ;
+    global_voteinfo_code_for_alias_word[ "end-tied-for-next-seat" ] = -71 ;
+    global_voteinfo_code_for_alias_word[ "counting-cycle-number" ] = -72 ;
+    global_voteinfo_code_for_alias_word[ "pairwise-losing-candidate" ] = -73 ;
+    global_voteinfo_code_for_alias_word[ "eliminated-candidate" ] = -74 ;
+    global_voteinfo_code_for_alias_word[ "quota-count-this-cycle" ] = -75 ;
+    global_voteinfo_code_for_alias_word[ "candidate-and-transfer-count" ] = -76 ;
+    global_voteinfo_code_for_alias_word[ "candidate-to-ignore" ] = -77 ;
     global_voteinfo_code_for_alias_word[ "invalid-input-word" ] = -200 ;
 
 
@@ -1177,6 +1205,20 @@ void read_data( )
             if ( next_number == global_voteinfo_code_for_request_logging_off )
             {
                 global_logging_info = global_false ;
+            }
+
+
+// -----------------------------------------------
+//  If a voteinfo code is followed by a number
+//  that should not be stored in the input data
+//  list, ignore both the code and the number.
+
+            if ( ( previous_number == global_text_voteinfo_code_for_number_of_equivalent_seats ) || ( next_number == global_text_voteinfo_code_for_number_of_equivalent_seats ) )
+            {
+	            input_number_count ++ ;
+	            previous_number = next_number ;
+	            pointer_to_word = strtok( NULL, " ,." ) ;
+	            continue ;
             }
 
 
