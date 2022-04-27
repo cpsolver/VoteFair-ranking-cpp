@@ -432,6 +432,7 @@ const int global_voteinfo_code_for_pairwise_losing_candidate = -73 ;
 const int global_voteinfo_code_for_eliminated_candidate = -74 ;
 const int global_voteinfo_code_for_quota_count_this_cycle = -75 ;
 const int global_voteinfo_code_for_candidate_and_transfer_count = -76 ;
+const int global_voteinfo_code_for_candidate_to_ignore = -77 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
