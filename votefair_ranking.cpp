@@ -510,7 +510,6 @@ int global_true_or_false_request_text_output ;
 //  Declare miscellaneous variables.
 
 int global_logging_info ;
-int global_question_count ;
 int global_number_of_questions ;
 int global_adjusted_choice_number ;
 int global_adjusted_choice_count ;
@@ -899,7 +898,6 @@ void do_initialization( )
     global_adjusted_choice_count = 0 ;
     global_full_choice_count = 0 ;
     global_pair_counter_maximum = 0 ;
-    global_question_count = 0 ;
     global_choice_count_at_top_popularity_ranking_level = 0 ;
     global_choice_count_at_full_top_popularity_ranking_level = 0 ;
     global_choice_count_at_full_second_representation_level = 0 ;
@@ -1209,20 +1207,6 @@ void read_data( )
 
 
 // -----------------------------------------------
-//  If a voteinfo code is followed by a number
-//  that should not be stored in the input data
-//  list, ignore both the code and the number.
-
-            if ( ( previous_number == global_voteinfo_code_for_number_of_equivalent_seats ) || ( next_number == global_voteinfo_code_for_number_of_equivalent_seats ) )
-            {
-	            input_number_count ++ ;
-	            previous_number = next_number ;
-	            pointer_to_word = strtok( NULL, " ,." ) ;
-	            continue ;
-            }
-
-
-// -----------------------------------------------
 //  Ensure the array that stores input numbers has
 //  not become too long.
 
@@ -1525,7 +1509,6 @@ void check_vote_info_numbers( )
     int choice_count_for_current_question ;
     int count_of_choices_marked_for_current_question ;
 
-    int tally_uses_of_question_number[ 20 ] ;
     int tally_uses_of_choice_number[ 99 ] ;
 
 
@@ -1533,10 +1516,6 @@ void check_vote_info_numbers( )
 //  Initialization.
 
     if ( global_logging_info == global_true ) { log_out << "\n[about to start checking vote-info numbers]\n" ; } ;
-    for ( question_number = 0 ; question_number <= global_maximum_question_number ; question_number ++ )
-    {
-        tally_uses_of_question_number[ question_number ] = 0 ;
-    }
     for ( choice_number = 0 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
     {
         tally_uses_of_choice_number[ choice_number ] = 0 ;
@@ -1561,7 +1540,6 @@ void check_vote_info_numbers( )
     current_vote_info_number = 0 ;
     previous_vote_info_number = 0 ;
     next_vote_info_number = 0 ;
-    global_question_count = 0 ;
     status_pair_just_handled = global_false ;
     global_ballot_info_repeat_count = 0 ;
     global_current_total_vote_count = 0 ;
@@ -1636,11 +1614,9 @@ void check_vote_info_numbers( )
                 global_possible_error_message = "Error: Case number is zero, which is not valid." ;
                 return ;
             }
-            global_question_count = 0 ;
-            global_question_number = 0 ;
             global_current_total_vote_count = 0 ;
+            global_question_number = 0 ;
             global_number_of_questions = 0 ;
-            tally_uses_of_question_number[ 0 ] = 0 ;
             within_ballots = global_false ;
             continue ;
 
@@ -1664,10 +1640,11 @@ void check_vote_info_numbers( )
                 return ;
             } else
             {
-                global_question_count = global_question_number ;
-                global_number_of_questions = global_question_number ;
+            	if ( global_number_of_questions < global_question_number )
+            	{
+                    global_number_of_questions = global_question_number ;
+                }
                 if ( global_logging_info == global_true ) { log_out << "[question " << global_question_number << "]" ; } ;
-                tally_uses_of_question_number[ global_question_number ] ++ ;
                 count_of_choices_marked_for_current_question = 0 ;
             }
             continue ;
@@ -1770,7 +1747,6 @@ void check_vote_info_numbers( )
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_start_of_all_vote_info )
         {
-            global_question_number = 0 ;
             if ( global_logging_info == global_true ) { log_out << "[begin ballots]" ; } ;
             continue ;
 
@@ -1781,13 +1757,13 @@ void check_vote_info_numbers( )
         } else if ( current_vote_info_number == global_voteinfo_code_for_end_of_ballot )
         {
             tally_uses_of_choice_number[ 0 ] = 0 ;
-            global_question_number = 0 ;
-//            if ( global_logging_info == global_true ) { log_out << "[end ballot]" ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[end ballot]" ; } ;
             continue ;
 
 
 // -----------------------------------------------
-//  Handle the code for the number of representation levels to calculate.
+//  Handle the code for the number of
+//  representation levels to calculate.
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_number_of_representation_levels_to_compute )
         {
@@ -1795,6 +1771,18 @@ void check_vote_info_numbers( )
             global_representation_levels_requested = next_vote_info_number ;
             global_true_or_false_request_votefair_representation_rank = global_true ;
             if ( global_logging_info == global_true ) { log_out << "[rank_levels_to_compute " << global_representation_levels_requested << "]" ; } ;
+            continue ;
+
+
+// -----------------------------------------------
+//  Handle the code for the number of seats to be
+//  filled in a multi-winner method.  Ignore this
+//  number.
+
+        } else if ( current_vote_info_number == global_voteinfo_code_for_number_of_equivalent_seats )
+        {
+            status_pair_just_handled = global_true ;
+            if ( global_logging_info == global_true ) { log_out << "[ignored, seats to fill " << next_vote_info_number << "]" ; } ;
             continue ;
 
 
@@ -2006,7 +1994,7 @@ void check_vote_info_numbers( )
         {
             if ( global_case_number > 0 )
             {
-                if ( ( global_number_of_questions < 1 ) || ( global_question_count < 1 ) )
+                if ( global_number_of_questions < 1 )
                 {
                     if ( global_logging_info == global_true ) { log_out << "[no questions found]" ; } ;
                 } else if ( global_current_total_vote_count < 1 )
@@ -2014,7 +2002,7 @@ void check_vote_info_numbers( )
                     if ( global_logging_info == global_true ) { log_out << "[no ballots found]" ; } ;
                 } else
                 {
-                    for ( global_question_number = 1 ; global_question_number <= global_question_count ; global_question_number ++ )
+                    for ( global_question_number = 1 ; global_question_number <= global_number_of_questions ; global_question_number ++ )
                     {
                         if ( global_logging_info == global_true ) { log_out << "[question " << global_question_number << " has " << global_choice_count_for_question[ global_question_number ] << " choices]" ; } ;
                         if ( global_choice_count_for_question[ global_question_number ] == 1 )
@@ -2666,7 +2654,8 @@ void compare_popularity_results( )
 // -----------------------------------------------
 //            output_plurality_counts
 //
-//  Puts into the output results the plurality counts.
+//  Puts into the output results the plurality
+//  counts.
 //
 // -----------------------------------------------
 // -----------------------------------------------
@@ -8473,8 +8462,8 @@ void do_votefair_calculations( )
 //  Question numbers are sequential; no
 //  question numbers are skipped.
 
-    if ( global_logging_info == global_true ) { log_out << "\n[there are " << global_question_count << " questions]\n" ; } ;
-    for ( global_question_number = 1 ; global_question_number <= global_question_count ; global_question_number ++ )
+    if ( global_logging_info == global_true ) { log_out << "\n[there are " << global_number_of_questions << " questions]\n" ; } ;
+    for ( global_question_number = 1 ; global_question_number <= global_number_of_questions ; global_question_number ++ )
         {
 
 
