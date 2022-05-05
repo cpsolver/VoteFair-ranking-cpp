@@ -1459,7 +1459,16 @@ void write_results( )
                 }
             }
         }
-        if ( global_logging_info == global_true ) { log_out << "[" << next_result_code << "]" ; } ;
+        if ( next_result_code > 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[" << next_result_code << "]" ; } ;
+        } else if ( next_result_code < 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[" << next_result_code << " " << global_text_for_voteinfo_code[ -1 * next_result_code ] << "]" ; } ;
+        } else
+        {
+            if ( global_logging_info == global_true ) { log_out << "[0]" ; } ;
+        }
         next_result_code = get_next_result_info_number( ) ;
     }
     std::cout << newline_or_space ;
@@ -9315,6 +9324,10 @@ void elim_find_fewest_first_choice( )
             }
         } else if ( ( current_vote_info_number == global_voteinfo_code_for_end_of_all_vote_info ) || ( current_vote_info_number == global_voteinfo_code_for_case_number ) || ( current_vote_info_number == global_voteinfo_code_for_end_of_all_cases ) )
         {
+            break ;
+        } else if ( current_vote_info_number == global_voteinfo_code_for_number_of_equivalent_seats )
+        {
+            pointer_to_vote_info ++ ;
             break ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_ballot_count )
         {
