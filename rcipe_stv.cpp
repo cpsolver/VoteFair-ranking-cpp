@@ -799,8 +799,6 @@ void handle_one_voteinfo_number( )
 //  candidates at the level below the last
 //  candidate encountered.  Do not return yet.
 
-// todo: debug this new code
-
     if ( ( global_total_count_of_ballot_groups >= 1 ) && ( ( global_current_voteinfo_number == global_voteinfo_code_for_ballot_count ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_vote_info ) ) )
     {
         true_or_false_have_handled_one_unranked_candidate = global_false ;
@@ -1403,6 +1401,8 @@ void point_to_next_ballot_group( )
         global_pointer_to_voteinfo_number ++ ;
     }
 
+    if ( global_logging_info == global_true ) { log_out << "[done skipping, pointer is now at " << global_pointer_to_voteinfo_number << "]" ; } ;
+
 
 // -----------------------------------------------
 //  End of function point_to_next_ballot_group.
@@ -1443,7 +1443,8 @@ int get_candidate_ranks_from_one_ballot_group( )
 
 // -----------------------------------------------
 //  If the voteinfo pointer does not already point
-//  to the ballot repeat count, that is an error.
+//  to the ballot repeat count, that is a fatal
+//  error.
 
     if ( global_vote_info_list[ global_pointer_to_voteinfo_number ] != global_voteinfo_code_for_ballot_count )
     {
@@ -1455,10 +1456,9 @@ int get_candidate_ranks_from_one_ballot_group( )
 
 // -----------------------------------------------
 //  If the number of ballot groups exceeds the
-//  assigned storage capacity, indicate a serious
+//  assigned storage capacity, indicate a fatal
 //  error.
 
-    global_ballot_group_pointer ++ ;
     if ( global_ballot_group_pointer >= global_maximum_number_of_ballot_groups )
     {
         if ( global_logging_info == global_true ) { log_out << "[error, number of ballot groups exceeds assigned storage capacity limit, which is " << global_maximum_number_of_ballot_groups << "]" << std::endl ; } ;
@@ -1494,9 +1494,6 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  candidate numbers within the ballot.
 
     preference_level = 1 ;
-
-    if ( global_logging_info == global_true ) { log_out << "[last position of input list is " << global_pointer_to_end_of_voteinfo_numbers << "]" ; } ;
-
     while ( global_pointer_to_voteinfo_number < global_pointer_to_end_of_voteinfo_numbers )
     {
 
@@ -1505,7 +1502,7 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  Get the current voteinfo number.
 
         global_current_voteinfo_number = global_vote_info_list[ global_pointer_to_voteinfo_number ] ;
-        if ( global_logging_info == global_true ) { log_out << "[" << global_pointer_to_voteinfo_number << ": " << global_current_voteinfo_number << "]" ; } ;
+//        if ( global_logging_info == global_true ) { log_out << "[" << global_pointer_to_voteinfo_number << ": " << global_current_voteinfo_number << "]" ; } ;
 
 
 // -----------------------------------------------
@@ -1690,6 +1687,7 @@ void fill_pairwise_tally_table( )
 
         if ( remaining_ballot_count_for_current_ballot_group < 1 )
         {
+            log_out << "[all ballots in this ballot group have no more influence]" << std::endl ;
             continue ;
         }
 
@@ -1698,6 +1696,7 @@ void fill_pairwise_tally_table( )
 //  Get the preferences on the ballots in this
 //  group of identical ballots.
 
+        log_out << "[x, looking at ballot group " << global_ballot_group_pointer << "]" << std::endl ;
         global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
 
 
@@ -2234,6 +2233,7 @@ void adjust_for_quota_excess( )
     global_pointer_to_voteinfo_number = 1 ;
     for ( global_ballot_group_pointer = 1 ; global_ballot_group_pointer <= global_total_count_of_ballot_groups ; global_ballot_group_pointer ++ )
     {
+        log_out << "[pointer at " << global_pointer_to_voteinfo_number << "]" << std::endl ;
 
 
 // -----------------------------------------------
@@ -2325,6 +2325,7 @@ void adjust_for_quota_excess( )
 //  This ballot group has multiple top-ranked
 //  candidates, so identify them.
 
+        log_out << "[y, looking at ballot group " << global_ballot_group_pointer << "]" << std::endl ;
         global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
         identify_top_ranked_candidates( ) ;
 
