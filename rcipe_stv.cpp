@@ -136,8 +136,8 @@
 //  have the meanings specified in the constants
 //  that begin with "global_voteinfo_code_for_...".
 //
-//  The mathematical algorithms of RCIPE STV are
-//  in the public domain.
+//  The mathematical algorithms of RCIPE and
+//  RCIPE STV are in the public domain.
 //
 //
 // -----------------------------------------------
@@ -155,12 +155,12 @@
 //  -6 6
 //  -67 5
 //  -50
-//  -9 -4 -11 31 1 2 3 -10
-//  -9 -4 -11 30 3 1 2 -10
-//  -9 -4 -11 2 2 1 3 -10
-//  -9 -4 -11 20 4 5 6 -10
-//  -9 -4 -11 20 5 4 6 -10
-//  -9 -4 -11 17 6 4 5 -10
+//  -9 -4 1 -11 31 1 2 3 -10
+//  -9 -4 1 -11 30 3 1 2 -10
+//  -9 -4 1 -11 2 2 1 3 -10
+//  -9 -4 1 -11 20 4 5 6 -10
+//  -9 -4 1 -11 20 5 4 6 -10
+//  -9 -4 1 -11 17 6 4 5 -10
 //  -8
 //
 //
@@ -336,6 +336,7 @@ int global_list_of_candidates_tied[ 99 ] ;
 
 
 //  Declare the input-related list.
+//  Allow room for extra codes at the end.
 
 const int global_maximum_vote_info_list_length = 200000 ;
 
@@ -343,6 +344,7 @@ int global_vote_info_list[ 200005 ] ;
 
 
 //  Declare the output-related list.
+//  Allow room for extra codes at the end.
 
 const int global_maximum_output_results_length = 2000 ;
 
@@ -365,8 +367,8 @@ int global_tally_first_equal_second_in_pair[ 2000 ] ;
 
 const int global_maximum_number_of_ballot_groups = 20000 ;
 
-int global_ballot_count_remaining_for_ballot_group[ 20005 ] ;
-int global_top_ranked_candidate_for_ballot_group[ 20005 ] ;
+int global_ballot_count_remaining_for_ballot_group[ 20000 ] ;
+int global_top_ranked_candidate_for_ballot_group[ 20000 ] ;
 
 
 //  Declare the lists that combine the counting of
@@ -374,6 +376,7 @@ int global_top_ranked_candidate_for_ballot_group[ 20005 ] ;
 //  candidates (during that counting cycle).
 
 const int global_maximum_number_of_pattern_numbers = 10000 ;
+
 int global_pattern_number_for_pattern_number_pointer[ 10000 ] ;
 int global_ballot_count_for_pattern_number_pointer[ 10000 ] ;
 int global_top_candidate_count_for_pattern_number_pointer[ 10000 ] ;
@@ -397,8 +400,10 @@ const int global_voteinfo_code_for_start_of_all_vote_info = -7 ;
 const int global_voteinfo_code_for_end_of_all_vote_info = -8 ;
 const int global_voteinfo_code_for_start_of_ballot = -9 ;
 const int global_voteinfo_code_for_end_of_ballot = -10 ;
+
 //  The following ballot count indicates how many ballots have the same ranking.
 const int global_voteinfo_code_for_ballot_count = -11 ;
+
 const int global_voteinfo_code_for_preference_level = -12 ;
 const int global_voteinfo_code_for_choice = -13 ;
 const int global_voteinfo_code_for_tie = -14 ;
@@ -589,7 +594,7 @@ void do_main_initialization( )
 
 
 // -----------------------------------------------
-//  Open the extra output files.
+//  Open the output file that logs details.
 
     log_out.open ( "output_rcipe_stv_log.txt" , std::ios::out ) ;
 
@@ -643,7 +648,7 @@ void do_main_initialization( )
 
 
 // -----------------------------------------------
-//  Do initialization.
+//  Initialize the candidate-specific flags.
 
     for ( candidate_number = 0 ; candidate_number <= global_maximum_candidate_number ; candidate_number ++ )
     {
@@ -655,6 +660,61 @@ void do_main_initialization( )
 
 // -----------------------------------------------
 //  End of function do_main_initialization.
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
+//       save_ballot_info_number
+//
+//  Puts the next voteinfo number into the list
+//  that stores the ballot-specific information.
+
+void save_ballot_info_number( int voteinfo_number )
+{
+
+
+// -----------------------------------------------
+//  Increment the pointer to the voteinfo numbers
+//  being stored in the list.
+//  Note that list position zero ([0]) is not used!
+
+    global_pointer_to_voteinfo_number ++ ;
+
+
+// -----------------------------------------------
+//  If the list has become too long, indicate that
+//  fatal error.
+
+    if ( global_pointer_to_voteinfo_number > global_maximum_vote_info_list_length )
+    {
+        if ( global_logging_info == global_true ) { log_out << "[error, too many vote-info numbers supplied, the available storage space must be increased]" ; } ;
+        std::cout << "Error: Too many vote-info numbers supplied, the available storage space must be increased." ;
+        exit( EXIT_FAILURE ) ;
+    }
+
+
+// -----------------------------------------------
+//  Store the supplied ballot-specific voteinfo
+//  number.
+
+    global_vote_info_list[ global_pointer_to_voteinfo_number ] = voteinfo_number ;
+//    if ( global_logging_info == global_true ) { log_out << "[at " << global_pointer_to_voteinfo_number << " vicode " << voteinfo_number << "]" ; } ;
+
+
+// -----------------------------------------------
+//  Insert an end-of-info code number at the next
+//  position, in case this is the last voteinfo
+//  number put into the list.
+
+    global_vote_info_list[ global_pointer_to_voteinfo_number + 1 ] = global_voteinfo_code_for_end_of_all_vote_info ;
+
+
+// -----------------------------------------------
+//  End of function save_ballot_info_number.
 
     return ;
 
@@ -728,131 +788,214 @@ void handle_one_voteinfo_number( )
 {
 
     int candidate_number ;
+    int true_or_false_have_handled_one_unranked_candidate ;
 
 
 // -----------------------------------------------
-//  Skip ahead if the PREVIOUS voteinfo number was
-//  greater than zero.
+//  If the code is a ballot repeat count, or is
+//  the end of the ballot data, and if not all the
+//  candidate numbers have been encountered for
+//  this ballot, rank these not-encountered
+//  candidates at the level below the last
+//  candidate encountered.  Do not return yet.
 
-    if ( global_previous_voteinfo_number <= 0 )
+// todo: debug this new code
+
+    if ( ( global_total_count_of_ballot_groups >= 1 ) && ( ( global_current_voteinfo_number == global_voteinfo_code_for_ballot_count ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_vote_info ) ) )
     {
+        true_or_false_have_handled_one_unranked_candidate = global_false ;
+	    for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
+	    {
+	        if ( global_tally_uses_of_candidate_number[ candidate_number ] < 1 )
+		    {
+		        if ( true_or_false_have_handled_one_unranked_candidate == global_true )
+	            {
+                    save_ballot_info_number( global_voteinfo_code_for_tie ) ;
+                }
+                save_ballot_info_number( candidate_number ) ;
+                true_or_false_have_handled_one_unranked_candidate = global_true ;
+//                if ( global_logging_info == global_true ) { log_out << "[unmarked candidate " << candidate_number << "]" ; } ;
+            }
+        }
+    }
+
+
+// -----------------------------------------------
+//  If the current code indicates a ballot repeat
+//  count, clear the flags that track which
+//  candidate numbers are encountered in this
+//  ballot group.  Do not return yet.
+
+    if ( global_current_voteinfo_number == global_voteinfo_code_for_ballot_count )
+    {
+        for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
+        {
+            global_tally_uses_of_candidate_number[ candidate_number ] = 0 ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  Handle the end of a case or the end of the
+//  ballot info, check for any errors, and return.
+
+    if ( ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_vote_info ) )
+    {
+        if ( global_case_number > 0 )
+        {
+            if ( global_ballot_info_repeat_count == 0 )
+            {
+                if ( global_logging_info == global_true ) { log_out << "[error, no ballots found]" ; } ;
+                global_possible_error_message = "Error: No ballots found." ;
+                return ;
+            }
+            if ( global_number_of_seats_to_fill < 1 )
+            {
+                if ( global_logging_info == global_true ) { log_out << "[error, seats to fill is less than one]" ; } ;
+                global_possible_error_message = "Error: Seats to fill is less than one." ;
+                return ;
+            }
+        } else if ( global_case_number < 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, case number not specified]" ; } ;
+            global_possible_error_message = "Error: Case number was not specified." ;
+            return ;
+        }
+        return ;
+    }
+
+
+// -----------------------------------------------
+//  Get the ballot repeat count, increment the
+//  counter for the number of ballot groups, and
+//  save the ballot repeat count in the
+//  ballot-info list, then return.
+
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_ballot_count )
+    {
+        global_ballot_info_repeat_count = global_current_voteinfo_number ;
+        save_ballot_info_number( global_voteinfo_code_for_ballot_count ) ;
+        save_ballot_info_number( global_ballot_info_repeat_count ) ;
+        global_count_of_candidates_marked = 0 ;
+        global_total_count_of_ballot_groups ++ ;
+        if ( global_logging_info == global_true ) { log_out << "[bc " << global_ballot_info_repeat_count << "]" ; } ;
+        if ( global_ballot_info_repeat_count < 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, ballot count number is less than one (" << global_ballot_info_repeat_count << ")]" ; } ;
+            global_possible_error_message = "Error: Ballot count number is less than one (" + convert_integer_to_text( global_ballot_info_repeat_count ) + ")." ;
+        } else if ( global_total_count_of_ballot_groups >= global_maximum_number_of_ballot_groups )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, number of ballot groups (" << global_total_count_of_ballot_groups << ") exceeds available storage space]" ; } ;
+            global_possible_error_message = "Error: Number of ballot groups (" + convert_integer_to_text( global_total_count_of_ballot_groups ) + ") exceeds the available storage space." ;
+        }
+        return ;
+    }
+
+
+// -----------------------------------------------
+//  Handle the code for a tie.  Save it in the
+//  vote-info list, then return.
+
+    if ( global_current_voteinfo_number == global_voteinfo_code_for_tie )
+    {
+        save_ballot_info_number( global_voteinfo_code_for_tie ) ;
+        if ( global_logging_info == global_true ) { log_out << "[+]" ; } ;
+        if ( global_count_of_candidates_marked < 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, invalid nesting of tied preference vote-info number, at input line number " << global_input_line_number << "]" ; } ;
+            global_possible_error_message = "Error: Invalid nesting of tied preference vote-info number, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
+            return ;
+        }
+        global_count_of_candidates_marked = 0 ;
+        return ;
+    }
 
 
 // -----------------------------------------------
 //  Get the case number, then return.
 
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_case_number )
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_case_number )
+    {
+        if ( global_case_number != 0 )
         {
-            if ( global_case_number != 0 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, second case number encountered, which is not allowed]" ; } ;
-                global_possible_error_message = "Error: Second case number encountered, which is not valid." ;
-                return ;
-            }
-            global_case_number = global_current_voteinfo_number ;
-            if ( global_logging_info == global_true ) { log_out << "[case " << global_case_number << "]" ; } ;
-            if ( global_case_number < 1 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, case number is less than one, which is not valid]" ; } ;
-                global_possible_error_message = "Error: Case number is less than one, which is not valid." ;
-                return ;
-            }
-            global_within_ballots = global_false ;
+            if ( global_logging_info == global_true ) { log_out << "[error, second case number encountered, which is not allowed]" ; } ;
+            global_possible_error_message = "Error: Second case number encountered, which is not valid." ;
             return ;
         }
+        global_case_number = global_current_voteinfo_number ;
+        global_within_ballots = global_false ;
+        if ( global_logging_info == global_true ) { log_out << "[case " << global_case_number << "]" ; } ;
+        if ( global_case_number < 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, case number is less than one, which is not valid]" ; } ;
+            global_possible_error_message = "Error: Case number is less than one, which is not valid." ;
+        }
+        return ;
+    }
 
 
 // -----------------------------------------------
-//  Handle the code for a question number.  This
-//  software handles only one question, so if the
-//  question number is not one, that is an error.
-//  Then return.
+//  Get the question number, which must be one,
+//  then return.
+//  Reminder: This software handles only one
+//  question, but the voteinfo codes support
+//  multiple questions.
 
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_question_number )
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_question_number )
+    {
+        global_question_number = global_current_voteinfo_number ;
+        if ( global_question_number != 1 )
         {
-            global_question_number = global_current_voteinfo_number ;
-            if ( global_logging_info == global_true ) { log_out << "[question number " << global_question_number << "]" ; } ;
-            if ( global_question_number != 1 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, question number is not one (" << global_question_number << ")]" ; } ;
-                global_possible_error_message = "Error: Encountered question number that is not one (" + convert_integer_to_text( global_question_number ) + ")." ;
-            }
-            return ;
+            if ( global_logging_info == global_true ) { log_out << "[error, question number is not one (" << global_question_number << ")]" ; } ;
+            global_possible_error_message = "Error: Encountered question number that is not one (" + convert_integer_to_text( global_question_number ) + ")." ;
         }
+        return ;
+    }
 
 
 // -----------------------------------------------
-//  Handle the code for the number of candidates,
+//  Get the count for the number of candidates,
 //  then return.
 
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_number_of_candidates )
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_number_of_candidates )
+    {
+        global_number_of_candidates = global_current_voteinfo_number ;
+        if ( global_logging_info == global_true ) { log_out << "[candidate count " << global_number_of_candidates << "]" ; } ;
+        if ( global_number_of_candidates == 1 )
         {
-            global_number_of_candidates = global_current_voteinfo_number ;
-            if ( global_logging_info == global_true ) { log_out << "[candidate count " << global_number_of_candidates << "]" ; } ;
-            if ( global_number_of_candidates == 1 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, only one candidate]" ; } ;
-                global_possible_error_message = "Error: Only one candidate." ;
-                return ;
-            } else if ( global_number_of_candidates < 1 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, no candidates specified]" ; } ;
-                global_possible_error_message = "Error: No candidates specified." ;
-                return ;
-            } else if ( global_number_of_candidates > global_maximum_candidate_number )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, number of candidates, " << global_number_of_candidates << ", exceeds maximum]" ; } ;
-                global_possible_error_message = "Error: Number of candidates, " + convert_integer_to_text( global_number_of_candidates ) + ", exceeds maximum." ;
-            }
+            if ( global_logging_info == global_true ) { log_out << "[error, only one candidate]" ; } ;
+            global_possible_error_message = "Error: Only one candidate." ;
             return ;
         }
+        if ( global_number_of_candidates < 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, no candidates specified]" ; } ;
+            global_possible_error_message = "Error: No candidates specified." ;
+            return ;
+        }
+        if ( global_number_of_candidates > global_maximum_candidate_number )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, number of candidates, " << global_number_of_candidates << ", exceeds maximum]" ; } ;
+            global_possible_error_message = "Error: Number of candidates, " + convert_integer_to_text( global_number_of_candidates ) + ", exceeds maximum." ;
+            return ;
+        }
+        return ;
+    }
 
 
 // -----------------------------------------------
-//  Handle the code for a ballot repeat count.
-//  Also, increment the counter for the number of
-//  ballot groups.  Do not return (exit from this
-//  function) here because the ballot repeat count
-//  needs to be put into the saved voteinfo list.
+//  Get the number of equivalent seats to be
+//  filled, write this number to the results info,
+//  then return.
 
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_ballot_count )
-        {
-            global_ballot_info_repeat_count = global_current_voteinfo_number ;
-            if ( global_ballot_info_repeat_count < 1 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, ballot count number is less than one (" << global_ballot_info_repeat_count << ")]" ; } ;
-                global_possible_error_message = "Error: Ballot count number is less than one (" + convert_integer_to_text( global_ballot_info_repeat_count ) + ")." ;
-                return ;
-            }
-            if ( global_logging_info == global_true ) { log_out << "[bc " << global_ballot_info_repeat_count << "]" ; } ;
-            global_total_count_of_ballot_groups ++ ;
-            if ( global_total_count_of_ballot_groups >= global_maximum_number_of_ballot_groups )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, number of ballot groups (" << global_total_count_of_ballot_groups << ") exceeds available storage space]" ; } ;
-                global_possible_error_message = "Error: Number of ballot groups (" + convert_integer_to_text( global_total_count_of_ballot_groups ) + ") exceeds the available storage space." ;
-                return ;
-            }
-            global_count_of_candidates_marked = 0 ;
-            for ( candidate_number = 0 ; candidate_number <= global_maximum_candidate_number ; candidate_number ++ )
-            {
-                global_tally_uses_of_candidate_number[ candidate_number ] = 0 ;
-            }
-        }
-
-
-// -----------------------------------------------
-//  Handle the code for the number of equivalent
-//  seats to be filled, write this number to the
-//  results info, then return.
-
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_number_of_equivalent_seats )
-        {
-            global_number_of_seats_to_fill = global_current_voteinfo_number ;
-            put_next_result_info_number( global_voteinfo_code_for_number_of_equivalent_seats ) ;
-            put_next_result_info_number( global_number_of_seats_to_fill ) ;
-            if ( global_logging_info == global_true ) { log_out << "[number of equivalent seats to fill is " << global_number_of_seats_to_fill << "]" ; } ;
-            return ;
-        }
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_number_of_equivalent_seats )
+    {
+        global_number_of_seats_to_fill = global_current_voteinfo_number ;
+        put_next_result_info_number( global_voteinfo_code_for_number_of_equivalent_seats ) ;
+        put_next_result_info_number( global_number_of_seats_to_fill ) ;
+        if ( global_logging_info == global_true ) { log_out << "[number of equivalent seats to fill is " << global_number_of_seats_to_fill << "]" ; } ;
+        return ;
+    }
 
 
 // -----------------------------------------------
@@ -860,17 +1003,18 @@ void handle_one_voteinfo_number( )
 //  specify that it is already eliminated.  This
 //  is useful for ignoring very unpopular
 //  candidates as a way to reduce the number of
-//  ballot groups and ballot patterns for very
-//  large elections.
+//  ballot groups and ballot patterns for
+//  elections that have a very large number of
+//  candidates.
 
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_candidate_to_ignore )
-        {
-            candidate_number = global_current_voteinfo_number ;
-            global_true_or_false_eliminated_candidate[ candidate_number ] = global_true ;
-            global_true_or_false_available_candidate[ candidate_number ] = global_false ;
-            if ( global_logging_info == global_true ) { log_out << "[as requested, ignoring candidate number " << candidate_number << "]" ; } ;
-            return ;
-        }
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_candidate_to_ignore )
+    {
+        candidate_number = global_current_voteinfo_number ;
+        global_true_or_false_eliminated_candidate[ candidate_number ] = global_true ;
+        global_true_or_false_available_candidate[ candidate_number ] = global_false ;
+        if ( global_logging_info == global_true ) { log_out << "[as requested, ignoring candidate number " << candidate_number << "]" ; } ;
+        return ;
+    }
 
 
 // -----------------------------------------------
@@ -878,46 +1022,71 @@ void handle_one_voteinfo_number( )
 //  number of representation levels to calculate,
 //  then return.
 
-        if ( global_previous_voteinfo_number == global_voteinfo_code_for_number_of_representation_levels_to_compute )
-        {
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  If a value of zero is encountered, ignore it,
-//  then return.
-
-        if ( global_current_voteinfo_number == 0 )
-        {
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  Finish skipping ahead when the PREVIOUS
-//  voteinfo number is a positive integer.
-
+    if ( global_previous_voteinfo_number == global_voteinfo_code_for_number_of_representation_levels_to_compute )
+    {
+        return ;
     }
 
 
 // -----------------------------------------------
-//  Skip ahead if the CURRENT voteinfo number is
-//  greater than zero.
+//  If a positive number appears before the case
+//  number, that is an error, so indicate it,
+//  then return.
 
-    if ( global_current_voteinfo_number <= 0 )
+    if ( ( global_current_voteinfo_number > 0 ) && ( global_case_number < 1 ) )
     {
+        if ( global_logging_info == global_true ) { log_out << "[error, positive number (" << global_current_voteinfo_number << ") encountered before case number specified]" ; } ;
+        global_possible_error_message = "Error: Positive number (" + convert_integer_to_text( global_current_voteinfo_number ) + ") encountered before case number specified." ;
+        return ;
+    }
+
+
+// -----------------------------------------------
+//  Handle a candidate number.  It is specified as
+//  as a voteinfo number that is greater than
+//  zero and is not preceded by a negative code
+//  that is otherwise handled.  Store the
+//  candidate number in the ballot-specific info
+//  list, check for errors, then return.
+
+    if ( global_current_voteinfo_number > 0 )
+    {
+        candidate_number = global_current_voteinfo_number ;
+        save_ballot_info_number( candidate_number ) ;
+        global_count_of_candidates_marked ++ ;
+        global_tally_uses_of_candidate_number[ candidate_number ] ++ ;
+        if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << "]" ; } ;
+        if ( global_number_of_candidates == 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, candidate number appears before number of candidates specified, at input line number " << global_input_line_number << "]" ; } ;
+            global_possible_error_message = "Error: Candidate number appears before number of candidates specified, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
+            return ;
+        }
+        if ( candidate_number > global_number_of_candidates )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, candidate number " << candidate_number << " exceeds indicated number of candidates, which is " << global_number_of_candidates << ", at input line number " << global_input_line_number << "]" ; } ;
+            global_possible_error_message = "Error: Candidate number " + convert_integer_to_text( candidate_number ) + " exceeds indicated number of candidates, which is " + convert_integer_to_text( global_number_of_candidates ) + ", at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
+            return ;
+        }
+        if ( global_tally_uses_of_candidate_number[ candidate_number ] > 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[error, candidate number " << candidate_number << " previously used in this ballot, at input line number " << global_input_line_number << "]" ; } ;
+            global_possible_error_message = "Error: Candidate number " + convert_integer_to_text( candidate_number ) + " previously used in this ballot, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
+            return ;
+        }
+        return ;
+    }
 
 
 // -----------------------------------------------
 //  If there is a request for no logging,
 //  shut off logging now, then return.
 
-        if ( global_current_voteinfo_number == global_voteinfo_code_for_request_logging_off )
-        {
-            global_logging_info = global_false ;
-            return ;
-        }
+    if ( global_current_voteinfo_number == global_voteinfo_code_for_request_logging_off )
+    {
+        global_logging_info = global_false ;
+        return ;
+    }
 
 
 // -----------------------------------------------
@@ -926,13 +1095,13 @@ void handle_one_voteinfo_number( )
 //  used later, write this request to the results
 //  info, then return.
 
-        if ( global_current_voteinfo_number == global_voteinfo_code_for_request_quota_droop_not_hare )
-        {
-            put_next_result_info_number( global_voteinfo_code_for_request_quota_droop_not_hare ) ;
-            global_true_or_false_request_quota_droop = global_true ;
-            if ( global_logging_info == global_true ) { log_out << "[request for Droop quota instead of Hare quota]" ; } ;
-            return ;
-        }
+    if ( global_current_voteinfo_number == global_voteinfo_code_for_request_quota_droop_not_hare )
+    {
+        put_next_result_info_number( global_voteinfo_code_for_request_quota_droop_not_hare ) ;
+        global_true_or_false_request_quota_droop = global_true ;
+        if ( global_logging_info == global_true ) { log_out << "[request for Droop quota instead of Hare quota]" ; } ;
+        return ;
+    }
 
 
 // -----------------------------------------------
@@ -945,13 +1114,13 @@ void handle_one_voteinfo_number( )
 //  flag and write this request to the results
 //  info, then return.
 
-        if ( global_current_voteinfo_number == global_voteinfo_code_for_request_instant_runoff_voting )
-        {
-            global_true_or_false_request_no_pairwise_loser_elimination = global_true ;
-            put_next_result_info_number( global_voteinfo_code_for_request_instant_runoff_voting ) ;
-            if ( global_logging_info == global_true ) { log_out << "[request no pairwise loser eliminations]" ; } ;
-            return ;
-        }
+    if ( global_current_voteinfo_number == global_voteinfo_code_for_request_instant_runoff_voting )
+    {
+        global_true_or_false_request_no_pairwise_loser_elimination = global_true ;
+        put_next_result_info_number( global_voteinfo_code_for_request_instant_runoff_voting ) ;
+        if ( global_logging_info == global_true ) { log_out << "[request no pairwise loser eliminations]" ; } ;
+        return ;
+    }
 
 
 // -----------------------------------------------
@@ -959,178 +1128,22 @@ void handle_one_voteinfo_number( )
 //  encountered without yet encountering a case
 //  number, indicate this as an error, and return.
 
-        if ( ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) && ( global_case_number < 1 ) )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[error, reached end of all cases, but no case has been started]" ; } ;
-            global_possible_error_message = "Error: Reached end of all cases before case started." ;
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  Handle the end of a case or the end of the
-//  ballot info, check for any errors, and return.
-
-        if ( ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_vote_info ) )
-        {
-            if ( global_case_number > 0 )
-            {
-                if ( global_ballot_info_repeat_count == 0 )
-                {
-                    if ( global_logging_info == global_true ) { log_out << "[error, no ballots found]" ; } ;
-                    global_possible_error_message = "Error: No ballots found." ;
-                    return ;
-                }
-                if ( global_number_of_seats_to_fill < 1 )
-                {
-                    if ( global_logging_info == global_true ) { log_out << "[error, seats to fill is less than one]" ; } ;
-                    global_possible_error_message = "Error: Seats to fill is less than one." ;
-                    return ;
-                }
-            } else if ( global_case_number < 1 )
-            {
-                if ( global_logging_info == global_true ) { log_out << "[error, case number not specified]" ; } ;
-                global_possible_error_message = "Error: Case number was not specified." ;
-                return ;
-            }
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  If a positive number appears before the case
-//  number, that is an error, so indicate it,
-//  then return.
-
-        if ( ( global_current_voteinfo_number > 0 ) && ( global_case_number < 1 ) )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[error, positive number (" << global_current_voteinfo_number << ") encountered before case number specified]" ; } ;
-            global_possible_error_message = "Error: Positive number (" + convert_integer_to_text( global_current_voteinfo_number ) + ") encountered before case number specified." ;
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  Ignore the code for voteinfo numbers that are
-//  not of interest, then return.
-
-        if ( ( global_current_voteinfo_number == global_voteinfo_code_for_start_of_all_vote_info ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_ballot ) )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[code " << global_current_voteinfo_number << " ignored]" ; } ;
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  If the (negative) voteinfo code is not the
-//  ballot repeat count code or a tied preference
-//  level, return without storing this code.
-
-        if ( ( global_current_voteinfo_number != global_voteinfo_code_for_ballot_count ) && ( global_current_voteinfo_number != global_voteinfo_code_for_tie  ) )
-        {
-            return ;
-        }
-
-
-// -----------------------------------------------
-//  Finish skipping ahead when the CURRENT
-//  voteinfo number is a positive integer.
-
-    }
-
-
-// -----------------------------------------------
-//  If the array that stores input numbers has
-//  become too long, indicate that error, and
-//  return.
-
-    if ( global_pointer_to_voteinfo_number > global_maximum_vote_info_list_length )
+    if ( ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) && ( global_case_number < 1 ) )
     {
-        if ( global_logging_info == global_true ) { log_out << "[error, too many vote-info numbers (" << global_pointer_to_voteinfo_number << ") supplied, maximum is " << global_maximum_vote_info_list_length << ".]" ; } ;
-        std::cout << "Error: Too many vote-info numbers (" << global_pointer_to_voteinfo_number << ") supplied, maximum is " << global_maximum_vote_info_list_length << "." ;
+        if ( global_logging_info == global_true ) { log_out << "[error, reached end of all cases, but no case has been started]" ; } ;
+        global_possible_error_message = "Error: Reached end of all cases before case started." ;
         return ;
     }
 
 
 // -----------------------------------------------
-//  Increment the pointer to the voteinfo numbers
-//  being stored in the list.
-//  Note that list position zero ([0]) is not used!
+//  If a value of zero is encountered, indicate an
+//  error, then return.
 
-    global_pointer_to_voteinfo_number ++ ;
-
-
-// -----------------------------------------------
-//  Store the supplied voteinfo number.
-
-    global_vote_info_list[ global_pointer_to_voteinfo_number ] = global_current_voteinfo_number ;
-    if ( global_logging_info == global_true ) { log_out << "[at " << global_pointer_to_voteinfo_number << " vicode " << global_current_voteinfo_number << "]" ; } ;
-
-
-// -----------------------------------------------
-//  Insert an end-of-info code number at the next
-//  position, in case this is the last voteinfo
-//  number put into the list.
-
-    global_vote_info_list[ global_pointer_to_voteinfo_number + 1 ] = global_voteinfo_code_for_end_of_all_vote_info ;
-
-
-// -----------------------------------------------
-//  Handle the code for a tie.  Save it in the
-//  vote-info list, then return.
-
-    if ( global_current_voteinfo_number == global_voteinfo_code_for_tie )
+    if ( global_current_voteinfo_number == 0 )
     {
-        if ( global_count_of_candidates_marked < 1 )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[error, invalid nesting of tied preference vote-info number, at input line number " << global_input_line_number << "]" ; } ;
-            global_possible_error_message = "Error: Invalid nesting of tied preference vote-info number, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
-            return ;
-        }
-        if ( global_logging_info == global_true ) { log_out << "[+]" ; } ;
-        return ;
-    }
-
-
-// -----------------------------------------------
-//  If the current voteinfo number is a ballot
-//  repeat count, return now so the integer is not
-//  regarded as a candidate number.
-
-    if ( global_previous_voteinfo_number == global_voteinfo_code_for_ballot_count )
-    {
-        return ;
-    }
-
-
-// -----------------------------------------------
-//  If the voteinfo number is greater than zero,
-//  it is a candidate number, so check for errors,
-//  store it in the vote-info list, then return.
-
-    if ( global_current_voteinfo_number > 0 )
-    {
-        candidate_number = global_current_voteinfo_number ;
-        if ( global_number_of_candidates == 0 )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[error, candidate number appears before number of candidates specified, at input line number " << global_input_line_number << "]" ; } ;
-            global_possible_error_message = "Error: Candidate number appears before number of candidates specified, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
-            return ;
-        } else if ( candidate_number > global_number_of_candidates )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[error, candidate number " << candidate_number << " exceeds indicated number of candidates, which is " << global_number_of_candidates << ", at input line number " << global_input_line_number << "]" ; } ;
-            global_possible_error_message = "Error: Candidate number " + convert_integer_to_text( candidate_number ) + " exceeds indicated number of candidates, which is " + convert_integer_to_text( global_number_of_candidates ) + ", at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
-            return ;
-        }
-        global_tally_uses_of_candidate_number[ candidate_number ] ++ ;
-        if ( global_tally_uses_of_candidate_number[ candidate_number ] > 1 )
-        {
-            if ( global_logging_info == global_true ) { log_out << "[error, candidate number " << candidate_number << " previously used in this ballot, at input line number " << global_input_line_number << "]" ; } ;
-            global_possible_error_message = "Error: Candidate number " + convert_integer_to_text( candidate_number ) + " previously used in this ballot, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
-            return ;
-        }
-        global_count_of_candidates_marked ++ ;
-        if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << "]" ; } ;
+        log_out << "[error, encountered voteinfo value of zero, which is not valid]" ;
+        global_possible_error_message = "Error: Encountered voteinfo value of zero, which is not valid." ;
         return ;
     }
 
@@ -1158,8 +1171,21 @@ void handle_one_voteinfo_number( )
 void read_data( )
 {
 
+    int candidate_number ;
+    int error_count ;
+
     std::string input_line ;
     std::string input_text_word ;
+
+
+// -----------------------------------------------
+//  Initialization.
+
+    error_count = 0 ;
+    for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
+    {
+        global_tally_uses_of_candidate_number[ candidate_number ] = 0 ;
+    }
 
 
 // -----------------------------------------------
@@ -1233,18 +1259,32 @@ void read_data( )
 
 // -----------------------------------------------
 //  Handle one voteinfo number, which is either a
-//  code or a positive integer.
+//  code expressed as a negative integer, or is a
+//  positive integer.  If the text is not an
+//  integer, or if the text is the integer zero,
+//  ignore it.
 
-            handle_one_voteinfo_number( ) ;
+	        if ( global_current_voteinfo_number != 0 )
+	        {
+                handle_one_voteinfo_number( ) ;
+	        }
 
 
 // -----------------------------------------------
-//  If there are any errors, exit now.
+//  If there are errors, report them.  If there
+//  are lots of errors, exit extra early.
 
             if ( global_possible_error_message.length() > 3 )
             {
-                log_out << std::endl << "[error, calculations not done because input data is not valid]" << std::endl << "[error message is: " << global_possible_error_message << "]" << std::endl ;
+                log_out << std::endl << "[error, message is: " << global_possible_error_message << "]" << std::endl ;
                 std::cout << "Error, error message is: " << global_possible_error_message << std::endl ;
+                error_count ++ ;
+                global_possible_error_message = "" ;
+            }
+            if ( error_count > 10 )
+            {
+                log_out << std::endl << "[too many errors to log, exiting early]" << std::endl ;
+                std::cout << "Too many errors to log, exiting early." << std::endl ;
                 exit( EXIT_FAILURE ) ;
             }
 
@@ -1263,6 +1303,17 @@ void read_data( )
 
     }
     if ( global_logging_info == global_true ) { log_out << "[done getting input data]" << std::endl ; }
+
+
+// -----------------------------------------------
+//  If there were any data errors, exit now.
+
+    if ( error_count > 0 )
+    {
+        log_out << std::endl << "[encountered one or more fatal data-input errors]" << std::endl ;
+        std::cout << "Encountered one or more fatal data-input errors, exiting now." << std::endl ;
+        exit( EXIT_FAILURE ) ;
+    }
 
 
 // -----------------------------------------------
@@ -1287,13 +1338,12 @@ void read_data( )
 
 
 // -----------------------------------------------
-//  If less than two numbers were found, indicate
-//  this no-data error.
+//  If a meaningful number of ballots were not
+//  found, indicate this no-data error.
 
-    if ( global_pointer_to_end_of_voteinfo_numbers < 2 )
+    if ( global_total_count_of_ballot_groups < 2 )
     {
-        global_length_of_result_info_list = 0 ;
-        if ( global_logging_info == global_true ) { log_out << "[error, input file does not contain any data]" ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[error, input file does not contain any ballot data]" ; } ;
         std::cout << "Error, input file does not contain any data." << std::endl ;
         exit( EXIT_FAILURE ) ;
     }
@@ -1317,6 +1367,9 @@ void read_data( )
 
 void point_to_next_ballot_group( )
 {
+
+
+    if ( global_logging_info == global_true ) { log_out << "[skipping, pointer is at " << global_pointer_to_voteinfo_number << "]" ; } ;
 
 
 // -----------------------------------------------
@@ -1441,6 +1494,9 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  candidate numbers within the ballot.
 
     preference_level = 1 ;
+
+    if ( global_logging_info == global_true ) { log_out << "[last position of input list is " << global_pointer_to_end_of_voteinfo_numbers << "]" ; } ;
+
     while ( global_pointer_to_voteinfo_number < global_pointer_to_end_of_voteinfo_numbers )
     {
 
@@ -1449,7 +1505,7 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  Get the current voteinfo number.
 
         global_current_voteinfo_number = global_vote_info_list[ global_pointer_to_voteinfo_number ] ;
-//        if ( global_logging_info == global_true ) { log_out << "[" << global_pointer_to_voteinfo_number << ": " << global_current_voteinfo_number << "]" ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[" << global_pointer_to_voteinfo_number << ": " << global_current_voteinfo_number << "]" ; } ;
 
 
 // -----------------------------------------------
@@ -2934,7 +2990,7 @@ void method_rcipe_stv( )
 
 // -----------------------------------------------
 //  If the lowest vote transfer count is less than
-//  zero, that is an error.
+//  one, that is an error.
 
         if ( number_of_candidates_with_lowest_vote_transfer_count < 1 )
         {
