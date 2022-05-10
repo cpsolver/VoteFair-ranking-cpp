@@ -102,6 +102,11 @@
 //  VoteFair Ranking, and single-winner RCIPE,
 //  and other single-winner vote-counting methods.
 //
+//  Version 0.15 - In May 2022 Richard Fobes
+//  did testing and debugging, and improved
+//  comments, and updated version count to: 0.15
+//  Yet more rigorous testing is needed before
+//  relying on this code for elections.
 //
 // -----------------------------------------------
 //
