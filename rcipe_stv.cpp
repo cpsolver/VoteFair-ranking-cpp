@@ -290,7 +290,9 @@ int global_ballot_info_repeat_count ;
 int global_current_total_vote_count ;
 int global_supporting_votes_for_elected_candidate ;
 int global_supporting_vote_count_that_exceeds_quota ;
+int global_need_to_initialize_group_ballot_count ;
 int global_quota_count ;
+int global_counting_cycle_number ;
 int global_ballot_group_pointer ;
 int global_total_count_of_ballot_groups ;
 int global_count_of_unique_pattern_numbers ;
@@ -797,17 +799,19 @@ void handle_one_voteinfo_number( )
 //  candidate numbers have been encountered for
 //  this ballot, rank these not-encountered
 //  candidates at the level below the last
-//  candidate encountered.  Do not return yet.
+//  candidate encountered.  Do not return yet
+//  because the ballot repeat count for the new
+//  ballot group needs to be saved.
 
     if ( ( global_total_count_of_ballot_groups >= 1 ) && ( ( global_current_voteinfo_number == global_voteinfo_code_for_ballot_count ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_cases ) || ( global_current_voteinfo_number == global_voteinfo_code_for_end_of_all_vote_info ) ) )
     {
         true_or_false_have_handled_one_unranked_candidate = global_false ;
-	    for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
-	    {
-	        if ( global_tally_uses_of_candidate_number[ candidate_number ] < 1 )
-		    {
-		        if ( true_or_false_have_handled_one_unranked_candidate == global_true )
-	            {
+        for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
+        {
+            if ( global_tally_uses_of_candidate_number[ candidate_number ] < 1 )
+            {
+                if ( true_or_false_have_handled_one_unranked_candidate == global_true )
+                {
                     save_ballot_info_number( global_voteinfo_code_for_tie ) ;
                 }
                 save_ballot_info_number( candidate_number ) ;
@@ -1009,6 +1013,8 @@ void handle_one_voteinfo_number( )
     {
         candidate_number = global_current_voteinfo_number ;
         global_true_or_false_eliminated_candidate[ candidate_number ] = global_true ;
+        put_next_result_info_number( global_voteinfo_code_for_eliminated_candidate ) ;
+        put_next_result_info_number( candidate_number ) ;
         global_true_or_false_available_candidate[ candidate_number ] = global_false ;
         if ( global_logging_info == global_true ) { log_out << "[as requested, ignoring candidate number " << candidate_number << "]" ; } ;
         return ;
@@ -1068,8 +1074,8 @@ void handle_one_voteinfo_number( )
         }
         if ( global_tally_uses_of_candidate_number[ candidate_number ] > 1 )
         {
-            if ( global_logging_info == global_true ) { log_out << "[error, candidate number " << candidate_number << " previously used in this ballot, at input line number " << global_input_line_number << "]" ; } ;
-            global_possible_error_message = "Error: Candidate number " + convert_integer_to_text( candidate_number ) + " previously used in this ballot, at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
+            if ( global_logging_info == global_true ) { log_out << "[error, candidate number " << candidate_number << " previously used in this ballot, error is at input line number " << global_input_line_number << "]" ; } ;
+            global_possible_error_message = "Error: Candidate number " + convert_integer_to_text( candidate_number ) + " previously used in this ballot, error is at input line number " + convert_integer_to_text( global_input_line_number ) + "." ;
             return ;
         }
         return ;
@@ -1262,10 +1268,10 @@ void read_data( )
 //  integer, or if the text is the integer zero,
 //  ignore it.
 
-	        if ( global_current_voteinfo_number != 0 )
-	        {
+            if ( global_current_voteinfo_number != 0 )
+            {
                 handle_one_voteinfo_number( ) ;
-	        }
+            }
 
 
 // -----------------------------------------------
@@ -1367,9 +1373,6 @@ void point_to_next_ballot_group( )
 {
 
 
-    if ( global_logging_info == global_true ) { log_out << "[skipping, pointer is at " << global_pointer_to_voteinfo_number << "]" ; } ;
-
-
 // -----------------------------------------------
 //  If the pointer is already at the end of the
 //  ballots, return.
@@ -1400,8 +1403,6 @@ void point_to_next_ballot_group( )
         }
         global_pointer_to_voteinfo_number ++ ;
     }
-
-    if ( global_logging_info == global_true ) { log_out << "[done skipping, pointer is now at " << global_pointer_to_voteinfo_number << "]" ; } ;
 
 
 // -----------------------------------------------
@@ -1490,6 +1491,18 @@ int get_candidate_ranks_from_one_ballot_group( )
 
 
 // -----------------------------------------------
+//  If this is the first time getting the ballot
+//  count for this group, save this ballot count
+//  as the initial influence count for this ballot
+//  group.
+
+    if ( global_need_to_initialize_group_ballot_count == global_true )
+    {
+        global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = global_ballot_info_repeat_count ;
+    }
+
+
+// -----------------------------------------------
 //  Begin a loop that gets the voteinfo codes and
 //  candidate numbers within the ballot.
 
@@ -1548,10 +1561,16 @@ int get_candidate_ranks_from_one_ballot_group( )
 
 
 // -----------------------------------------------
+//  Log the current ballot count and candidate
+//  ranking sequence.
+
+    if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " bc " << global_ballot_info_repeat_count << " x " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << " " << text_ballot_info << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
 //  Return with the number of ballot counts
 //  handled.  If zero, there are no more ballots.
 
-    if ( global_logging_info == global_true ) { log_out << "[x " << global_ballot_info_repeat_count << " " << text_ballot_info << "]" << std::endl ; } ;
     return global_ballot_info_repeat_count ;
 
 
@@ -1612,9 +1631,8 @@ void reset_tally_table( )
 //  compare, return with zero in the variable
 //  global_pair_counter_maximum.
 
-    if ( pair_counter == 0 )
+    if ( global_pair_counter_maximum == 0 )
     {
-        global_pair_counter_maximum = 0 ;
         return ;
     }
 
@@ -1665,6 +1683,12 @@ void fill_pairwise_tally_table( )
 
 
 // -----------------------------------------------
+//  Log the number of pairs.
+
+    if ( global_logging_info == global_true ) { log_out << "[pair count is " << global_pair_counter_maximum << "]" << std::endl ; } ;
+
+
+// -----------------------------------------------
 //  Begin a loop that handles each ballot group.
 
     global_pointer_to_voteinfo_number = 1 ;
@@ -1696,7 +1720,6 @@ void fill_pairwise_tally_table( )
 //  Get the preferences on the ballots in this
 //  group of identical ballots.
 
-        log_out << "[x, looking at ballot group " << global_ballot_group_pointer << "]" << std::endl ;
         global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
 
 
@@ -1774,7 +1797,7 @@ int check_for_pairwise_losing_candidate( )
         if ( global_true_or_false_pairwise_consider_candidate[ candidate_number ] == global_true )
         {
             number_of_candidates_being_pairwise_considered ++ ;
-            if ( global_logging_info == global_true ) { log_out << "[considering candidate " << candidate_number << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[considering candidate " << candidate_number << "]" << std::endl ; } ;
         }
     }
 
@@ -1790,14 +1813,14 @@ int check_for_pairwise_losing_candidate( )
         if ( global_tally_first_over_second_in_pair[ pair_counter ] > global_tally_second_over_first_in_pair[ pair_counter ] )
         {
             global_loss_count_for_candidate[ second_candidate_number ] ++ ;
-            if ( global_logging_info == global_true ) { log_out << "[candidate " << second_candidate_number << " loses to candidate " << first_candidate_number << ", with " << global_tally_second_over_first_in_pair[ pair_counter ] << " votes versus " << global_tally_first_over_second_in_pair[ pair_counter ] << " votes]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[candidate " << second_candidate_number << " loses to candidate " << first_candidate_number << ", with " << global_tally_second_over_first_in_pair[ pair_counter ] << " votes versus " << global_tally_first_over_second_in_pair[ pair_counter ] << " votes]" << std::endl ; } ;
         } else if ( global_tally_second_over_first_in_pair[ pair_counter ] > global_tally_first_over_second_in_pair[ pair_counter ] )
         {
             global_loss_count_for_candidate[ first_candidate_number ] ++ ;
-            if ( global_logging_info == global_true ) { log_out << "[candidate " << first_candidate_number << " loses to candidate " << second_candidate_number << ", with " << global_tally_first_over_second_in_pair[ pair_counter ] << " votes versus " << global_tally_second_over_first_in_pair[ pair_counter ] << " votes]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[candidate " << first_candidate_number << " loses to candidate " << second_candidate_number << ", with " << global_tally_first_over_second_in_pair[ pair_counter ] << " votes versus " << global_tally_second_over_first_in_pair[ pair_counter ] << " votes]" << std::endl ; } ;
         } else
         {
-            if ( global_logging_info == global_true ) { log_out << "[equal vote counts for candidate " << first_candidate_number << " and candidate " << second_candidate_number << ", both have " << global_tally_first_over_second_in_pair[ pair_counter ] << " votes]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[equal vote counts for candidate " << first_candidate_number << " and candidate " << second_candidate_number << ", both have " << global_tally_first_over_second_in_pair[ pair_counter ] << " votes]" << std::endl ; } ;
         }
     }
 
@@ -1807,14 +1830,14 @@ int check_for_pairwise_losing_candidate( )
 //  identify it.  If there is no pairwise losing
 //  candidate, return with a value of zero.
 
-    if ( global_logging_info == global_true ) { log_out << "[considering " << number_of_candidates_being_pairwise_considered << " candidates]" << std::endl ; } ;
+    if ( global_logging_info == global_true ) { log_out << "[pairwise comparing " << number_of_candidates_being_pairwise_considered << " candidates]" << std::endl ; } ;
     for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
     {
         if ( global_true_or_false_pairwise_consider_candidate[ candidate_number ] == global_true )
         {
             if ( global_loss_count_for_candidate[ candidate_number ] > 0 )
             {
-                if ( global_logging_info == global_true ) { log_out << "[loss count for candidate " << candidate_number << " is " << global_loss_count_for_candidate[ candidate_number ] << "]" << std::endl ; } ;
+//                if ( global_logging_info == global_true ) { log_out << "[loss count for candidate " << candidate_number << " is " << global_loss_count_for_candidate[ candidate_number ] << "]" << std::endl ; } ;
                 if ( global_loss_count_for_candidate[ candidate_number ] == ( number_of_candidates_being_pairwise_considered - 1 ) )
                 {
                     if ( global_logging_info == global_true ) { log_out << "[found pairwise losing candidate, candidate " << candidate_number << "]" << std::endl ; } ;
@@ -1823,6 +1846,13 @@ int check_for_pairwise_losing_candidate( )
             }
         }
     }
+
+
+// -----------------------------------------------
+//  Return with zero to indicate there was not a
+//  pairwise losing candidate.
+
+    if ( global_logging_info == global_true ) { log_out << "[did not find pairwise losing candidate]" << std::endl ; } ;
     return 0 ;
 
 
@@ -1973,6 +2003,16 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
 
 
 // -----------------------------------------------
+//  If this ballot group has no more influence,
+//  return.
+
+    if ( global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] <= 0 )
+    {
+    	return ;
+    }
+
+
+// -----------------------------------------------
 //  Identify which candidate, or candidates, are
 //  top ranked, which means higher than the
 //  remaining (not-yet-elected and
@@ -2063,7 +2103,6 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
             exit( EXIT_FAILURE ) ;
         }
     }
-//    if ( global_logging_info == global_true ) { log_out << "[ballot count having pattern number " << pattern_number << " is now " << global_ballot_count_for_pattern_number_pointer[ pointer_to_matching_pattern_number ] << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -2103,6 +2142,15 @@ void calculate_transfer_count_for_each_candidate( )
 
 
 // -----------------------------------------------
+//  Clear the total vote count to restart this
+/// count, which can change because some ballots
+//  are changed to zero influence after they help
+//  to elect a candidate.
+
+    global_current_total_vote_count = 0 ;
+
+
+// -----------------------------------------------
 //  Begin a loop that handles each pattern number.
 
     for ( pattern_number_pointer = 1 ; pattern_number_pointer <= global_count_of_unique_pattern_numbers ; pattern_number_pointer ++ )
@@ -2125,7 +2173,17 @@ void calculate_transfer_count_for_each_candidate( )
 //  the same highest preference level.
 
         count_of_votes_to_each_candidate_at_shared_preference_level = int( float( ballot_count_for_shared_preference_level ) / float( count_of_candidates_at_top_preference_level ) ) ;
-        if ( global_logging_info == global_true ) { log_out << "[pattern number " << remaining_pattern_number << ", shared pref count " << count_of_candidates_at_top_preference_level << ", ballot count " << ballot_count_for_shared_preference_level << ", each candidate gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  If this ballot group now has more than one
+//  top-ranked candidate, log the info for this
+//  adjusted ballot group.
+
+        if ( count_of_candidates_at_top_preference_level > 1 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[pattern number " << remaining_pattern_number << ", shared pref count " << count_of_candidates_at_top_preference_level << ", ballot count " << ballot_count_for_shared_preference_level << ", each candidate gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
+        }
 
 
 // -----------------------------------------------
@@ -2146,7 +2204,7 @@ void calculate_transfer_count_for_each_candidate( )
 //            if ( global_logging_info == global_true ) { log_out << "[remaining pattern number is " << remaining_pattern_number << "]" << std::endl ; } ;
             global_vote_transfer_count_for_candidate[ candidate_number ] += count_of_votes_to_each_candidate_at_shared_preference_level ;
             global_current_total_vote_count += count_of_votes_to_each_candidate_at_shared_preference_level ;
-//            if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
         }
 
 
@@ -2233,7 +2291,6 @@ void adjust_for_quota_excess( )
     global_pointer_to_voteinfo_number = 1 ;
     for ( global_ballot_group_pointer = 1 ; global_ballot_group_pointer <= global_total_count_of_ballot_groups ; global_ballot_group_pointer ++ )
     {
-        log_out << "[pointer at " << global_pointer_to_voteinfo_number << "]" << std::endl ;
 
 
 // -----------------------------------------------
@@ -2310,11 +2367,11 @@ void adjust_for_quota_excess( )
             if ( ( number_of_ballots_after_reduced_influence >= 0 ) && ( number_of_ballots_after_reduced_influence <= remaining_ballot_count_for_current_ballot_group ) )
             {
                 global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = number_of_ballots_after_reduced_influence ;
-                if ( global_logging_info == global_true ) { log_out << "[ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[check: ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
             } else
             {
                 global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
-                if ( global_logging_info == global_true ) { log_out << "[ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[check: ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
             }
             point_to_next_ballot_group( ) ;
             continue ;
@@ -2325,8 +2382,14 @@ void adjust_for_quota_excess( )
 //  This ballot group has multiple top-ranked
 //  candidates, so identify them.
 
-        log_out << "[y, looking at ballot group " << global_ballot_group_pointer << "]" << std::endl ;
+        log_out << "[getting top-ranked candidate(s) from ballot group " << global_ballot_group_pointer << "]" << std::endl ;
+
+        if ( global_logging_info == global_true ) { log_out << "[xy " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << "]" << std::endl ; } ;
+
         global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
+
+        if ( global_logging_info == global_true ) { log_out << "[xz " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << "]" << std::endl ; } ;
+
         identify_top_ranked_candidates( ) ;
 
 
@@ -2385,7 +2448,6 @@ void adjust_for_quota_excess( )
 void method_rcipe_stv( )
 {
 
-    int counting_cycle_number ;
     int number_of_seats_filled ;
     int candidate_number ;
     int first_candidate_number ;
@@ -2412,14 +2474,22 @@ void method_rcipe_stv( )
 
 
 // -----------------------------------------------
+//  Set a flag that will be used during the first
+//  counting cycle to initialize each ballot group
+//  to have full influence.
+
+    global_need_to_initialize_group_ballot_count = global_true ;
+
+
+// -----------------------------------------------
 //  Begin the loop that handles each counting
 //  cycle.  The loop exits when all the available
 //  seats have been filled, or if an unusual
 //  situation is encountered.
 
-    for ( counting_cycle_number = 1 ; counting_cycle_number <= global_number_of_candidates + 1 ; counting_cycle_number ++ )
+    for ( global_counting_cycle_number = 1 ; global_counting_cycle_number <= global_number_of_candidates + 1 ; global_counting_cycle_number ++ )
     {
-        if ( global_logging_info == global_true ) { log_out << std::endl << "[starting counting cycle number " << counting_cycle_number << "]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << std::endl << "[starting counting cycle number " << global_counting_cycle_number << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -2443,16 +2513,16 @@ void method_rcipe_stv( )
         {
             if ( global_true_or_false_winner_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " won a seat]" ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " elected !!!!]" ; } ;
                 global_true_or_false_available_candidate[ candidate_number ] = global_false ;
                 number_of_seats_filled ++ ;
             } else if ( global_true_or_false_eliminated_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " eliminated]" ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " eliminated ----]" ; } ;
                 global_true_or_false_available_candidate[ candidate_number ] = global_false ;
             } else if ( global_true_or_false_available_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " still being considered]" ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " available]" ; } ;
                 global_number_of_remaining_candidates ++ ;
             } else
             {
@@ -2501,16 +2571,6 @@ void method_rcipe_stv( )
 
 
 // -----------------------------------------------
-//  Initialize the counter for the total vote
-//  count.  The total vote count can be different
-//  in each counting cycle because some ballots
-//  switch to zero influence after helping to
-//  elect a candidate.
-
-        global_current_total_vote_count = 0 ;
-
-
-// -----------------------------------------------
 //  Reset the vote transfer counts of all the
 //  candidates to start at zero.
 
@@ -2518,6 +2578,16 @@ void method_rcipe_stv( )
         {
             global_vote_transfer_count_for_candidate[ candidate_number ] = 0 ;
         }
+
+
+// -----------------------------------------------
+//  Initialize the counter for the total vote
+//  count.  The total vote count can be different
+//  in each counting cycle because some ballots
+//  switch to zero influence after helping to
+//  elect a candidate.
+
+        global_current_total_vote_count = 0 ;
 
 
 // -----------------------------------------------
@@ -2537,9 +2607,17 @@ void method_rcipe_stv( )
 //  Allow for two or more candidates to be
 //  highest-ranked.  Also get the ballot count
 //  that indicates how many ballots are in this
-//  ballot group -- of identical ballots.
+//  ballot group (of identical ballots), and get
+//  this ballot group's remaining vote count.
 
             global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
+
+
+// -----------------------------------------------
+//  Add this ballot group's remaining vote count
+//  to the sum of all the remaining vote counts.
+
+            global_current_total_vote_count += global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] ;
 
 
 // -----------------------------------------------
@@ -2550,17 +2628,6 @@ void method_rcipe_stv( )
             if ( global_ballot_info_repeat_count < 1 )
             {
                 break ;
-            }
-
-
-// -----------------------------------------------
-//  If this is the first counting cycle,
-//  initialize the "remaining" ballot count for
-//  each ballot group.
-
-            if ( counting_cycle_number == 1 )
-            {
-                global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = global_ballot_info_repeat_count ;
             }
 
 
@@ -2590,6 +2657,14 @@ void method_rcipe_stv( )
 //  each ballot group.
 
         }
+
+
+// -----------------------------------------------
+//  The group ballot counts have been initialized
+//  to full influence, so ensure that this
+//  initialization is not done again.
+
+        global_need_to_initialize_group_ballot_count = global_false ;
 
 
 // -----------------------------------------------
@@ -2696,6 +2771,20 @@ void method_rcipe_stv( )
 
 
 // -----------------------------------------------
+//  If the highest vote transfer count is zero (or
+//  negative), or if zero candidates have the
+//  highest vote transfer count, a bug has been
+//  introduced into this software.
+
+        if ( ( highest_vote_transfer_count <= 0 ) || ( number_of_candidates_with_highest_vote_transfer_count < 1 ) )
+        {
+            log_out << "[error, zero candidates have the highest vote transfer count, which means a software bug has been introduced]" << std::endl ;
+            std::cout << "[Error: Zero candidates have the highest vote transfer count, which means a software bug has been introduced.]" << std::endl ;
+            exit( EXIT_FAILURE ) ;
+        }
+
+
+// -----------------------------------------------
 //  Show which candidates have the highest
 //  transfer count.
 
@@ -2703,18 +2792,6 @@ void method_rcipe_stv( )
        for ( pointer_to_list_of_candidates_with_highest_transfer_count = 1 ; pointer_to_list_of_candidates_with_highest_transfer_count <= number_of_candidates_with_highest_vote_transfer_count ; pointer_to_list_of_candidates_with_highest_transfer_count ++ )
         {
             if ( global_logging_info == global_true ) { log_out << "[candidate " << global_list_of_candidates_with_highest_vote_transfer_count[ pointer_to_list_of_candidates_with_highest_transfer_count ] << " has highest vote transfer count]" << std::endl ; } ;
-        }
-
-
-// -----------------------------------------------
-//  If the highest vote transfer count is less
-//  than zero, that is an error.
-
-        if ( number_of_candidates_with_highest_vote_transfer_count < 1 )
-        {
-            log_out << "[error, zero candidates have the highest vote transfer count, which means a software bug has been introduced]" << std::endl ;
-            std::cout << "[Error: Zero candidates have the highest vote transfer count, which means a software bug has been introduced.]" << std::endl ;
-            exit( EXIT_FAILURE ) ;
         }
 
 
@@ -2775,6 +2852,7 @@ void method_rcipe_stv( )
                     exit( EXIT_FAILURE ) ;
                 } else
                 {
+                    if ( global_logging_info == global_true ) { log_out << "[looking for pairwise losing candidate within a tie]" << std::endl ; } ;
                     fill_pairwise_tally_table( ) ;
                     pairwise_loser = check_for_pairwise_losing_candidate( ) ;
                     if ( pairwise_loser > 0 )
@@ -2840,6 +2918,27 @@ void method_rcipe_stv( )
 //  Done handling one or more candidates meeting
 //  or exceeding the quota count.
 
+        }
+
+
+// -----------------------------------------------
+//  If all the seats have been filled, return from
+//  this function.
+
+        if ( global_number_of_seats_still_available == 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[all " << number_of_seats_filled << " seats have been filled]" << std::endl ; } ;
+            return ;
+        }
+
+
+// -----------------------------------------------
+//  If none of the candidates met or exceeded the
+//  quota count, log this fact.
+
+        if ( global_supporting_vote_count_that_exceeds_quota < 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[none of the candidates reached the quota]" << std::endl ; } ;
         }
 
 
@@ -2926,7 +3025,6 @@ void method_rcipe_stv( )
                 if ( global_true_or_false_available_candidate[ candidate_number ] == global_true )
                 {
                     global_true_or_false_pairwise_consider_candidate[ candidate_number ] = global_true ;
-                    if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " is being pairwise compared]" << std::endl ; } ;
                 } else
                 {
                     global_true_or_false_pairwise_consider_candidate[ candidate_number ] = global_false ;
@@ -2940,16 +3038,18 @@ void method_rcipe_stv( )
                 exit( EXIT_FAILURE ) ;
             } else
             {
+                if ( global_logging_info == global_true ) { log_out << "[looking for pairwise losing candidate to eliminate]" << std::endl ; } ;
                 fill_pairwise_tally_table( ) ;
                 pairwise_loser = check_for_pairwise_losing_candidate( ) ;
                 if ( pairwise_loser > 0 )
                 {
                     global_true_or_false_eliminated_candidate[ pairwise_loser ] = global_true ;
                     global_true_or_false_available_candidate[ pairwise_loser ] = global_false ;
+                    put_next_result_info_number( global_voteinfo_code_for_pairwise_losing_candidate ) ;
+                    put_next_result_info_number( candidate_number ) ;
                     if ( global_logging_info == global_true ) { log_out << std::endl << "[eliminating candidate " << pairwise_loser << " because is pairwise losing candidate]" << std::endl ; } ;
                     continue ;
                 }
-                if ( global_logging_info == global_true ) { log_out << std::endl << "[pairwise losing candidate not found]" << std::endl << std::endl ; } ;
             }
         }
 
@@ -2962,6 +3062,7 @@ void method_rcipe_stv( )
 //  that candidate.  Allow for the possibility of
 //  a tie.
 
+        if ( global_logging_info == global_true ) { log_out << "[looking for candidate with lowest vote transfer count]" << std::endl ; } ;
         lowest_vote_transfer_count = -1 ;
         pointer_to_list_of_candidates_with_lowest_transfer_count = 0 ;
         for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
@@ -3011,27 +3112,28 @@ void method_rcipe_stv( )
             candidate_number = global_list_of_candidates_with_lowest_vote_transfer_count[ 1 ] ;
             global_true_or_false_eliminated_candidate[ candidate_number ] = global_true ;
             global_true_or_false_available_candidate[ candidate_number ] = global_false ;
+            put_next_result_info_number( global_voteinfo_code_for_eliminated_candidate ) ;
+            put_next_result_info_number( candidate_number ) ;
             if ( global_logging_info == global_true ) { log_out << "[eliminating candidate " << candidate_number << " because has lowest vote transfer count of " << global_vote_transfer_count_for_candidate[ candidate_number ] << "]" << std::endl ; } ;
             continue ;
         }
-        if ( global_logging_info == global_true ) { log_out << "[more than one candidate has the lowest vote transfer count]" << std::endl ; } ;
 
 
 // -----------------------------------------------
 //  There is more than one candidate with the
-//  lowest vote transfer count, so indicate this
-//  as a tie, and list the tied candidates, and
-//  exit this function.
+//  lowest vote transfer count, so eliminate all
+//  those candidates, then repeat the main loop.
 
-        put_next_result_info_number( global_voteinfo_code_for_begin_tied_for_next_seat ) ;
+        if ( global_logging_info == global_true ) { log_out << "[eliminating all the candidates who have the same lowest vote transfer count]" << std::endl ; } ;
         for ( pointer_to_list_of_tied_candidates = 1 ; pointer_to_list_of_tied_candidates <= number_of_candidates_with_lowest_vote_transfer_count ; pointer_to_list_of_tied_candidates ++ )
         {
             candidate_number = global_list_of_candidates_with_lowest_vote_transfer_count[ pointer_to_list_of_tied_candidates ] ;
+            global_true_or_false_eliminated_candidate[ candidate_number ] = global_true ;
+            global_true_or_false_available_candidate[ candidate_number ] = global_false ;
+            put_next_result_info_number( global_voteinfo_code_for_eliminated_candidate ) ;
             put_next_result_info_number( candidate_number ) ;
-            if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " is one of the candidates tied with the lowest vote transfer count]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[eliminating candidate " << candidate_number << " who is tied with the lowest vote transfer count]" << std::endl ; } ;
         }
-        put_next_result_info_number( global_voteinfo_code_for_end_tied_for_next_seat ) ;
-        return ;
 
 
 // -----------------------------------------------
