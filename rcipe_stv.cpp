@@ -26,15 +26,21 @@
 //  When shared preference levels are encountered,
 //  the ballots are transfered in "whole" numbers,
 //  not by splitting a ballot into fractional or
-//  decimal portions.
+//  decimal portions.  For example, during a
+//  counting cycle, if there are two ballots that
+//  rank candidates numbered 1 and 2 at the same
+//  highest ranking level, one of the ballots will
+//  transfer to candidate 1 and the other ballot
+//  will transfer to candidate 2.
 //
-//  Unlike some simplistic versions of STV, during
-//  each counting cycle either a candidate wins an
-//  available seat, or an unpopular candidate is
-//  eliminated, but not both in the same counting
-//  cycle.  Also, only one candidate can get
-//  elected in each counting cycle because ballots
-//  are transfered after each seat is filled.
+//  Unlike some simplistic versions of STV
+//  software, during each counting cycle either a
+//  candidate wins an available seat, or an
+//  unpopular candidate is eliminated, but not
+//  both in the same counting cycle.  Also, only
+//  one candidate can get elected in each counting
+//  cycle because ballots are transfered after
+//  each seat is filled.
 //
 //  The RCIPE and RCIPE STV methods are described
 //  at:
@@ -45,26 +51,34 @@
 //  filled.  To request STV or RCIPE STV
 //  calculations, specify the number of seats to
 //  be filled, with the typical number of seats
-//  being 2, 3, 4, or 5.  (Use voteinfo code -67
-//  followed by the number of seats.)
+//  being 2, 3, 4, or 5.  Use voteinfo code -67
+//  followed by the number of seats to be filled.
+//  There is no default choice for this seat
+//  count.
 //
 //  To specify IRV or STV instead of RCIPE or
 //  RCIPE STV, request that pairwise losing
 //  candidates not be eliminated when they occur.
 //  Otherwise, the default is to eliminate
 //  pairwise losing candidates when they occur.
-//  This extra elimination prevents a ballot from
-//  getting "stuck" on a candidate who a majority
-//  of voters dislike, which ignores that ballot's
-//  lower ranking marks while other ballots
-//  control which of the more-popular candidates
-//  win or lose.  (Use voteinfo code -50 to
-//  request IRV or STV.)
+//  A pairwise losing candidate is a candidate who
+//  would lose every one-on-one contest against
+//  every other remaining candidate.  This extra
+//  elimination prevents a ballot from getting
+//  "stuck" on a candidate who a majority of
+//  voters dislike, which causes that ballot's
+//  lower ranking marks to be ignored while other
+//  ballots control which of the more-popular
+//  candidates win and lose.  The default choice
+//  is to eliminate pairwise losing candidates
+//  when they occur.  Use voteinfo code -50 to
+//  request IRV or STV.
 //
 //  When calculating STV or RCIPE STV results,
 //  either the Hare quota or the Droop quota can
-//  be selected.  (Use voteinfo code -68 to
-//  request the Droop quota.)
+//  be selected.  The default choice is the Hare
+//  quota.  Use voteinfo code -68 to request the
+//  Droop quota.
 //
 //  Ballot counting is done in ways that avoid
 //  getting different results if the supplied
@@ -104,9 +118,9 @@
 //
 //  Version 0.15 - In May 2022 Richard Fobes
 //  did testing and debugging, and improved
-//  comments, and updated version count to: 0.15
-//  Yet more rigorous testing is needed before
-//  relying on this code for elections.
+//  comments, and updated the version count to:
+//  0.15  Yet more rigorous testing is needed
+//  before relying on this code for elections.
 //
 // -----------------------------------------------
 //
@@ -389,10 +403,14 @@ int global_ballot_count_for_pattern_number_pointer[ 10000 ] ;
 int global_top_candidate_count_for_pattern_number_pointer[ 10000 ] ;
 
 
-//  Note:  Do NOT change these numbers!  They match codes
-//  used in the VoteFair_Ranking.cpp application.
-//  These are input and output codes that identify
-//  the meaning of the next number in the (coded) list.
+//  Note:  Do NOT change these numbers!  They
+//  match codes used in the
+//  VoteFair_Ranking.cpp application.
+//  Some of these codes supply ballot information
+//  and make requests for various options.  Some
+//  of these codes supply calculated results.
+//  Some codes can be used for both input and
+//  output.
 
 const int global_voteinfo_code_for_start_of_all_cases = -1 ;
 const int global_voteinfo_code_for_end_of_all_cases = -2 ;
@@ -400,7 +418,7 @@ const int global_voteinfo_code_for_case_number = -3 ;
 const int global_voteinfo_code_for_question_number = -4 ;
 const int global_voteinfo_code_for_total_ballot_count = -5 ;
 
-//  in other software the following constant is named global_voteinfo_code_for_number_of_choices
+//  In other software the following constant is named global_voteinfo_code_for_number_of_choices
 const int global_voteinfo_code_for_number_of_candidates = -6 ;
 
 const int global_voteinfo_code_for_start_of_all_vote_info = -7 ;
@@ -1175,7 +1193,7 @@ void handle_one_voteinfo_number( )
 //  specify what to calculate and what results to
 //  include in the results.  The codes that
 //  specify ballot marks are saved in a list where
-//  they can be repeatedly accessed.
+//  they can be accessed repeatedly.
 
 void read_data( )
 {
@@ -1248,21 +1266,18 @@ void read_data( )
 // -----------------------------------------------
 //  Attempt to convert the text word into an
 //  integer.  If this conversion is not
-//  successful, indicate an error and write
-//  this error to the output files and then exit
-//  the program.
+//  successful, indicate an error.
 
             global_current_voteinfo_number = 0 ;
             try
             {
                 global_current_voteinfo_number = convert_text_to_integer( pointer_to_word ) ;
-//                if ( global_logging_info == global_true ) { log_out << "[" << global_current_voteinfo_number << "]  " ; } ;
             }
             catch( ... )
             {
-                log_out << "[error, input line contains non-numeric characters (" << pointer_to_word << "), so this case (" << global_case_number << ") cannot be calculated]" << std::endl ;
-                std::cout << "Error, invalid input word: " << pointer_to_word << std::endl ;
-                exit( EXIT_FAILURE ) ;
+                log_out << "[error, input line contains non-numeric characters: " << pointer_to_word << "]" << std::endl ;
+                std::cout << "Error: Input line contains non-numeric characters: " << pointer_to_word << std::endl ;
+                error_count ++ ;
             }
 
 
@@ -1353,7 +1368,7 @@ void read_data( )
     if ( global_total_count_of_ballot_groups < 2 )
     {
         if ( global_logging_info == global_true ) { log_out << "[error, input file does not contain any ballot data]" ; } ;
-        std::cout << "Error, input file does not contain any data." << std::endl ;
+        std::cout << "Error, input file does not contain any ballot data." << std::endl ;
         exit( EXIT_FAILURE ) ;
     }
 
@@ -1512,7 +1527,7 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  candidate numbers within the ballot.
 
     preference_level = 1 ;
-    while ( global_pointer_to_voteinfo_number < global_pointer_to_end_of_voteinfo_numbers )
+    while ( global_pointer_to_voteinfo_number <= global_pointer_to_end_of_voteinfo_numbers )
     {
 
 
@@ -1569,7 +1584,7 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  Log the current ballot count and candidate
 //  ranking sequence.
 
-    if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " bc " << global_ballot_info_repeat_count << " x " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << " " << text_ballot_info << "]" << std::endl ; } ;
+    if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " bc " << global_ballot_info_repeat_count << " r " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << " " << text_ballot_info << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -1716,7 +1731,7 @@ void fill_pairwise_tally_table( )
 
         if ( remaining_ballot_count_for_current_ballot_group < 1 )
         {
-            log_out << "[all ballots in this ballot group have no more influence]" << std::endl ;
+            log_out << "[check: all ballots in ballot group " << global_ballot_group_pointer << " have no more influence]" << std::endl ;
             continue ;
         }
 
@@ -1802,7 +1817,6 @@ int check_for_pairwise_losing_candidate( )
         if ( global_true_or_false_pairwise_consider_candidate[ candidate_number ] == global_true )
         {
             number_of_candidates_being_pairwise_considered ++ ;
-//            if ( global_logging_info == global_true ) { log_out << "[considering candidate " << candidate_number << "]" << std::endl ; } ;
         }
     }
 
@@ -1832,8 +1846,7 @@ int check_for_pairwise_losing_candidate( )
 
 // -----------------------------------------------
 //  If there is a pairwise losing candidate,
-//  identify it.  If there is no pairwise losing
-//  candidate, return with a value of zero.
+//  return with its candidate number.
 
     if ( global_logging_info == global_true ) { log_out << "[pairwise comparing " << number_of_candidates_being_pairwise_considered << " candidates]" << std::endl ; } ;
     for ( candidate_number = 1 ; candidate_number <= global_number_of_candidates ; candidate_number ++ )
@@ -1854,8 +1867,9 @@ int check_for_pairwise_losing_candidate( )
 
 
 // -----------------------------------------------
-//  Return with zero to indicate there was not a
-//  pairwise losing candidate.
+//  There was not pairwise losing candidate, so
+//  return with zero in what otherwise would be
+//  the candidate number.
 
     if ( global_logging_info == global_true ) { log_out << "[did not find pairwise losing candidate]" << std::endl ; } ;
     return 0 ;
@@ -2037,7 +2051,7 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
     if ( global_count_of_top_ranked_remaining_candidates > 5 )
     {
         global_count_of_top_ranked_remaining_candidates = 0 ;
-        if ( global_logging_info == global_true ) { log_out << "[too many top-ranked candidates in this ballot group (" << global_count_of_top_ranked_remaining_candidates << "), so this ballot group is ignored for calculating the vote transfer count]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[too many top-ranked candidates (" << global_count_of_top_ranked_remaining_candidates << ") in ballot group " << global_count_of_top_ranked_remaining_candidates << " so ignoring this ballot group during this counting cycle]" << std::endl ; } ;
     }
 
 
@@ -2372,11 +2386,11 @@ void adjust_for_quota_excess( )
             if ( ( number_of_ballots_after_reduced_influence >= 0 ) && ( number_of_ballots_after_reduced_influence <= remaining_ballot_count_for_current_ballot_group ) )
             {
                 global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = number_of_ballots_after_reduced_influence ;
-                if ( global_logging_info == global_true ) { log_out << "[check: ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
             } else
             {
                 global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
-                if ( global_logging_info == global_true ) { log_out << "[check: ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
+                if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
             }
             point_to_next_ballot_group( ) ;
             continue ;
@@ -2385,17 +2399,11 @@ void adjust_for_quota_excess( )
 
 // -----------------------------------------------
 //  This ballot group has multiple top-ranked
-//  candidates, so identify them.
-
-        log_out << "[getting top-ranked candidate(s) from ballot group " << global_ballot_group_pointer << "]" << std::endl ;
-
-        if ( global_logging_info == global_true ) { log_out << "[xy " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << "]" << std::endl ; } ;
+//  candidates, so identify them and count them.
 
         global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
-
-        if ( global_logging_info == global_true ) { log_out << "[xz " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << "]" << std::endl ; } ;
-
         identify_top_ranked_candidates( ) ;
+        log_out << "[ballot group " << global_ballot_group_pointer << " has " << global_count_of_top_ranked_remaining_candidates << " top-ranked candidate(s)]" << std::endl ;
 
 
 // -----------------------------------------------
@@ -2449,6 +2457,13 @@ void adjust_for_quota_excess( )
 //  this is equivalent to the RCIPE method, which
 //  modifies the instant-runoff voting (IRV)
 //  method.
+//
+//  If pairwise losing candidates are not
+//  eliminated, this code implements the methods
+//  known as the "single transferable vote" (STV)
+//  (when multiple seats need to be filled) and
+//  "instant runoff voting" (IRV) (when there can
+//  be only one winner).
 
 void method_rcipe_stv( )
 {
@@ -2489,8 +2504,8 @@ void method_rcipe_stv( )
 // -----------------------------------------------
 //  Begin the loop that handles each counting
 //  cycle.  The loop exits when all the available
-//  seats have been filled, or if an unusual
-//  situation is encountered.
+//  seats have been filled, or a tie is
+//  encountered.
 
     for ( global_counting_cycle_number = 1 ; global_counting_cycle_number <= global_number_of_candidates + 1 ; global_counting_cycle_number ++ )
     {
@@ -2518,17 +2533,17 @@ void method_rcipe_stv( )
         {
             if ( global_true_or_false_winner_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " elected !!!!]" ; } ;
                 global_true_or_false_available_candidate[ candidate_number ] = global_false ;
                 number_of_seats_filled ++ ;
+                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " elected !!!!]" ; } ;
             } else if ( global_true_or_false_eliminated_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " eliminated ----]" ; } ;
                 global_true_or_false_available_candidate[ candidate_number ] = global_false ;
+                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " eliminated ----]" ; } ;
             } else if ( global_true_or_false_available_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " available]" ; } ;
                 global_number_of_remaining_candidates ++ ;
+                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " available]" ; } ;
             } else
             {
                 if ( global_logging_info == global_true ) { log_out << "[error, bug has been introduced into code, candidate status is invalid]" ; } ;
@@ -2608,7 +2623,7 @@ void method_rcipe_stv( )
 // -----------------------------------------------
 //  For the current ballot group, identify which
 //  remaining (not-yet-eliminated and
-//  not-yet-elected) candidate is highest ranked.
+//  not-yet-elected) candidate is ranked highest.
 //  Allow for two or more candidates to be
 //  highest-ranked.  Also get the ballot count
 //  that indicates how many ballots are in this
