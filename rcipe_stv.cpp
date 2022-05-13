@@ -1584,7 +1584,7 @@ int get_candidate_ranks_from_one_ballot_group( )
 //  Log the current ballot count and candidate
 //  ranking sequence.
 
-    if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " bc " << global_ballot_info_repeat_count << " r " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << " " << text_ballot_info << "]" << std::endl ; } ;
+    if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << " bc " << global_ballot_info_repeat_count << " r " << global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] << " " << text_ballot_info << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -1731,7 +1731,7 @@ void fill_pairwise_tally_table( )
 
         if ( remaining_ballot_count_for_current_ballot_group < 1 )
         {
-            log_out << "[check: all ballots in ballot group " << global_ballot_group_pointer << " have no more influence]" << std::endl ;
+            log_out << "[all ballots in ballot group " << global_ballot_group_pointer << " have no more influence]" << std::endl ;
             continue ;
         }
 
@@ -2201,7 +2201,7 @@ void calculate_transfer_count_for_each_candidate( )
 
         if ( count_of_candidates_at_top_preference_level > 1 )
         {
-            if ( global_logging_info == global_true ) { log_out << "[pattern number " << remaining_pattern_number << ", shared pref count " << count_of_candidates_at_top_preference_level << ", ballot count " << ballot_count_for_shared_preference_level << ", each candidate gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[check: pattern number " << remaining_pattern_number << ", shared pref count " << count_of_candidates_at_top_preference_level << ", ballot count " << ballot_count_for_shared_preference_level << ", each candidate gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
         }
 
 
@@ -2220,10 +2220,9 @@ void calculate_transfer_count_for_each_candidate( )
         {
             candidate_number = remaining_pattern_number % ( global_number_of_candidates + 1 ) ;
             remaining_pattern_number = ( remaining_pattern_number - candidate_number ) / ( global_number_of_candidates + 1 ) ;
-//            if ( global_logging_info == global_true ) { log_out << "[remaining pattern number is " << remaining_pattern_number << "]" << std::endl ; } ;
             global_vote_transfer_count_for_candidate[ candidate_number ] += count_of_votes_to_each_candidate_at_shared_preference_level ;
             global_current_total_vote_count += count_of_votes_to_each_candidate_at_shared_preference_level ;
-            if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " gets " << count_of_votes_to_each_candidate_at_shared_preference_level << " votes]" << std::endl ; } ;
         }
 
 
@@ -2340,95 +2339,92 @@ void adjust_for_quota_excess( )
 
 
 // -----------------------------------------------
+//  If this ballot group has multiple top-ranked
+//  candidates, identify them.  In all cases,
+//  count how many candidates are top-ranked on
+//  these identical ballots.  Also point to the
+//  next ballot group.
+
+        if ( top_ranked_candidate_if_only_one_else_zero == 0 )
+        {
+            global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
+            identify_top_ranked_candidates( ) ;
+        } else
+        {
+        	global_count_of_top_ranked_remaining_candidates = 1 ;
+            point_to_next_ballot_group( ) ;
+        }
+//        log_out << "[ballot group " << global_ballot_group_pointer << " has " << global_count_of_top_ranked_remaining_candidates << " top-ranked candidate(s)]" << std::endl ;
+
+
+// -----------------------------------------------
 //  If this ballot group only has one top-ranked
 //  candidate, but it's not the just-elected
-//  candidate, skip this ballot group because
-//  these ballots did not support the just-elected
-//  candidate.
+//  candidate, repeat the loop.
 
-        if ( ( top_ranked_candidate_if_only_one_else_zero > 0 ) && ( top_ranked_candidate_if_only_one_else_zero != global_candidate_just_elected ) )
+        if ( ( global_count_of_top_ranked_remaining_candidates == 1 ) && ( top_ranked_candidate_if_only_one_else_zero != global_candidate_just_elected ) )
         {
-            point_to_next_ballot_group( ) ;
             continue ;
         }
 
 
 // -----------------------------------------------
-//  If this group of identical ballots have only
-//  one top-ranked candidate who is the
-//  just-elected candidate, reduce the ballot
-//  count for this group of identical supporting
-//  ballots.  Specifically, decide how many
-//  ballots in this ballot group need to be given
-//  zero influence so that the extra influence of
-//  these ballots beyond the quota count are still
-//  available to influence which candidate wins
-//  the next seat.  However, do not decrease the
-//  count below zero, and do not decrease the
-//  count beyond what is proportional for these
-//  ballots.  Then point to the next ballot group
-//  and restart the loop to handle the next ballot
-//  group.
+//  If there are multiple top-ranked candidates
+//  but none of them are the just-elected
+//  candidate, repeat the loop.
+
+        if ( ( global_count_of_top_ranked_remaining_candidates > 1 ) && ( global_true_or_false_is_top_ranked_candidate[ global_candidate_just_elected ] != global_true ) )
+        {
+            continue ;
+        }
+
+
+// -----------------------------------------------
+//  Calculate how many ballots in this ballot
+//  group will retain full influence.  The other
+//  ballots in this ballot group will be given
+//  zero influence so that the extra influence
+//  of these ballots beyond the quota count are
+//  still available to influence which candidate
+//  wins the next seat.
 //
-//  This calculation would be faster if a decimal
-//  number was used instead of dividing by the
-//  same number multiple times.  However, this
-//  code makes it clear that decimal numbers are
-//  not assigned as influence amounts, which means
-//  that a ballot either gets full influence or
-//  no influence, which is a legal requirement
+//  If the just-elected candidate is just one of
+//  multiple top-ranked candidates, include
+//  division by the number of top-ranked
+//  candidates.  This extra adjustment is needed
+//  because these ballots only provide partial
+//  support for the just-elected candidate.
+//
+//  This calculation can be made faster (by not
+//  dividing by the same number multiple times,
+//  and by avoiding multiplication by one), but
+//  this code makes it clear that decimal numbers
+//  are not assigned as influence amounts, which
+//  means that a ballot either gets full influence
+//  or no influence, which is a legal requirement
 //  where laws require allocating ballots in
 //  "whole" numbers.
 
-        if ( top_ranked_candidate_if_only_one_else_zero > 0 )
-        {
-            number_of_ballots_after_reduced_influence = remaining_ballot_count_for_current_ballot_group - int( float( remaining_ballot_count_for_current_ballot_group * global_quota_count ) / float( global_supporting_votes_for_elected_candidate ) ) - 1 ;
-            if ( ( number_of_ballots_after_reduced_influence >= 0 ) && ( number_of_ballots_after_reduced_influence <= remaining_ballot_count_for_current_ballot_group ) )
-            {
-                global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = number_of_ballots_after_reduced_influence ;
-                if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
-            } else
-            {
-                global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
-                if ( global_logging_info == global_true ) { log_out << "[g " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
-            }
-            point_to_next_ballot_group( ) ;
-            continue ;
-        }
+        number_of_ballots_after_reduced_influence = remaining_ballot_count_for_current_ballot_group - int( float( remaining_ballot_count_for_current_ballot_group * global_quota_count ) / float( global_supporting_votes_for_elected_candidate * global_count_of_top_ranked_remaining_candidates ) ) - 1 ;
 
 
 // -----------------------------------------------
-//  This ballot group has multiple top-ranked
-//  candidates, so identify them and count them.
+//  If the newly calculated reduced influence is
+//  a reduced count, but is not less than zero,
+//  use this newly calculated reduced influence
+//  for this ballot group.  If the newly
+//  calculated count is less than zero, change the
+//  remaining count to zero.  Of course do not
+//  allow the count to increase.
 
-        global_ballot_info_repeat_count = get_candidate_ranks_from_one_ballot_group( ) ;
-        identify_top_ranked_candidates( ) ;
-        log_out << "[ballot group " << global_ballot_group_pointer << " has " << global_count_of_top_ranked_remaining_candidates << " top-ranked candidate(s)]" << std::endl ;
-
-
-// -----------------------------------------------
-//  If the multiple top-ranked candidates include
-//  the just-elected candidate, reduce the ballot
-//  count for this ballot group using calculations
-//  that are similar to the calculations above
-//  except that the result is divided by the
-//  number of top-ranked candidates.  This extra
-//  adjustment is needed because these ballots
-//  only provide partial support for the
-//  just-elected candidate.
-
-        if ( global_true_or_false_is_top_ranked_candidate[ global_candidate_just_elected ] == global_true )
+        if ( ( number_of_ballots_after_reduced_influence < remaining_ballot_count_for_current_ballot_group ) && ( number_of_ballots_after_reduced_influence >= 0 ) )
         {
-            number_of_ballots_after_reduced_influence = remaining_ballot_count_for_current_ballot_group - int( float( remaining_ballot_count_for_current_ballot_group * global_quota_count ) / float( global_supporting_votes_for_elected_candidate * global_count_of_top_ranked_remaining_candidates ) ) - 1 ;
-            if ( ( number_of_ballots_after_reduced_influence >= 0 ) && ( number_of_ballots_after_reduced_influence <= remaining_ballot_count_for_current_ballot_group ) )
-            {
-                global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = number_of_ballots_after_reduced_influence ;
-                if ( global_logging_info == global_true ) { log_out << "[ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
-            } else
-            {
-                global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
-                if ( global_logging_info == global_true ) { log_out << "[ballot group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
-            }
+            global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = number_of_ballots_after_reduced_influence ;
+            if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
+        } else if ( number_of_ballots_after_reduced_influence < remaining_ballot_count_for_current_ballot_group )
+        {
+            global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
+            if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
         }
 
 
@@ -2561,9 +2557,27 @@ void method_rcipe_stv( )
 
         if ( global_number_of_seats_still_available == 0 )
         {
-            if ( global_logging_info == global_true ) { log_out << "[all " << number_of_seats_filled << " seats have been filled]" << std::endl ; } ;
+            if ( global_logging_info == global_true ) { log_out << "[all " << global_number_of_seats_to_fill << " seats have been filled]" << std::endl ; } ;
             return ;
         }
+
+
+// -----------------------------------------------
+//  If there are no candidates available to fill
+//  any more seats, indicate a tie, and return
+//  from this function.
+
+        if ( global_number_of_remaining_candidates == 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[all the candidates have been eliminated or elected without filling all the seats, so there is a tie among the eliminated candidates that must be resolved]" << std::endl ; } ;
+            return ;
+        }
+
+
+// -----------------------------------------------
+//  Indicate how many seats are still available.
+
+        if ( global_logging_info == global_true ) { log_out << "[" << global_number_of_seats_still_available << " seats still available]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -2579,14 +2593,15 @@ void method_rcipe_stv( )
                 if ( global_true_or_false_available_candidate[ candidate_number ] == global_true )
                 {
                     global_candidate_just_elected = candidate_number ;
-                    global_true_or_false_winner_candidate[ global_candidate_just_elected ] = global_true ;
-                    global_true_or_false_available_candidate[ global_candidate_just_elected ] = global_false ;
-                    put_next_result_info_number( global_voteinfo_code_for_winner_next_seat ) ;
-                    put_next_result_info_number( global_candidate_just_elected ) ;
-                    if ( global_logging_info == global_true ) { log_out << std::endl << "[there is one seat available and one remaining candidate, so candidate " << global_candidate_just_elected << " wins the last seat]" << std::endl ; } ;
-                    continue ;
+                	break ;
                 }
             }
+            global_true_or_false_winner_candidate[ global_candidate_just_elected ] = global_true ;
+            global_true_or_false_available_candidate[ global_candidate_just_elected ] = global_false ;
+            put_next_result_info_number( global_voteinfo_code_for_winner_next_seat ) ;
+            put_next_result_info_number( global_candidate_just_elected ) ;
+            if ( global_logging_info == global_true ) { log_out << std::endl << "[there is one seat available and one remaining candidate, so candidate " << global_candidate_just_elected << " wins the last seat]" << std::endl ; } ;
+            continue ;
         }
 
 
@@ -2793,13 +2808,13 @@ void method_rcipe_stv( )
 // -----------------------------------------------
 //  If the highest vote transfer count is zero (or
 //  negative), or if zero candidates have the
-//  highest vote transfer count, a bug has been
-//  introduced into this software.
+//  highest vote transfer count, then there is a
+//  tie.
 
         if ( ( highest_vote_transfer_count <= 0 ) || ( number_of_candidates_with_highest_vote_transfer_count < 1 ) )
         {
-            log_out << "[error, zero candidates have the highest vote transfer count, which means a software bug has been introduced]" << std::endl ;
-            std::cout << "[Error: Zero candidates have the highest vote transfer count, which means a software bug has been introduced.]" << std::endl ;
+            log_out << "[error, zero candidates have the highest vote transfer count, which means there is a tie that must be resolved]" << std::endl ;
+            std::cout << "[Error: Zero candidates have the highest vote transfer count, which means there is a tie that must be resolved.]" << std::endl ;
             exit( EXIT_FAILURE ) ;
         }
 
@@ -2835,9 +2850,22 @@ void method_rcipe_stv( )
             global_candidate_just_elected = global_list_of_candidates_with_highest_vote_transfer_count[ 1 ] ;
             global_true_or_false_winner_candidate[ global_candidate_just_elected ] = global_true ;
             global_true_or_false_available_candidate[ global_candidate_just_elected ] = global_false ;
-            if ( global_logging_info == global_true ) { log_out << std::endl << "[candidate " << global_candidate_just_elected << " won a seat by reaching the quota count]" << std::endl ; } ;
             put_next_result_info_number( global_voteinfo_code_for_winner_next_seat ) ;
             put_next_result_info_number( global_candidate_just_elected ) ;
+            global_number_of_seats_still_available -- ;
+            if ( global_logging_info == global_true ) { log_out << std::endl << "[candidate " << global_candidate_just_elected << " won a seat by reaching the quota count]" << std::endl ; } ;
+        }
+
+
+// -----------------------------------------------
+//  If all the seats have been filled, repeat the
+//  counting cycle loop because vote transfers are
+//  not needed.
+
+        if ( global_number_of_seats_still_available == 0 )
+        {
+            if ( global_logging_info == global_true ) { log_out << "[all " << global_number_of_seats_to_fill << " seats have been filled]" << std::endl ; } ;
+            continue ;
         }
 
 
@@ -2977,6 +3005,7 @@ void method_rcipe_stv( )
                 global_candidate_just_elected = global_list_of_candidates_with_highest_vote_transfer_count[ 1 ] ;
                 put_next_result_info_number( global_voteinfo_code_for_winner_next_seat ) ;
                 put_next_result_info_number( global_candidate_just_elected ) ;
+                global_number_of_seats_still_available -- ;
                 if ( global_logging_info == global_true ) { log_out << "[candidate " << global_candidate_just_elected << " wins the next seat because the number of remaining candidates equals the number of remaining seats and this candidate has the highest vote transfer count]" ; } ;
             } else
             {
@@ -2987,8 +3016,9 @@ void method_rcipe_stv( )
                     global_candidate_just_elected = global_list_of_candidates_with_highest_vote_transfer_count[ pointer_to_list_of_candidates_with_highest_transfer_count ] ;
                     global_true_or_false_winner_candidate[ global_candidate_just_elected ] = global_true ;
                     global_true_or_false_available_candidate[ global_candidate_just_elected ] = global_false ;
-                    if ( global_logging_info == global_true ) { log_out << "[candidate " << global_candidate_just_elected << " wins a seat because the number of remaining candidates equals the number of remaining seats]" ; } ;
                     put_next_result_info_number( global_candidate_just_elected ) ;
+                    global_number_of_seats_still_available -- ;
+                    if ( global_logging_info == global_true ) { log_out << "[candidate " << global_candidate_just_elected << " wins a seat because the number of remaining candidates equals the number of remaining seats]" ; } ;
                 }
                 put_next_result_info_number( global_voteinfo_code_for_end_tied_for_next_seat ) ;
             }
@@ -3067,6 +3097,7 @@ void method_rcipe_stv( )
                     global_true_or_false_available_candidate[ pairwise_loser ] = global_false ;
                     put_next_result_info_number( global_voteinfo_code_for_pairwise_losing_candidate ) ;
                     put_next_result_info_number( candidate_number ) ;
+                    global_number_of_seats_still_available -- ;
                     if ( global_logging_info == global_true ) { log_out << std::endl << "[eliminating candidate " << pairwise_loser << " because is pairwise losing candidate]" << std::endl ; } ;
                     continue ;
                 }
