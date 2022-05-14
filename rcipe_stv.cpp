@@ -2303,6 +2303,21 @@ void adjust_for_quota_excess( )
 
 
 // -----------------------------------------------
+//  Declare two decimal variables and initialize
+//  them to zero.  These numbers are NOT directly
+//  used when calculating the adjusted ballot
+//  counts.  Instead, they are used to identify
+//  equal spacing among ballots so that ballot
+//  groups containing just one ballot do not get
+//  adjusted downward more often, or less often,
+//  than ballots that are marked the same as other
+//  ballots.
+
+    float decimal_in_progress_original_transfer_count = 0 ;
+    float decimal_in_progress_adjusted_transfer_count = 0 ;
+
+
+// -----------------------------------------------
 //  Begin a loop that handles each ballot group.
 
     if ( global_logging_info == global_true ) { log_out << std::endl << "[beginning to adjust vote counts of ballots that supported winning candidate]" << std::endl ; } ;
@@ -2404,28 +2419,73 @@ void adjust_for_quota_excess( )
 //  or no influence, which is a legal requirement
 //  where laws require allocating ballots in
 //  "whole" numbers.
+//
+//  Do not allow the calculated reduced influence
+//  amount to be a negative number.
 
         number_of_ballots_after_reduced_influence = remaining_ballot_count_for_current_ballot_group - int( float( remaining_ballot_count_for_current_ballot_group * global_quota_count ) / float( global_supporting_votes_for_elected_candidate * global_count_of_top_ranked_remaining_candidates ) ) - 1 ;
+        if ( number_of_ballots_after_reduced_influence < 0 )
+        {
+        	number_of_ballots_after_reduced_influence = 0 ;
+        }
 
 
 // -----------------------------------------------
-//  If the newly calculated reduced influence is
-//  a reduced count, but is not less than zero,
-//  use this newly calculated reduced influence
-//  for this ballot group.  If the newly
-//  calculated count is less than zero, change the
-//  remaining count to zero.  Of course do not
-//  allow the count to increase.
+//  If the in-progress vote transfer counts
+//  indicate that the reductions will not cause
+//  the new ballot counts to match the goal of
+//  keeping the excess count beyond the quota
+//  count, modify this adjustment as needed.
 
-        if ( ( number_of_ballots_after_reduced_influence < remaining_ballot_count_for_current_ballot_group ) && ( number_of_ballots_after_reduced_influence >= 0 ) )
+//  todo: write this code
+
+// decimal_in_progress_original_transfer_count
+// global_quota_count + global_supporting_vote_count_that_exceeds_quota
+
+// decimal_in_progress_adjusted_transfer_count
+// global_supporting_vote_count_that_exceeds_quota
+
+
+// -----------------------------------------------
+//  If the number of remaining ballots with full
+//  influence in this ballot group will decrease,
+//  use this newly calculated ballot count for
+//  this ballot group.  Do not allow the count to
+//  increase.
+
+        if ( number_of_ballots_after_reduced_influence < remaining_ballot_count_for_current_ballot_group )
         {
             global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = number_of_ballots_after_reduced_influence ;
-            if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has " << number_of_ballots_after_reduced_influence << " votes]" << std::endl ; } ;
-        } else if ( number_of_ballots_after_reduced_influence < remaining_ballot_count_for_current_ballot_group )
-        {
-            global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
-            if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << " had " << remaining_ballot_count_for_current_ballot_group << " votes, now has zero votes]" << std::endl ; } ;
         }
+
+
+// -----------------------------------------------
+//  Show the previous and new ballot counts for
+//  this ballot group.
+
+            if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << " had " << convert_integer_to_text( remaining_ballot_count_for_current_ballot_group ) << " votes, now has " << convert_integer_to_text( number_of_ballots_after_reduced_influence ) << " votes]" << std::endl ; } ;
+
+
+// -----------------------------------------------
+//  Calculate the in-progress original(!) winning
+//  vote transfer count, and the in-progress
+//  adjusted(!) winning vote transfer count.
+//  These are decimal numbers so that roundoff
+//  errors do not accumulate.  These decimal
+//  numbers are used above to identify which
+//  ballots are equally spaced from one another
+//  as if the full-influence ballots were being
+//  handled like paper ballots.  Without this
+//  extra consideration, unique ballots -- that
+//  are marked differently from every other
+//  ballot -- would have to be changed to zero
+//  influence either more often, or less often,
+//  compared to the ballots in the groups that
+//  have larger ballot repeat counts.
+
+        decimal_in_progress_original_transfer_count += float( remaining_ballot_count_for_current_ballot_group ) / float( global_count_of_top_ranked_remaining_candidates ) ;
+        decimal_in_progress_adjusted_transfer_count += float( number_of_ballots_after_reduced_influence ) / float( global_count_of_top_ranked_remaining_candidates ) ;
+        if ( global_logging_info == global_true ) { log_out << "[in-progress ballot counts, original is " << decimal_in_progress_original_transfer_count << ", and adjusted is " << decimal_in_progress_adjusted_transfer_count << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
