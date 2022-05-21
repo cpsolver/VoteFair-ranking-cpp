@@ -326,8 +326,8 @@ int global_logging_info ;
 //  because different programming languages use
 //  different conventions for their true/false logic.
 
-int global_true ;
-int global_false ;
+const int global_true = 1 ;
+const int global_false = 0 ;
 
 
 //  For speed reasons, arrays are declared here,
@@ -602,14 +602,6 @@ void do_main_initialization( )
 
     int pointer ;
     int candidate_number ;
-
-
-// -----------------------------------------------
-//  Define true and false constants (for easier
-//  conversion between programming languages).
-
-    global_true = 1 ;
-    global_false = 0 ;
 
 
 // -----------------------------------------------
