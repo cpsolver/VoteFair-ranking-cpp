@@ -10005,8 +10005,8 @@ void find_condorcet_winner( )
 // -----------------------------------------------
 //  Write the result.
 
-    put_next_result_info_number( global_voteinfo_code_for_winner_condorcet ) ;
-    put_next_result_info_number( condorcet_winner ) ;
+//    put_next_result_info_number( global_voteinfo_code_for_winner_condorcet ) ;
+//    put_next_result_info_number( condorcet_winner ) ;
     if ( global_logging_info == global_true ) { log_out << std::endl << "[condorcet winner is choice " << convert_integer_to_text( condorcet_winner ) << "]" << std::endl ; } ;
 
 
