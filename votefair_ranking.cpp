@@ -1959,18 +1959,23 @@ void check_vote_info_numbers( )
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_pairwise_elimination )
         {
             global_true_or_false_request_instant_pairwise_elimination = global_true ;
+            if ( global_logging_info == global_true ) { log_out << "[request ipe]" ; } ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_rcipe_voting )
         {
             global_true_or_false_request_rcipe_voting = global_true ;
+            if ( global_logging_info == global_true ) { log_out << "[request rcipe]" ; } ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_instant_runoff_voting )
         {
             global_true_or_false_request_instant_runoff_voting = global_true ;
+            if ( global_logging_info == global_true ) { log_out << "[request irv]" ; } ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_star_voting )
         {
             global_true_or_false_request_star_voting = global_true ;
+            if ( global_logging_info == global_true ) { log_out << "[request star]" ; } ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_request_pairwise_loser_elimination )
         {
             global_true_or_false_request_pairwise_loser_elimination = global_true ;
+            if ( global_logging_info == global_true ) { log_out << "[request ple]" ; } ;
 
 
 // -----------------------------------------------
@@ -9328,12 +9333,12 @@ void elim_find_fewest_first_choice( )
         } else if ( current_vote_info_number == global_voteinfo_code_for_number_of_equivalent_seats )
         {
             pointer_to_vote_info ++ ;
-            break ;
+            continue ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_ballot_count )
         {
             pointer_to_vote_info ++ ;
             global_ballot_info_repeat_count = global_vote_info_list[ pointer_to_vote_info ] ;
-//                    if ( global_logging_info == global_true ) { log_out << "[ballot info repeat count is " << global_ballot_info_repeat_count << "]" << std::endl ; } ;
+//            if ( global_logging_info == global_true ) { log_out << "[ballot info repeat count is " << global_ballot_info_repeat_count << "]" << std::endl ; } ;
         } else if ( current_vote_info_number == global_voteinfo_code_for_preference_level )
         {
             pointer_to_vote_info ++ ;
