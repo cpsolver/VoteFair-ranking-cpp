@@ -26,6 +26,16 @@
 //
 //  Version 2.2
 //
+//  This code works with an older (same-date)
+//  version of the votefair_ranking.cpp code.
+//  In 2022-May the votefair_ranking.cpp code was
+//  modified to remove the calculations for RCIPE
+//  and IRV because those methods are now
+//  calculated in the rcipe_stv.cpp code.
+//  So this code should be updated to use that
+//  new code (instead of using the older
+//  votefair_ranking.cpp code).
+//
 //
 // -----------------------------------------------
 //
