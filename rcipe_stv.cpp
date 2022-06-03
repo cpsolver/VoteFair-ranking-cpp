@@ -286,6 +286,7 @@ int global_case_number ;
 int global_number_of_seats_to_fill ;
 int global_true_or_false_request_no_pairwise_loser_elimination ;
 int global_true_or_false_request_quota_droop ;
+int global_true_or_false_request_ignore_shared_rankings ;
 
 
 //  Declare global variables.
@@ -495,6 +496,7 @@ const int global_voteinfo_code_for_eliminated_candidate = -74 ;
 const int global_voteinfo_code_for_quota_count_this_cycle = -75 ;
 const int global_voteinfo_code_for_candidate_and_transfer_count = -76 ;
 const int global_voteinfo_code_for_candidate_to_ignore = -77 ;
+const int global_voteinfo_code_for_request_ignore_shared_rankings = -78 ;
 
 const int global_voteinfo_code_for_invalid_input_word = -200 ;
 
@@ -639,6 +641,7 @@ void do_main_initialization( )
 
     global_true_or_false_request_quota_droop = global_false ;
     global_true_or_false_request_no_pairwise_loser_elimination = global_false ;
+    global_true_or_false_request_ignore_shared_rankings = global_false ;
 
 
 // -----------------------------------------------
@@ -1138,6 +1141,23 @@ void handle_one_voteinfo_number( )
         global_true_or_false_request_no_pairwise_loser_elimination = global_true ;
         put_next_result_info_number( global_voteinfo_code_for_request_instant_runoff_voting ) ;
         if ( global_logging_info == global_true ) { log_out << "[request no pairwise loser eliminations]" ; } ;
+        return ;
+    }
+
+
+// -----------------------------------------------
+//  If there is a request to calculate the
+//  primitive version of STV that ignores ballots
+//  when counting reaches two or more candidates
+//  sharing the same ranking level, save this
+//  request in a flag and write this request to
+//  the results info, then return.
+
+    if ( global_current_voteinfo_number == global_voteinfo_code_for_request_ignore_shared_rankings )
+    {
+        global_true_or_false_request_ignore_shared_rankings = global_true ;
+        put_next_result_info_number( global_voteinfo_code_for_request_ignore_shared_rankings ) ;
+        if ( global_logging_info == global_true ) { log_out << "[request ignoring ballots when shared rankings are encountered]" ; } ;
         return ;
     }
 
@@ -2048,6 +2068,25 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
 
 
 // -----------------------------------------------
+//  If there is a request to simulate the
+//  primitive version of STV that ignores ballots
+//  when counting reaches a ballot that marks more
+//  than one top-ranked candidate, and this ballot
+//  pattern has such a shared ranking level, do
+//  not allow this group of ballots to count as
+//  support for any candidate.  However, unlike
+//  the primitive version of STV, do allow the
+//  ballot to be counted later if all but one of
+//  the same-ranked candidates have been eliminated.
+
+    if ( global_true_or_false_request_ignore_shared_rankings == global_true )
+    {
+    	global_count_of_top_ranked_remaining_candidates = 0 ;
+        return ;
+    }
+
+
+// -----------------------------------------------
 //  Calculate a pattern number that is unique for
 //  the combination of shared top ranked
 //  candidates.  If only one candidate is top
@@ -2056,7 +2095,8 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
 //  generation method accesses the candidate
 //  numbers in candidate-number sequence so that
 //  the same candidates (accessed in any order)
-//  yield the same pattern number.
+//  yield the same pattern number.  If the pattern
+//  number is zero, exit with an error message.
 
     pattern_number = 0 ;
     if ( global_count_of_top_ranked_remaining_candidates > 0 )
@@ -2068,6 +2108,12 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
                 pattern_number = ( pattern_number * ( global_number_of_candidates + 1 ) ) + candidate_number ;
             }
         }
+    }
+    if ( pattern_number == 0 )
+    {
+        log_out << "[error, bug has been introduced into code, pattern number is zero]" ;
+        std::cout << "[Error: Bug has been introduced into code, pattern number is zero.]" << std::endl ;
+        exit( EXIT_FAILURE ) ;
     }
 
 
@@ -2557,6 +2603,8 @@ void method_rcipe_stv( )
     int lowest_vote_transfer_count ;
     int pattern_number ;
     int count_of_tied_candidates ;
+
+    if ( global_logging_info == global_true ) { log_out << std::endl << "[calculating winner or winners for RCIPE or IRV or RCIPE STV or STV]" << std::endl ; } ;
 
 
 // -----------------------------------------------
