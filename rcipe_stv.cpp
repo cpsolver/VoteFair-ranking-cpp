@@ -1470,6 +1470,7 @@ int get_candidate_ranks_from_one_ballot_group( )
     if ( global_pointer_to_voteinfo_number >= global_pointer_to_end_of_voteinfo_numbers )
     {
         global_ballot_info_repeat_count = 0 ;
+        log_out << "[voteinfo pointer has already reached the end of the ballots]" << std::endl ;
         return 0 ;
     }
 
@@ -2079,7 +2080,7 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
 //  ballot to be counted later if all but one of
 //  the same-ranked candidates have been eliminated.
 
-    if ( global_true_or_false_request_ignore_shared_rankings == global_true )
+    if ( ( global_true_or_false_request_ignore_shared_rankings == global_true ) && ( global_count_of_top_ranked_remaining_candidates > 1 ) )
     {
     	global_count_of_top_ranked_remaining_candidates = 0 ;
         return ;
@@ -2539,11 +2540,11 @@ void adjust_for_quota_excess( )
 
 // -----------------------------------------------
 //  If the number of ballots that got zero
-//  influence is fewer than the quota count then
-//  there is a software bug.
+//  influence is significantly fewer than the
+//  quota count then there is a software bug.
 
     if ( global_logging_info == global_true ) { log_out << "[" << total_number_of_ballots_that_got_zero_influence << " ballots got zero influence, which must equal or exceed the quota count, which is " << global_quota_count << "]" << std::endl ; } ;
-    if ( total_number_of_ballots_that_got_zero_influence < global_quota_count )
+    if ( total_number_of_ballots_that_got_zero_influence < ( global_quota_count - 1 ) )
     {
         log_out << "[error, bug has been introduced into code, " << total_number_of_ballots_that_got_zero_influence << " ballots got zero influence, but that is less than the quota count, which is " << global_quota_count << "]" ;
         std::cout << "[Error: Bug has been introduced into code, " << total_number_of_ballots_that_got_zero_influence << " ballots got zero influence, but that is less than the quota count, which is " << global_quota_count << ".]" << std::endl ;
@@ -3238,7 +3239,7 @@ void method_rcipe_stv( )
         {
             if ( global_true_or_false_available_candidate[ candidate_number ] == global_true )
             {
-                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " transfer count is " << global_vote_transfer_count_for_candidate[ candidate_number ] << "]" << std::endl ; } ;
+//                if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " transfer count is " << global_vote_transfer_count_for_candidate[ candidate_number ] << "]" << std::endl ; } ;
                 if ( ( pointer_to_list_of_candidates_with_lowest_transfer_count == 0 ) || ( global_vote_transfer_count_for_candidate[ candidate_number ] < lowest_vote_transfer_count ) )
                 {
                     lowest_vote_transfer_count = global_vote_transfer_count_for_candidate[ candidate_number ] ;
@@ -3255,7 +3256,8 @@ void method_rcipe_stv( )
         if ( global_logging_info == global_true ) { log_out << "[" << number_of_candidates_with_lowest_vote_transfer_count << " candidates have the same lowest vote transfer count]" << std::endl ; } ;
         for ( pointer_to_list_of_candidates_with_lowest_transfer_count = 1 ; pointer_to_list_of_candidates_with_lowest_transfer_count <= number_of_candidates_with_lowest_vote_transfer_count ; pointer_to_list_of_candidates_with_lowest_transfer_count ++ )
         {
-            if ( global_logging_info == global_true ) { log_out << "[candidate " << global_list_of_candidates_with_lowest_vote_transfer_count[ pointer_to_list_of_candidates_with_lowest_transfer_count ] << " has lowest vote transfer count]" << std::endl ; } ;
+        	candidate_number = global_list_of_candidates_with_lowest_vote_transfer_count[ pointer_to_list_of_candidates_with_lowest_transfer_count ] ;
+            if ( global_logging_info == global_true ) { log_out << "[candidate " << candidate_number << " has lowest vote transfer count of " << global_vote_transfer_count_for_candidate[ candidate_number ] << "]" << std::endl ; } ;
         }
 
 
