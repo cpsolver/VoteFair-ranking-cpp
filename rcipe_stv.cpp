@@ -2351,7 +2351,7 @@ void adjust_for_quota_excess( )
 //  spaced among the ballots that support the
 //  just-elected candidate.
 
-    float decimal_skip_plus_one_interval_size ;
+    float decimal_skip_interval_size ;
     float decimal_residual_vote_transfer_count ;
 
 
@@ -2387,14 +2387,14 @@ void adjust_for_quota_excess( )
 
     if ( global_quota_count > 0 )
     {
-        decimal_skip_plus_one_interval_size = 1.0 + ( float( global_quota_count + global_supporting_vote_count_that_exceeds_quota ) / float( global_quota_count ) ) ;
+        decimal_skip_interval_size = ( float( global_quota_count + global_supporting_vote_count_that_exceeds_quota - 1.0 ) / float( global_quota_count ) ) ;
     } else
     {
         log_out << "[error, bug has been introduced into code, quota count is zero]" ;
         std::cout << "[Error: Bug has been introduced into code, quota count is zero.]" << std::endl ;
         exit( EXIT_FAILURE ) ;
     }
-    if ( global_logging_info == global_true ) { log_out << "[decimal skip plus one interval size " << convert_float_to_text( decimal_skip_plus_one_interval_size ) << "]" << std::endl ; } ;
+    if ( global_logging_info == global_true ) { log_out << "[decimal skip interval size " << convert_float_to_text( decimal_skip_interval_size ) << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
@@ -2506,7 +2506,7 @@ void adjust_for_quota_excess( )
 //  and zero influence -- because many laws
 //  require allocating ballots in "whole" numbers.
 
-        number_of_ballots_getting_zero_influence = 1 + int( decimal_residual_vote_transfer_count / decimal_skip_plus_one_interval_size ) ;
+        number_of_ballots_getting_zero_influence = 1 + int( decimal_residual_vote_transfer_count / decimal_skip_interval_size ) ;
         if ( number_of_ballots_getting_zero_influence < 0 )
         {
         	number_of_ballots_getting_zero_influence = 0 ;
