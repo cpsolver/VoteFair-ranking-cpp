@@ -2528,7 +2528,7 @@ void adjust_for_quota_excess( )
 // -----------------------------------------------
 //  Log this ballot count adjustment.
 
-        if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << ", votes " << convert_integer_to_text( remaining_ballot_count_for_current_ballot_group ) << " adjusted to " << convert_integer_to_text( global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] ) << " votes, residual is now " << convert_float_to_text( decimal_residual_vote_transfer_count ) << "]" << std::endl ; } ;
+        if ( global_logging_info == global_true ) { log_out << "[group " << global_ballot_group_pointer << ", had " << convert_integer_to_text( remaining_ballot_count_for_current_ballot_group ) << " votes, reduced by " << number_of_ballots_getting_zero_influence << ", now " << convert_integer_to_text( global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] ) << ", overall residual " << convert_float_to_text( decimal_residual_vote_transfer_count ) << "]" << std::endl ; } ;
 
 
 // -----------------------------------------------
