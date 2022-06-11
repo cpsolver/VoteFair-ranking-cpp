@@ -2069,19 +2069,23 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
 
 
 // -----------------------------------------------
-//  If there is a request to simulate the
-//  primitive version of STV that ignores ballots
-//  when counting reaches a ballot that marks more
-//  than one top-ranked candidate, and this ballot
-//  pattern has such a shared ranking level, do
-//  not allow this group of ballots to count as
-//  support for any candidate.  However, unlike
-//  the primitive version of STV, do allow the
-//  ballot to be counted later if all but one of
-//  the same-ranked candidates have been eliminated.
+//  If this ballot marks more than one top-ranked
+//  candidate at the same ranking level, and if
+//  there is a request to simulate the primitive
+//  version of STV that ignores such ballots when
+//  counting reaches the shared ranking level,
+//  change this ballot group to have zero
+//  influence.
+//  A later counting cycle might no longer have
+//  this sharing during a later counting cycle
+//  (because some of the candidates get
+//  eliminated), yet this complete rejection of
+//  the ballots simulates the primitive version of
+//  STV that fully rejects such ballots.
 
     if ( ( global_true_or_false_request_ignore_shared_rankings == global_true ) && ( global_count_of_top_ranked_remaining_candidates > 1 ) )
     {
+    	global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
     	global_count_of_top_ranked_remaining_candidates = 0 ;
         return ;
     }
