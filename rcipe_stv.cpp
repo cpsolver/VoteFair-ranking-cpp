@@ -335,26 +335,30 @@ const int global_false = 0 ;
 //  not within a function, even if a single
 //  function uses them.
 
+//  Position one -- [ 1 ] -- is used as the
+//  starting position for these arrays, so the
+//  array lengths have to be longer than the
+//  number of items to be stored.
 
-//  These list lengths must match the value of
-//  variable global_maximum_candidate_number.
 
-const int global_maximum_candidate_number = 99 ;
+//  These arrays have one item per candidate.
 
-int global_true_or_false_winner_candidate[ 99 ] ;
-int global_true_or_false_eliminated_candidate[ 99 ] ;
-int global_true_or_false_available_candidate[ 99 ] ;
-int global_true_or_false_is_top_ranked_candidate[ 99 ] ;
-int global_true_or_false_pairwise_consider_candidate[ 99 ] ;
-int global_ballot_preference_for_candidate[ 99 ] ;
-int global_vote_transfer_count_for_candidate[ 99 ] ;
-int global_win_count_for_candidate[ 99 ] ;
-int global_loss_count_for_candidate[ 99 ] ;
-int global_tally_uses_of_candidate_number[ 99 ] ;
-int global_list_of_top_ranked_candidates[ 99 ] ;
-int global_list_of_candidates_with_highest_vote_transfer_count[ 99 ] ;
-int global_list_of_candidates_with_lowest_vote_transfer_count[ 99 ] ;
-int global_list_of_candidates_tied[ 99 ] ;
+const int global_maximum_candidate_number = 100 ;
+
+int global_true_or_false_winner_candidate[ 101 ] ;
+int global_true_or_false_eliminated_candidate[ 101 ] ;
+int global_true_or_false_available_candidate[ 101 ] ;
+int global_true_or_false_is_top_ranked_candidate[ 101 ] ;
+int global_true_or_false_pairwise_consider_candidate[ 101 ] ;
+int global_ballot_preference_for_candidate[ 101 ] ;
+int global_vote_transfer_count_for_candidate[ 101 ] ;
+int global_win_count_for_candidate[ 101 ] ;
+int global_loss_count_for_candidate[ 101 ] ;
+int global_tally_uses_of_candidate_number[ 101 ] ;
+int global_list_of_top_ranked_candidates[ 101 ] ;
+int global_list_of_candidates_with_highest_vote_transfer_count[ 101 ] ;
+int global_list_of_candidates_with_lowest_vote_transfer_count[ 101 ] ;
+int global_list_of_candidates_tied[ 101 ] ;
 
 
 //  Declare the input-related list.
@@ -377,11 +381,11 @@ int global_output_results[ 2005 ] ;
 
 const int global_maximum_candidate_pairs = 20000 ;
 
-int global_first_candidate_number_in_pair[ 2000 ] ;
-int global_second_candidate_number_in_pair[ 2000 ] ;
-int global_tally_first_over_second_in_pair[ 2000 ] ;
-int global_tally_second_over_first_in_pair[ 2000 ] ;
-int global_tally_first_equal_second_in_pair[ 2000 ] ;
+int global_first_candidate_number_in_pair[ 2001 ] ;
+int global_second_candidate_number_in_pair[ 2001 ] ;
+int global_tally_first_over_second_in_pair[ 2001 ] ;
+int global_tally_second_over_first_in_pair[ 2001 ] ;
+int global_tally_first_equal_second_in_pair[ 2001 ] ;
 
 
 //  Declare the lists that group identical ballots
@@ -389,8 +393,8 @@ int global_tally_first_equal_second_in_pair[ 2000 ] ;
 
 const int global_maximum_number_of_ballot_groups = 20000 ;
 
-int global_ballot_count_remaining_for_ballot_group[ 20000 ] ;
-int global_top_ranked_candidate_for_ballot_group[ 20000 ] ;
+int global_ballot_count_remaining_for_ballot_group[ 20001 ] ;
+int global_top_ranked_candidate_for_ballot_group[ 20001 ] ;
 
 
 //  Declare the lists that combine the counting of
@@ -399,9 +403,9 @@ int global_top_ranked_candidate_for_ballot_group[ 20000 ] ;
 
 const int global_maximum_number_of_pattern_numbers = 10000 ;
 
-int global_pattern_number_for_pattern_number_pointer[ 10000 ] ;
-int global_ballot_count_for_pattern_number_pointer[ 10000 ] ;
-int global_top_candidate_count_for_pattern_number_pointer[ 10000 ] ;
+int global_pattern_number_for_pattern_number_pointer[ 10001 ] ;
+int global_ballot_count_for_pattern_number_pointer[ 10001 ] ;
+int global_top_candidate_count_for_pattern_number_pointer[ 10001 ] ;
 
 
 //  Note:  Do NOT change these numbers!  They
