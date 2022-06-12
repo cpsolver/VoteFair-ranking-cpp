@@ -306,10 +306,9 @@ const int global_false = 0 ;
 
 const int global_maximum_vote_info_list_length = 200000 ;
 const int global_maximum_question_number = 20 ;
-const int global_maximum_choice_number = 99 ;
+const int global_maximum_choice_number = 100 ;
 const int global_maximum_twice_highest_possible_score = 999999 ;
 const int global_maximum_output_results_length = 2000 ;
-const int global_limit_on_popularity_rank_levels = 20 ;
 const int global_default_representation_levels_requested = 6 ;
 const int global_limit_on_representation_rank_levels = 6 ;
 
@@ -317,47 +316,50 @@ const int global_limit_on_representation_rank_levels = 6 ;
 //  Declare a list that stores the number of
 //  choices for each question.
 
-int global_choice_count_for_question[ 20 ] ;
+int global_choice_count_for_question[ 21 ] ;
 
 
 //  Declare a variable for how many choices
 //  can be handled for each question,
 //  and declare lists that have that length.
 
-int global_plurality_count_for_actual_choice[ 99 ] ;
-int global_popularity_ranking_for_actual_choice[ 99 ] ;
-int global_full_popularity_ranking_for_actual_choice[ 99 ] ;
-int global_representation_ranking_for_actual_choice[ 99 ] ;
-int global_full_representation_ranking_for_actual_choice[ 99 ] ;
-int global_party_ranking_for_actual_choice[ 99 ] ;
-int global_adjusted_choice_for_actual_choice[ 99 ] ;
-int global_actual_choice_for_adjusted_choice[ 99 ] ;
-int global_using_choice[ 99 ] ;
-int global_ballot_preference_for_choice[ 99 ] ;
-int global_adjusted_ranking_for_adjusted_choice_bottom_up_version[ 99 ] ;
-int global_adjusted_ranking_for_adjusted_choice_top_down_version[ 99 ] ;
-int global_pair_counter_offset_for_first_adjusted_choice[ 99 ] ;
-int global_log_info_choice_at_position[ 99 ] ;
-int global_rank_to_normalize_for_adjusted_choice[ 99 ] ;
-int global_normalized_ranking_level_for_adjusted_choice[ 99 ] ;
-int global_choice_score_popularity_rank_for_actual_choice[ 99 ] ;
-int global_insertion_sort_popularity_rank_for_actual_choice[ 99 ] ;
-int global_sortable_sequence_used_during_normalization [ 99 ] ;
+int global_plurality_count_for_actual_choice[ 101 ] ;
+int global_popularity_ranking_for_actual_choice[ 101 ] ;
+int global_full_popularity_ranking_for_actual_choice[ 101 ] ;
+int global_representation_ranking_for_actual_choice[ 101 ] ;
+int global_full_representation_ranking_for_actual_choice[ 101 ] ;
+int global_party_ranking_for_actual_choice[ 101 ] ;
+int global_adjusted_choice_for_actual_choice[ 101 ] ;
+int global_actual_choice_for_adjusted_choice[ 101 ] ;
+int global_using_choice[ 101 ] ;
+int global_ballot_preference_for_choice[ 101 ] ;
+int global_adjusted_ranking_for_adjusted_choice_bottom_up_version[ 101 ] ;
+int global_adjusted_ranking_for_adjusted_choice_top_down_version[ 101 ] ;
+int global_pair_counter_offset_for_first_adjusted_choice[ 101 ] ;
+int global_log_info_choice_at_position[ 101 ] ;
+int global_rank_to_normalize_for_adjusted_choice[ 101 ] ;
+int global_normalized_ranking_level_for_adjusted_choice[ 101 ] ;
+int global_choice_score_popularity_rank_for_actual_choice[ 101 ] ;
+int global_insertion_sort_popularity_rank_for_actual_choice[ 101 ] ;
+int global_sortable_sequence_used_during_normalization [ 101 ] ;
+int global_tally_uses_of_choice_number[ 101 ] ;
+int global_actual_choice_at_popularity_list_sequence_position[ 101 ] ;
 
 
 //  Declare input-related and output-related lists.
+//  Allow extra space for codes at end.
 
-int global_vote_info_list[ 10005 ] ;
+int global_vote_info_list[ 200005 ] ;
 int global_output_results[ 2005 ] ;
 
 
 //  Declare pairwise lists.
 
-int global_adjusted_first_choice_number_in_pair[ 2000 ] ;
-int global_adjusted_second_choice_number_in_pair[ 2000 ] ;
-int global_tally_first_over_second_in_pair[ 2000 ] ;
-int global_tally_second_over_first_in_pair[ 2000 ] ;
-int global_tally_first_equal_second_in_pair[ 2000 ] ;
+int global_adjusted_first_choice_number_in_pair[ 2001 ] ;
+int global_adjusted_second_choice_number_in_pair[ 2001 ] ;
+int global_tally_first_over_second_in_pair[ 2001 ] ;
+int global_tally_second_over_first_in_pair[ 2001 ] ;
+int global_tally_first_equal_second_in_pair[ 2001 ] ;
 
 
 //  Input and output codes that identify
@@ -568,17 +570,17 @@ int global_true_or_false_request_instant_pairwise_elimination ;
 int global_true_or_false_find_largest_not_smallest ;
 int global_true_or_false_find_pairwise_opposition_not_support ;
 
-int global_integer_count_for_choice[ 99 ] ;
-int global_list_of_choices_with_largest_or_smallest_count[ 99 ] ;
-int global_list_of_choices_with_smallest_pairwise_support_count[ 99 ] ;
-int global_list_of_choices_with_largest_pairwise_opposition_count[ 99 ] ;
-int global_list_of_choices_with_smallest_single_pairwise_count[ 99 ] ;
-int global_true_or_false_continuing_for_choice[ 99 ] ;
-int global_true_or_false_continuing_subset_includes_choice[ 99 ] ;
-int global_pairwise_opposition_or_support_count_for_choice[ 99 ] ;
-int global_list_of_choices_having_pairwise_opposition_or_support[ 99 ] ;
-int global_loss_count_for_choice[ 99 ] ;
-int global_win_count_for_choice[ 99 ] ;
+int global_integer_count_for_choice[ 101 ] ;
+int global_list_of_choices_with_largest_or_smallest_count[ 101 ] ;
+int global_list_of_choices_with_smallest_pairwise_support_count[ 101 ] ;
+int global_list_of_choices_with_largest_pairwise_opposition_count[ 101 ] ;
+int global_list_of_choices_with_smallest_single_pairwise_count[ 101 ] ;
+int global_true_or_false_continuing_for_choice[ 101 ] ;
+int global_true_or_false_continuing_subset_includes_choice[ 101 ] ;
+int global_pairwise_opposition_or_support_count_for_choice[ 101 ] ;
+int global_list_of_choices_having_pairwise_opposition_or_support[ 101 ] ;
+int global_loss_count_for_choice[ 101 ] ;
+int global_win_count_for_choice[ 101 ] ;
 
 
 // -----------------------------------------------
@@ -1478,8 +1480,6 @@ void check_vote_info_numbers( )
     int choice_count_for_current_question ;
     int count_of_choices_marked_for_current_question ;
 
-    int tally_uses_of_choice_number[ 99 ] ;
-
 
 // -----------------------------------------------
 //  Initialization.
@@ -1487,7 +1487,7 @@ void check_vote_info_numbers( )
     if ( global_logging_info == global_true ) { log_out << "\n[about to start checking vote-info numbers]\n" ; } ;
     for ( choice_number = 0 ; choice_number <= global_maximum_choice_number ; choice_number ++ )
     {
-        tally_uses_of_choice_number[ choice_number ] = 0 ;
+        global_tally_uses_of_choice_number[ choice_number ] = 0 ;
     }
 
 
@@ -1677,13 +1677,13 @@ void check_vote_info_numbers( )
                 global_possible_error_message = "Error: Choice number exceeds indicated number of choices, question (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             }
-            if ( tally_uses_of_choice_number[ global_choice_number ] > 1 )
+            if ( global_tally_uses_of_choice_number[ global_choice_number ] > 1 )
             {
                 if ( global_logging_info == global_true ) { log_out << "[choice number previously used in this ballot, question " << global_question_number << ", ballot vote count " << global_ballot_info_repeat_count << ", choice " << global_choice_number << ", at list position " << pointer_to_vote_info << ")]" ; } ;
                 global_possible_error_message = "Error: Choice number previously used in same ballot, question (" + convert_integer_to_text( global_question_number ) + ")." ;
                 return ;
             }
-            tally_uses_of_choice_number[ global_choice_number ] = 1 ;
+            global_tally_uses_of_choice_number[ global_choice_number ] = 1 ;
             count_of_choices_marked_for_current_question ++ ;
             if ( global_choice_number > global_choice_count_for_question[ global_question_number ] )
             {
@@ -1725,7 +1725,7 @@ void check_vote_info_numbers( )
 
         } else if ( current_vote_info_number == global_voteinfo_code_for_end_of_ballot )
         {
-            tally_uses_of_choice_number[ 0 ] = 0 ;
+            global_tally_uses_of_choice_number[ 0 ] = 0 ;
             if ( global_logging_info == global_true ) { log_out << "[end ballot]" ; } ;
             continue ;
 
@@ -2490,8 +2490,6 @@ void compare_popularity_results( )
     int ranking_level_choice_specific_pairwise_score ;
     int ranking_level_insertion_sort ;
 
-    int actual_choice_at_popularity_list_sequence_position[ 200 ] ;
-
     std::string comparison_of_methods_table ;
     std::string possible_text_insertion_sort_not_the_same ;
     std::string possible_text_choice_specific_pairwise_score_not_the_same ;
@@ -2515,7 +2513,7 @@ void compare_popularity_results( )
             actual_choice = global_actual_choice_for_adjusted_choice[ adjusted_choice ] ;
             if ( global_popularity_ranking_for_actual_choice[ actual_choice ] == ranking_level )
             {
-                actual_choice_at_popularity_list_sequence_position[ sequence_position ] = actual_choice ;
+                global_actual_choice_at_popularity_list_sequence_position[ sequence_position ] = actual_choice ;
                 global_log_info_choice_at_position[ sequence_position ] = actual_choice ;
                 sequence_position ++ ;
             }
@@ -2561,7 +2559,7 @@ void compare_popularity_results( )
     comparison_of_methods_table += "[compare pop results, columns: official, insertion, estimated]\n" ;
     for ( sequence_position = 1 ; sequence_position <= global_adjusted_choice_count ; sequence_position ++ )
     {
-        actual_choice = actual_choice_at_popularity_list_sequence_position[ sequence_position ] ;
+        actual_choice = global_actual_choice_at_popularity_list_sequence_position[ sequence_position ] ;
         adjusted_choice = global_adjusted_choice_for_actual_choice[ actual_choice ] ;
         ranking_level_official = global_popularity_ranking_for_actual_choice[ actual_choice ] ;
         ranking_level_choice_specific_pairwise_score = global_choice_score_popularity_rank_for_actual_choice[ actual_choice ] ;
@@ -2752,11 +2750,11 @@ void output_ranking_results( )
     int sum_of_rankings ;
     int count_of_choices_found_at_this_ranking_level ;
 
-    int sequence_start_code_for_ranking_type[ 200 ] ;
-    int sequence_end_code_for_ranking_type[ 200 ] ;
-    int levels_start_code_for_ranking_type[ 200 ] ;
-    int levels_end_code_for_ranking_type[ 200 ] ;
-    int ranking_level_result_for_actual_choice[ 200 ] ;
+    int sequence_start_code_for_ranking_type[ 201 ] ;
+    int sequence_end_code_for_ranking_type[ 201 ] ;
+    int levels_start_code_for_ranking_type[ 201 ] ;
+    int levels_end_code_for_ranking_type[ 201 ] ;
+    int ranking_level_result_for_actual_choice[ 201 ] ;
 
     std::string ranking_type_name ;
     std::string ranking_type_name_for_number[ 200 ] ;
@@ -3275,14 +3273,14 @@ void calc_all_sequence_scores( )
     std::string  ranking_changes_info ;
     std::string  score_info ;
 
-    int sequence_count_at_position[ 200 ] ;
-    int maximum_sequence_count_at_position[ 200 ] ;
-    int sequence_position_for_adjusted_choice[ 200 ] ;
-    int count_of_sequences_with_highest_ranking_for_adjusted_choice[ 200 ] ;
-    int count_of_sequences_with_lowest_ranking_for_adjusted_choice[ 200 ] ;
-    int sum_of_rankings_at_highest_score_for_adjusted_choice[ 200 ] ;
-    int count_of_rankings_at_highest_score_for_adjusted_choice[ 200 ] ;
-    int choice_in_remainder_position[ 200 ] ;
+    int sequence_count_at_position[ 201 ] ;
+    int maximum_sequence_count_at_position[ 201 ] ;
+    int sequence_position_for_adjusted_choice[ 201 ] ;
+    int count_of_sequences_with_highest_ranking_for_adjusted_choice[ 201 ] ;
+    int count_of_sequences_with_lowest_ranking_for_adjusted_choice[ 201 ] ;
+    int sum_of_rankings_at_highest_score_for_adjusted_choice[ 201 ] ;
+    int count_of_rankings_at_highest_score_for_adjusted_choice[ 201 ] ;
+    int choice_in_remainder_position[ 201 ] ;
 
 
 // -----------------------------------------------
@@ -4017,11 +4015,11 @@ void calc_votefair_choice_specific_pairwise_score_popularity_rank( )
     int first_pointer ;
     int second_pointer ;
 
-    int row_score_for_adjusted_choice[ 200 ] ;
-    int column_score_for_adjusted_choice[ 200 ] ;
-    int position_in_sequence_for_adjusted_choice[ 200 ] ;
-    int adjusted_choice_in_rank_sequence_position[ 200 ] ;
-    int adjusted_choice_at_tie_count[ 200 ] ;
+    int row_score_for_adjusted_choice[ 201 ] ;
+    int column_score_for_adjusted_choice[ 201 ] ;
+    int position_in_sequence_for_adjusted_choice[ 201 ] ;
+    int adjusted_choice_in_rank_sequence_position[ 201 ] ;
+    int adjusted_choice_at_tie_count[ 201 ] ;
 
 
 // -----------------------------------------------
@@ -5251,16 +5249,16 @@ void calc_votefair_insertion_sort_popularity_rank( )
     int tally_first_over_second ;
     int tally_second_over_first ;
 
-    int local_actual_choice_for_adjusted_choice[ 200 ] ;
-    int actual_choice_at_new_adjusted_choice[ 200 ] ;
-    int actual_choice_in_insertion_rank_sequence_position[ 200 ] ;
-    int highest_insertion_sort_sequence_position_for_actual_choice[ 200 ] ;
-    int lowest_insertion_sort_sequence_position_for_actual_choice[ 200 ] ;
-    int pass_number_at_last_rerank_for_adjusted_choice[ 200 ] ;
-    int adjusted_choice_count_at_stage[ 200 ] ;
-    int highest_ranked_actual_choice_at_count[ 200 ] ;
-    int lower_ranked_actual_choice_at_count[ 200 ] ;
-    int local_adjusted_choice_for_actual_choice[ 200 ] ;
+    int local_actual_choice_for_adjusted_choice[ 201 ] ;
+    int actual_choice_at_new_adjusted_choice[ 201 ] ;
+    int actual_choice_in_insertion_rank_sequence_position[ 201 ] ;
+    int highest_insertion_sort_sequence_position_for_actual_choice[ 201 ] ;
+    int lowest_insertion_sort_sequence_position_for_actual_choice[ 201 ] ;
+    int pass_number_at_last_rerank_for_adjusted_choice[ 201 ] ;
+    int adjusted_choice_count_at_stage[ 201 ] ;
+    int highest_ranked_actual_choice_at_count[ 201 ] ;
+    int lower_ranked_actual_choice_at_count[ 201 ] ;
+    int local_adjusted_choice_for_actual_choice[ 201 ] ;
 
 
 // -----------------------------------------------
