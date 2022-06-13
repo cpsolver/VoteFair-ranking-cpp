@@ -122,6 +122,10 @@
 //  0.15  Yet more rigorous testing is needed
 //  before relying on this code for elections.
 //
+//  Version 0.20 - In June 2022 removed a
+//  potential bug, after more successful
+//  testing.
+//
 // -----------------------------------------------
 //
 //  USAGE
