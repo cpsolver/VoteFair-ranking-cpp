@@ -70,6 +70,8 @@
 //  Also removed were calculations for methods
 //  that had been added for comparison purposes.
 //
+//  Version 6.31 - In June 2022 removed a
+//  potential bug.
 //
 // -----------------------------------------------
 //
