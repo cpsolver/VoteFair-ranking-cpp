@@ -2095,6 +2095,7 @@ void add_current_ballot_group_votes_to_vote_transfer_counts( )
     {
     	global_ballot_count_remaining_for_ballot_group[ global_ballot_group_pointer ] = 0 ;
     	global_count_of_top_ranked_remaining_candidates = 0 ;
+        log_out << "[ballot group " << global_ballot_group_pointer << ", influence is now zero because of shared ranking level and request to use primitive version of STV]" << std::endl ;
         return ;
     }
 
