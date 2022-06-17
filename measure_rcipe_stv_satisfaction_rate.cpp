@@ -119,8 +119,11 @@ int global_number_of_case_types_to_test ;
 int global_case_type ;
 int global_case_type_votefair_popularity ;
 int global_case_type_votefair_representation ;
+int global_case_type_plurality ;
+int global_case_type_random ;
 int global_total_ballot_count ;
 int global_number_of_tests ;
+int global_count_ballot_generation_done ;
 int global_full_candidate_count ;
 int global_count_of_cases_ignored ;
 int global_maximum_ballot_group ;
@@ -128,15 +131,15 @@ int global_maximum_ranking_level ;
 int global_test_count ;
 int global_count_of_tests_that_match ;
 int global_candidate_winner ;
+int global_plurality_winner ;
+int global_majority_winner ;
 int global_candidate_omitted ;
-int global_candidate_first_choice_on_majority_of_ballots ;
 int global_yes_or_no_show_details_in_log_file ;
 int global_count_of_seats_filled ;
 int global_ballot_count_times_candidate_count_minus_one ;
 int global_pointer_to_list_voteinfo_output_begin ;
 int global_pointer_to_list_voteinfo_output_ballot ;
 int global_pointer_to_list_voteinfo_output_end ;
-int global_number_of_result_categories ;
 
 
 // -----------------------------------------------
@@ -148,12 +151,10 @@ int global_number_of_result_categories ;
 const int global_maximum_number_of_case_types = 40 ;
 int global_list_of_case_types_to_test[ 41 ] ;
 int global_number_of_seats_to_fill_for_case_type[ 41 ] ;
-int global_decimal_proportional_satisfaction_number_for_case_type[ 41 ] ;
-int global_count_of_satisfaction_cases_for_case_type[ 41 ] ;
-int global_number_of_seat_winners_matching_for_case_type[ 41 ] ;
 int global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ 41 ] ;
 int global_yes_or_no_switch_to_droop_quota_for_case_type[ 41 ] ;
 int global_yes_or_no_request_ignore_shared_rankings_for_case_type[ 41 ] ;
+int global_count_of_successful_cases_for_case_type[ 41 ] ;
 
 const int global_maximum_number_of_seats_to_fill = 10 ;
 int global_candidate_who_won_seat_number[ 11 ] ;
@@ -191,7 +192,6 @@ int global_results_category_number_for_case_type[ 21 ] ;
 int global_usage_count_for_candidate_and_sequence_position[ 21 ][ 61 ] ;
 int global_sequence_position_for_candidate_and_ballot_group[ 21 ][ 201 ] ;
 int global_ranking_for_candidate_and_ballot_group[ 21 ][ 201 ] ;
-int global_proportional_satisfaction_percent_for_case_type_and_seat_count[ 41 ][ 11 ] ;
 
 
 // -----------------------------------------------
@@ -252,6 +252,13 @@ std::ofstream log_out ;
 
 
 // -----------------------------------------------
+//  Declare an output file for writing spreadsheet
+//  data.
+
+std::ofstream spreadsheet_out ;
+
+
+// -----------------------------------------------
 //  Declare an input file for reading calculated
 //  results.
 
@@ -286,7 +293,9 @@ void do_initialization( )
     int verified_candidate_count ;
     int next_available_case_type_number ;
     int seats_to_fill ;
-    int next_results_category_number ;
+    int yes_or_no_switch_to_droop_quota ;
+    int yes_or_no_eliminate_pairwise_losing_candidate ;
+    int yes_or_no_request_ignore_shared_rankings ;
 
 
 // -----------------------------------------------
@@ -301,7 +310,8 @@ void do_initialization( )
 //  when the case type is the first case type,
 //  which corresponds to case type 1.
 
-    global_case_count_limit = 100 ;
+    global_case_count_limit = 10000 ;
+    global_case_count_limit = 120 ;
 
 
 // -----------------------------------------------
@@ -317,87 +327,51 @@ void do_initialization( )
 //  representation ranking.
 
 //  VoteFair representation ranking, 2 seats
-    next_results_category_number = 1 ;
     next_available_case_type_number = 1 ;
     global_case_type_votefair_representation = next_available_case_type_number ;
-    global_results_category_number_for_case_type[ global_case_type_votefair_representation ] = next_results_category_number ;
     global_number_of_seats_to_fill_for_case_type[ global_case_type_votefair_representation ] = 2 ;
     global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ global_case_type_votefair_representation ] = global_no ;
     global_yes_or_no_switch_to_droop_quota_for_case_type[ global_case_type_votefair_representation ] = global_no ;
     global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type_votefair_representation ] = global_no ;
+    global_count_of_successful_cases_for_case_type[ global_case_type_votefair_representation ] = 0 ;
 
 //  VoteFair popularity ranking, 1 seat
-    next_results_category_number ++ ;
     next_available_case_type_number ++ ;
     global_case_type_votefair_popularity = next_available_case_type_number ;
-    global_results_category_number_for_case_type[ global_case_type_votefair_popularity ] = next_results_category_number ;
     global_number_of_seats_to_fill_for_case_type[ global_case_type_votefair_popularity ] = 1 ;
     global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ global_case_type_votefair_popularity ] = global_no ;
     global_yes_or_no_switch_to_droop_quota_for_case_type[ global_case_type_votefair_popularity ] = global_no ;
     global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type_votefair_popularity ] = global_no ;
+    global_count_of_successful_cases_for_case_type[ global_case_type_votefair_popularity ] = 0 ;
 
-//  STV/IRV, droop quota, ignore shared rankings
-    next_results_category_number ++ ;
-    for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
+
+//  Loop through the STV and RCIPE STV variations.
+
+    for ( yes_or_no_switch_to_droop_quota = global_no ; yes_or_no_switch_to_droop_quota <= global_yes ; yes_or_no_switch_to_droop_quota ++ )
     {
-        next_available_case_type_number ++ ;
-        global_results_category_number_for_case_type[ next_available_case_type_number ] = next_results_category_number ;
-        global_number_of_seats_to_fill_for_case_type[ next_available_case_type_number ] = seats_to_fill ;
-        global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ next_available_case_type_number ] = global_no ;
-        global_yes_or_no_switch_to_droop_quota_for_case_type[ next_available_case_type_number ] = global_yes ;
-        global_yes_or_no_request_ignore_shared_rankings_for_case_type[ next_available_case_type_number ] = global_yes ;
+        for ( yes_or_no_request_ignore_shared_rankings = global_no ; yes_or_no_request_ignore_shared_rankings <= global_yes ; yes_or_no_request_ignore_shared_rankings ++ )
+        {
+            for ( yes_or_no_eliminate_pairwise_losing_candidate = global_no ; yes_or_no_eliminate_pairwise_losing_candidate <= global_yes ; yes_or_no_eliminate_pairwise_losing_candidate ++ )
+            {
+                if ( ( yes_or_no_eliminate_pairwise_losing_candidate == global_yes ) && ( yes_or_no_request_ignore_shared_rankings == global_yes ) )
+                {
+                    continue ;
+                }
+                for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
+                {
+                    next_available_case_type_number ++ ;
+                    global_number_of_seats_to_fill_for_case_type[ next_available_case_type_number ] = seats_to_fill ;
+                    global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ next_available_case_type_number ] = yes_or_no_eliminate_pairwise_losing_candidate ;
+                    global_yes_or_no_switch_to_droop_quota_for_case_type[ next_available_case_type_number ] = yes_or_no_switch_to_droop_quota ;
+                    global_yes_or_no_request_ignore_shared_rankings_for_case_type[ next_available_case_type_number ] = yes_or_no_request_ignore_shared_rankings ;
+                    global_count_of_successful_cases_for_case_type[ next_available_case_type_number ] = 0 ;
+                }
+            }
+        }
     }
 
-//  STV/IRV, hare quota
-    next_results_category_number ++ ;
-    for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
-    {
-        next_available_case_type_number ++ ;
-        global_results_category_number_for_case_type[ next_available_case_type_number ] = next_results_category_number ;
-        global_number_of_seats_to_fill_for_case_type[ next_available_case_type_number ] = seats_to_fill ;
-        global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ next_available_case_type_number ] = global_no ;
-        global_yes_or_no_switch_to_droop_quota_for_case_type[ next_available_case_type_number ] = global_no ;
-        global_yes_or_no_request_ignore_shared_rankings_for_case_type[ next_available_case_type_number ] = global_no ;
-    }
-
-//  STV/IRV, droop quota
-    next_results_category_number ++ ;
-    for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
-    {
-        next_available_case_type_number ++ ;
-        global_results_category_number_for_case_type[ next_available_case_type_number ] = next_results_category_number ;
-        global_number_of_seats_to_fill_for_case_type[ next_available_case_type_number ] = seats_to_fill ;
-        global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ next_available_case_type_number ] = global_no ;
-        global_yes_or_no_switch_to_droop_quota_for_case_type[ next_available_case_type_number ] = global_yes ;
-        global_yes_or_no_request_ignore_shared_rankings_for_case_type[ next_available_case_type_number ] = global_no ;
-    }
-
-//  RCIPE STV, droop quota
-    next_results_category_number ++ ;
-    for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
-    {
-        next_available_case_type_number ++ ;
-        global_results_category_number_for_case_type[ next_available_case_type_number ] = next_results_category_number ;
-        global_number_of_seats_to_fill_for_case_type[ next_available_case_type_number ] = seats_to_fill ;
-        global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ next_available_case_type_number ] = global_yes ;
-        global_yes_or_no_switch_to_droop_quota_for_case_type[ next_available_case_type_number ] = global_yes ;
-        global_yes_or_no_request_ignore_shared_rankings_for_case_type[ next_available_case_type_number ] = global_no ;
-    }
-
-//  RCIPE STV, hare quota
-    next_results_category_number ++ ;
-    for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
-    {
-        next_available_case_type_number ++ ;
-        global_results_category_number_for_case_type[ next_available_case_type_number ] = next_results_category_number ;
-        global_number_of_seats_to_fill_for_case_type[ next_available_case_type_number ] = seats_to_fill ;
-        global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ next_available_case_type_number ] = global_yes ;
-        global_yes_or_no_switch_to_droop_quota_for_case_type[ next_available_case_type_number ] = global_no ;
-        global_yes_or_no_request_ignore_shared_rankings_for_case_type[ next_available_case_type_number ] = global_no ;
-    }
-
-    global_number_of_result_categories = next_results_category_number ;
     global_number_of_case_types_to_test = next_available_case_type_number ;
+
 
 // -----------------------------------------------
 //  Specify which case types to test.  This use of
@@ -412,6 +386,35 @@ void do_initialization( )
     {
         global_list_of_case_types_to_test[ case_type ] = case_type ;
     }
+
+
+// -----------------------------------------------
+//  Specify the plurality method as a special case
+//  type that does not involve external counting
+//  because the vote counting is done internally.
+//  This case type is added as an extra that is
+//  not included in the loops.
+
+    global_case_type_plurality = global_number_of_case_types_to_test + 1 ;
+    global_number_of_seats_to_fill_for_case_type[ global_case_type_plurality ] = 1 ;
+    global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ global_case_type_plurality ] = global_no ;
+    global_yes_or_no_switch_to_droop_quota_for_case_type[ global_case_type_plurality ] = global_no ;
+    global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type_plurality ] = global_yes ;
+    global_count_of_successful_cases_for_case_type[ global_case_type_plurality ] = 0 ;
+    global_list_of_case_types_to_test[ global_case_type_plurality ] = global_case_type_plurality ;
+
+
+// -----------------------------------------------
+//  Specify "random" as another special case.  It
+//  always identifies candidate 1 as the winner.
+
+    global_case_type_random = global_number_of_case_types_to_test + 2 ;
+    global_number_of_seats_to_fill_for_case_type[ global_case_type_random ] = 1 ;
+    global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ global_case_type_random ] = global_no ;
+    global_yes_or_no_switch_to_droop_quota_for_case_type[ global_case_type_random ] = global_no ;
+    global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type_random ] = global_yes ;
+    global_count_of_successful_cases_for_case_type[ global_case_type_random ] = 0 ;
+    global_list_of_case_types_to_test[ global_case_type_random ] = global_case_type_random ;
 
 
 // -----------------------------------------------
@@ -465,18 +468,22 @@ void do_initialization( )
 
     global_maximum_ranking_level = 6 ;
 
+//  todo: allow different marking patterns
+
     global_number_of_candidates_at_ranking_level[ 1 ] = 1 ;
-    global_number_of_candidates_at_ranking_level[ 2 ] = 1 ;
-    global_number_of_candidates_at_ranking_level[ 3 ] = 1 ;
-    global_number_of_candidates_at_ranking_level[ 4 ] = 3 ;
-    global_number_of_candidates_at_ranking_level[ 5 ] = 3 ;
-    global_number_of_candidates_at_ranking_level[ 6 ] = 2 ;
+    global_number_of_candidates_at_ranking_level[ 2 ] = 2 ;
+    global_number_of_candidates_at_ranking_level[ 3 ] = 3 ;
+    global_number_of_candidates_at_ranking_level[ 4 ] = 2 ;
+    global_number_of_candidates_at_ranking_level[ 5 ] = 2 ;
+    global_number_of_candidates_at_ranking_level[ 6 ] = 1 ;
 
 
 // -----------------------------------------------
 //  Count the number of candidates based on the
 //  number of ranking levels and the number of
 //  candidates at each ranking level.
+
+//  todo: allow different marking patterns
 
     global_full_candidate_count = 0 ;
     for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
@@ -492,6 +499,8 @@ void do_initialization( )
 //  into the ballot data to indicate an additional
 //  candidate being ranked at the same preference
 //  level as the previous candidate.
+
+//  todo: allow different marking patterns
 
     sequence_position = 1 ;
     for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
@@ -517,21 +526,6 @@ void do_initialization( )
 //            log_out << "[tie insert flag at sequence position " << sequence_position << "]" << std::endl ;
         }
 //        log_out << "[sequence position " << sequence_position << " is at ranking level " << global_ranking_level_for_sequence_position[ sequence_position ] << "]" << std::endl ;
-    }
-
-
-// -----------------------------------------------
-//  Initialize the result numbers.
-
-    for ( case_type = 1 ; case_type <= global_maximum_number_of_case_types ; case_type ++ )
-    {
-        global_decimal_proportional_satisfaction_number_for_case_type[ case_type ] = 0 ;
-        global_count_of_satisfaction_cases_for_case_type[ case_type ] = 0 ;
-        global_number_of_seat_winners_matching_for_case_type[ case_type ] = 0 ;
-        for ( seats_to_fill = 1 ; seats_to_fill <= global_maximum_number_of_seats_to_fill ; seats_to_fill ++ )
-        {
-            global_proportional_satisfaction_percent_for_case_type_and_seat_count[ case_type ][ seats_to_fill ] = 0 ;
-        }
     }
 
 
@@ -686,6 +680,322 @@ std::string convert_float_to_text( float supplied_float )
 // -----------------------------------------------
 // -----------------------------------------------
 //
+//     calculate_satisfaction
+//
+//  Calculate the satisfaction percent for the
+//  identified seat winners.
+//
+//  If all the seat winners are ranked as first
+//  choice by an equal number of voters, the
+//  satisfaction rate is 100 percent.  As an
+//  example of this full satisfaction value,
+//  imagine there are three seats, one third of
+//  the voters rank the first-seat winner as their
+//  first choice, another third of the voters rank
+//  the second-seat winner as their first choice,
+//  and the remaining third of the voters rank
+//  the third-seat winner as their first choice.
+//
+//  The degree of satisfaction for a voter is
+//  measured by the number of candidates who are
+//  ranked below the seat winner.  If all the
+//  other candidates are ranked below the seat
+//  winner, that ballot has full -- 100 percent
+//  -- satisfaction.
+//
+//  A ballot is regarded as supporting a seat
+//  winner to the degree it highly ranks that
+//  seat winner.
+//
+//  Some ballots support more than one winner
+//  because a supporting vote count beyond the
+//  quota (needed to win) leaves a portion of the
+//  ballot's influence available during the
+//  filling of other seats.
+//
+//
+// -----------------------------------------------
+
+void calculate_satisfaction( ) {
+
+    int candidate_number ;
+    int sequence_position ;
+    int ranking_level ;
+    int ballot_group_number ;
+    int ballot_group_repeat_count ;
+    int pointer_to_supporting_ballot_group ;
+    int supporting_ballot_group ;
+    int number_of_supporting_ballot_groups ;
+    int seat_number ;
+    int candidate_seat_winner ;
+    int proportional_satisfaction_percent_for_current_case ;
+
+    float decimal_supporting_vote_count_weighted ;
+    float decimal_count_of_supporting_ballots ;
+    float decimal_influence_reduction_per_ballot ;
+    float decimal_votes_that_must_support_seat_winner ;
+    float decimal_influence_reduction_for_current_ballot_group ;
+    float decimal_proportional_satisfaction_number_for_current_case ;
+
+
+// -----------------------------------------------
+//  Initialization.
+
+    decimal_proportional_satisfaction_number_for_current_case = 0.0 ;
+    for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
+    {
+        ballot_group_repeat_count = global_repeat_count_for_ballot_group[ ballot_group_number ] ;
+        global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] = float( ballot_group_repeat_count ) ;
+        global_decimal_reduced_influence_for_ballot_group[ ballot_group_number ] = 0 ;
+    }
+
+
+// -----------------------------------------------
+//  Begin a loop that handles each ranking level
+//
+//  Reminder: Ranking level 1 is the highest, not
+//  the lowest, ranking level.
+
+    log_out << std::endl ;
+    for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
+    {
+
+
+// -----------------------------------------------
+//  Begin a loop that handles each seat winner.
+//
+//  Reminder: The winner of VoteFair popularity
+//  ranking is always the same as the winner of
+//  the first seat in two-seat VoteFair
+//  representation ranking.
+
+        for ( seat_number = 1 ; seat_number <= global_number_of_seats_to_fill_for_case_type[ global_case_type ] ; seat_number ++ )
+        {
+            candidate_seat_winner = 0 ;
+            if ( ( global_case_type == global_case_type_votefair_popularity ) || ( global_case_type == global_case_type_votefair_representation ) )
+            {
+                candidate_seat_winner = global_candidate_who_won_votefair_seat_number[ seat_number ] ;
+            } else if ( global_case_type == global_case_type_plurality )
+            {
+                candidate_seat_winner = global_plurality_winner ;
+            } else if ( global_case_type == global_case_type_random )
+            {
+                candidate_seat_winner = 1 ;
+            } else
+            {
+                candidate_seat_winner = global_candidate_who_won_seat_number[ seat_number ] ;
+            }
+
+
+// -----------------------------------------------
+//  Exit this function if any of the seat winner
+//  numbers are zero.  This situation indicates
+//  that not all the seats were filled, which
+//  means a satisfaction rate cannot be
+//  calculated.
+
+            if ( candidate_seat_winner == 0 )
+            {
+                decimal_proportional_satisfaction_number_for_current_case = 0.0 ;
+                log_out << "[seat winner is zero, proportional satisfaction cannot be calculated]" << std::endl ;
+                return ;
+            }
+
+
+// -----------------------------------------------
+//  Initialize the counts that track how many
+//  ballots, and which ballots, support the
+//  current seat winner.
+
+            decimal_supporting_vote_count_weighted = 0.0 ;
+            decimal_count_of_supporting_ballots = 0 ;
+            number_of_supporting_ballot_groups = 0 ;
+            pointer_to_supporting_ballot_group = 0 ;
+
+
+// -----------------------------------------------
+//  Begin a loop that handles each ballot group.
+
+            for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
+            {
+                ballot_group_repeat_count = global_repeat_count_for_ballot_group[ ballot_group_number ] ;
+
+
+// -----------------------------------------------
+//  Within this ballot group (of identical
+//  ballots), if the seat winner is not ranked at
+//  the ranking level that's currently of
+//  interest, skip this ballot group.
+
+                if ( global_ranking_for_candidate_and_ballot_group[ candidate_seat_winner ][ ballot_group_number ] != ranking_level )
+                {
+                    continue ;
+                }
+
+
+// -----------------------------------------------
+//  Within this ballot group, calculate how many
+//  votes support this seat-winning candidate,
+//  allowing for the possibility that these
+//  ballots have more than one candidate ranked at
+//  the same ranking level (of interest).
+
+//  todo: allow different marking patterns
+
+                decimal_supporting_vote_count_weighted = global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] / float( global_number_of_candidates_at_ranking_level[ ranking_level ] ) ;
+
+                global_decimal_reduced_influence_for_ballot_group[ ballot_group_number ] = decimal_supporting_vote_count_weighted ;
+
+                log_out << "[rank " << ranking_level << ", seat winner " << candidate_seat_winner << ", group " << ballot_group_number << ", repeat count " << ballot_group_repeat_count << ", remaining " << convert_float_to_text( global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] ) << ", support " << convert_float_to_text( decimal_supporting_vote_count_weighted ) << "]" << std::endl ;
+
+
+// -----------------------------------------------
+//  If this ballot group provided any support to
+//  this seat winner, add that amount to the vote
+//  count supporting this seat winner.  Also track
+//  the number of supporting ballots.  Also add
+//  the ballot group number to the list that
+//  tracks the supporting ballots.
+
+                if ( decimal_supporting_vote_count_weighted > 0.0 )
+                {
+                    decimal_count_of_supporting_ballots += global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] ;
+                    pointer_to_supporting_ballot_group ++ ;
+                    global_list_of_supporting_ballot_groups[ pointer_to_supporting_ballot_group ] = ballot_group_number ;
+                    number_of_supporting_ballot_groups = pointer_to_supporting_ballot_group ;
+                }
+
+
+// -----------------------------------------------
+//  Repeat the loop to handle the next ballot
+//  group.
+
+            }
+
+
+// -----------------------------------------------
+//  If none of the ballots -- at the specified
+//  ranking level -- support the specified winning
+//  candidate, repeat the loop to handle the next
+//  winning candidate.
+
+            if ( decimal_count_of_supporting_ballots <= 0.0 )
+            {
+//                log_out << "[no support for winning candidate " << candidate_seat_winner << " at ranking level " << ranking_level << "]" << std::endl ;
+                continue ;
+            }
+
+
+// -----------------------------------------------
+//  Begin a loop that handles each group of
+//  supporting ballots.
+
+            if ( number_of_supporting_ballot_groups > 0 )
+            {
+                for ( pointer_to_supporting_ballot_group = 1 ; pointer_to_supporting_ballot_group <= number_of_supporting_ballot_groups ; pointer_to_supporting_ballot_group ++ )
+                {
+                    supporting_ballot_group = global_list_of_supporting_ballot_groups[ pointer_to_supporting_ballot_group ] ;
+
+
+// -----------------------------------------------
+//  Reduce the influence of the supporting ballot
+//  group.  This reduction leaves less influence
+//  toward electing further winners.  This
+//  reduction is the same as the amount of support
+//  that was just calculated.
+
+                    global_decimal_remaining_influence_for_ballot_group[ supporting_ballot_group ] -= global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] ;
+                    log_out << "[group " << supporting_ballot_group << ", reduced by " << convert_float_to_text( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] ) << ", reduced to " << convert_float_to_text( global_decimal_remaining_influence_for_ballot_group[ supporting_ballot_group ] )  << "]" << std::endl ;
+
+
+// -----------------------------------------------
+//  For each of the supporting ballot groups, add
+//  the supporting influence amount to the total
+//  proportional satisfaction number.
+
+                    sequence_position = global_sequence_position_for_candidate_and_ballot_group[ candidate_seat_winner ][ supporting_ballot_group ] ;
+
+//  todo: allow different marking patterns
+
+                    decimal_proportional_satisfaction_number_for_current_case += ( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] * float( global_count_of_candidates_ranked_below_sequence_position[ sequence_position ] ) ) ;
+
+
+// -----------------------------------------------
+//  Repeat the branch and loop that handles the
+//  next supporting ballot group.
+
+                }
+            }
+
+
+// -----------------------------------------------
+//  Repeat the loop to handle the next seat
+//  winner.
+
+        }
+
+
+// -----------------------------------------------
+//  Repeat the loop to handle the next ranking
+//  level.
+
+    }
+
+
+// -----------------------------------------------
+//  Show any remaining influence.
+
+    for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
+    {
+        if ( global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] > 0.0 )
+        {
+            log_out << "[remaining influence in group " << ballot_group_number << " is " << convert_float_to_text( global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] )  << " votes]" << std::endl ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  Calculate, and log, the satisfaction rate.
+
+    log_out << "[satisfaction count is " << convert_float_to_text( decimal_proportional_satisfaction_number_for_current_case ) << "]" << std::endl ;
+
+    proportional_satisfaction_percent_for_current_case = int( 100.0 * decimal_proportional_satisfaction_number_for_current_case / float( global_ballot_count_times_candidate_count_minus_one ) ) ;
+
+    log_out << "[satisfaction percent for case type " << global_case_type << " is " << proportional_satisfaction_percent_for_current_case << "]" << std::endl ;
+
+
+// -----------------------------------------------
+//  Count the number of satisfaction calculations
+//  done for the current case type.
+
+    global_count_of_successful_cases_for_case_type[ global_case_type ] ++ ;
+
+
+// -----------------------------------------------
+//  Write data to a spreadsheet-like file that
+//  allows standard deviation values and ranges to
+//  be calculated.
+//
+//  Reminder: Use "sample" standard deviation
+//  not "population" standard deviation because
+//  sampling is involved.  Divisor is N-1 instead
+//  of N.
+//  In Libre Office use: =STDEV.P
+
+    spreadsheet_out << global_case_type << " " << proportional_satisfaction_percent_for_current_case << std::endl ;
+
+
+// -----------------------------------------------
+//  End of function calculate_satisfaction
+
+    return ;
+
+}
+
+
+// -----------------------------------------------
+// -----------------------------------------------
+//
 //  generate_ballots
 //
 //  This function generates random preferences
@@ -704,7 +1014,8 @@ void generate_ballots( ) {
     int count_of_candidates_not_yet_ranked ;
     int ranking_level ;
     int pointer_number ;
-    int majority_count ;
+    int highest_plurality_count ;
+    int saved_case_type ;
 
 
 // -----------------------------------------------
@@ -716,6 +1027,13 @@ void generate_ballots( ) {
     {
         global_count_first_choice_usage_of_candidate[ candidate_number ] = 0 ;
     }
+
+
+// -----------------------------------------------
+//  Count the number of times new ballots were
+//  generated.
+
+    global_count_ballot_generation_done ++ ;
 
 
 // -----------------------------------------------
@@ -821,6 +1139,8 @@ void generate_ballots( ) {
 //  Insert a tie if this candidate shares the
 //  same ranking level as the previous candidate.
 
+//  todo: allow different marking patterns
+
             if ( global_yes_or_no_insert_tie_at_sequence_position[ sequence_position ] == global_yes )
             {
                 global_pointer_to_list_voteinfo_output_ballot ++ ;
@@ -874,20 +1194,67 @@ void generate_ballots( ) {
 
 
 // -----------------------------------------------
-//  If one of the candidates is ranked first on
-//  more than half the ballots, keep track of this
-//  candidate number to see if the candidate wins.
+//  Identify which candidate is ranked first on
+//  the most ballots.  This is the plurality
+//  "winner".
 
-    majority_count = 1 + int( float( global_total_ballot_count ) / 2.0 ) ;
-    global_candidate_first_choice_on_majority_of_ballots = 0 ;
+    global_plurality_winner = 0 ;
+    highest_plurality_count = 0 ;
     for ( candidate_number = 1 ; candidate_number <= global_full_candidate_count ; candidate_number ++ )
     {
-        if (  global_count_first_choice_usage_of_candidate[ candidate_number ] >= majority_count )
+        if ( (  global_count_first_choice_usage_of_candidate[ candidate_number ] > highest_plurality_count ) || (  highest_plurality_count == 0 ) )
         {
-            global_candidate_first_choice_on_majority_of_ballots = candidate_number ;
-            log_out << "[candidate " << global_candidate_first_choice_on_majority_of_ballots << " is first-choice majority]" ;
+            highest_plurality_count = global_count_first_choice_usage_of_candidate[ candidate_number ] ;
+            global_plurality_winner = candidate_number ;
+        } else if ( global_count_first_choice_usage_of_candidate[ candidate_number ] == highest_plurality_count )
+        {
+            global_plurality_winner = 0 ;
         }
     }
+
+
+// -----------------------------------------------
+//  If there is a plurality winner, calculate and
+//  write the proportional satisfaction rate.
+
+    if ( global_plurality_winner > 0 )
+    {
+        log_out << "[candidate " << global_plurality_winner << " is plurality winner]" << std::endl << "[calculating proportional satisfaction rate for plurality winner]" << std::endl ;
+        saved_case_type = global_case_type ;
+        global_case_type = global_case_type_plurality ;
+        calculate_satisfaction( ) ;
+        global_case_type = saved_case_type ;
+    } else
+    {
+        log_out << "[there is a tie for plurality winner]" ;
+    }
+
+
+// -----------------------------------------------
+//  Determine whether the plurality winner is, or
+//  is not, supported by a majority of voters.
+
+    global_majority_winner = 0 ;
+    if ( global_plurality_winner > 0 )
+    {
+        if ( highest_plurality_count >= 1 + int( float( global_total_ballot_count ) / 2.0 ) )
+        {
+            global_majority_winner = global_plurality_winner ;
+            log_out << "[candidate " << global_majority_winner << " is first-choice majority]" ;
+        }
+    }
+
+
+// -----------------------------------------------
+//  Calculate and write the proportional
+//  satisfaction rate for the "random" method,
+//  which always elects candidate 1.
+
+    log_out << "[candidate 1 is random winner]" << std::endl << "[calculating proportional satisfaction rate for random winner]" << std::endl ;
+    saved_case_type = global_case_type ;
+    global_case_type = global_case_type_random ;
+    calculate_satisfaction( ) ;
+    global_case_type = saved_case_type ;
 
 
 // -----------------------------------------------
@@ -1123,303 +1490,6 @@ void handle_calculated_results( )
 // -----------------------------------------------
 // -----------------------------------------------
 //
-//     calculate_satisfaction
-//
-//  Calculate the satisfaction percent for the
-//  identified seat winners.
-//
-//  If all the seat winners are ranked as first
-//  choice by an equal number of voters, the
-//  satisfaction rate is 100 percent.  As an
-//  example of this full satisfaction value,
-//  imagine there are three seats, one third of
-//  the voters rank the first-seat winner as their
-//  first choice, another third of the voters rank
-//  the second-seat winner as their first choice,
-//  and the remaining third of the voters rank
-//  the third-seat winner as their first choice.
-//
-//  The degree of satisfaction for a voter is
-//  measured by the number of candidates who are
-//  ranked below the seat winner.  If all the
-//  other candidates are ranked below the seat
-//  winner, that ballot has full -- 100 percent
-//  -- satisfaction.
-//
-//  A ballot is regarded as supporting a seat
-//  winner to the degree it highly ranks that
-//  seat winner.
-//
-//  Some ballots support more than one winner
-//  because a supporting vote count beyond the
-//  quota (needed to win) leaves a portion of the
-//  ballot's influence available during the
-//  filling of other seats.
-//
-//
-// -----------------------------------------------
-
-void calculate_satisfaction( ) {
-
-    int candidate_number ;
-    int sequence_position ;
-    int ranking_level ;
-    int ballot_group_number ;
-    int ballot_group_repeat_count ;
-    int pointer_to_supporting_ballot_group ;
-    int supporting_ballot_group ;
-    int number_of_supporting_ballot_groups ;
-    int seat_number ;
-    int candidate_seat_winner ;
-    int percent_version_for_logging ;
-
-    float decimal_supporting_vote_count_weighted ;
-    float decimal_count_of_supporting_ballots ;
-    float decimal_influence_reduction_per_ballot ;
-    float decimal_votes_that_must_support_seat_winner ;
-    float decimal_influence_reduction_for_current_ballot_group ;
-    float decimal_proportional_satisfaction_number_for_current_case ;
-
-
-// -----------------------------------------------
-//  Initialization.
-
-    decimal_proportional_satisfaction_number_for_current_case = 0.0 ;
-    for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
-    {
-        ballot_group_repeat_count = global_repeat_count_for_ballot_group[ ballot_group_number ] ;
-        global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] = float( ballot_group_repeat_count ) ;
-        global_decimal_reduced_influence_for_ballot_group[ ballot_group_number ] = 0 ;
-    }
-
-
-// -----------------------------------------------
-//  Begin a loop that handles each ranking level
-//
-//  Reminder: Ranking level 1 is the highest, not
-//  the lowest, ranking level.
-
-    log_out << std::endl ;
-    for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
-    {
-
-
-// -----------------------------------------------
-//  Begin a loop that handles each seat winner.
-//
-//  Reminder: The winner of VoteFair popularity
-//  ranking is always the same as the winner of
-//  the first seat in two-seat VoteFair
-//  representation ranking.
-
-        for ( seat_number = 1 ; seat_number <= global_number_of_seats_to_fill_for_case_type[ global_case_type ] ; seat_number ++ )
-        {
-            candidate_seat_winner = 0 ;
-            if ( ( global_case_type == global_case_type_votefair_popularity ) || ( global_case_type == global_case_type_votefair_representation ) )
-            {
-                candidate_seat_winner = global_candidate_who_won_votefair_seat_number[ seat_number ] ;
-            } else
-            {
-                candidate_seat_winner = global_candidate_who_won_seat_number[ seat_number ] ;
-            }
-
-
-// -----------------------------------------------
-//  Exit this function if any of the seat winner
-//  numbers are zero.  This situation indicates
-//  that not all the seats were filled, which
-//  means a satisfaction rate cannot be
-//  calculated.
-
-            if ( candidate_seat_winner == 0 )
-            {
-                decimal_proportional_satisfaction_number_for_current_case = 0.0 ;
-                log_out << "[seat winner is zero, proportional satisfaction cannot be calculated]" << std::endl ;
-                return ;
-            }
-
-
-// -----------------------------------------------
-//  Initialize the counts that track how many
-//  ballots, and which ballots, support the
-//  current seat winner.
-
-            decimal_supporting_vote_count_weighted = 0.0 ;
-            decimal_count_of_supporting_ballots = 0 ;
-            number_of_supporting_ballot_groups = 0 ;
-            pointer_to_supporting_ballot_group = 0 ;
-
-
-// -----------------------------------------------
-//  Begin a loop that handles each ballot group.
-
-            for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
-            {
-                ballot_group_repeat_count = global_repeat_count_for_ballot_group[ ballot_group_number ] ;
-
-
-// -----------------------------------------------
-//  Within this ballot group (of identical
-//  ballots), if the seat winner is not ranked at
-//  the ranking level that's currently of
-//  interest, skip this ballot group.
-
-                if ( global_ranking_for_candidate_and_ballot_group[ candidate_seat_winner ][ ballot_group_number ] != ranking_level )
-                {
-                    continue ;
-                }
-
-
-// -----------------------------------------------
-//  Within this ballot group, calculate how many
-//  votes support this seat-winning candidate,
-//  allowing for the possibility that these
-//  ballots have more than one candidate ranked at
-//  the same ranking level (of interest).
-
-                decimal_supporting_vote_count_weighted = global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] / float( global_number_of_candidates_at_ranking_level[ ranking_level ] ) ;
-
-                global_decimal_reduced_influence_for_ballot_group[ ballot_group_number ] = decimal_supporting_vote_count_weighted ;
-
-                log_out << "[rank " << ranking_level << ", seat winner " << candidate_seat_winner << ", group " << ballot_group_number << ", repeat count " << ballot_group_repeat_count << ", remaining " << convert_float_to_text( global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] ) << ", support " << convert_float_to_text( decimal_supporting_vote_count_weighted ) << "]" << std::endl ;
-
-
-// -----------------------------------------------
-//  If this ballot group provided any support to
-//  this seat winner, add that amount to the vote
-//  count supporting this seat winner.  Also track
-//  the number of supporting ballots.  Also add
-//  the ballot group number to the list that
-//  tracks the supporting ballots.
-
-                if ( decimal_supporting_vote_count_weighted > 0.0 )
-                {
-                    decimal_count_of_supporting_ballots += global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] ;
-                    pointer_to_supporting_ballot_group ++ ;
-                    global_list_of_supporting_ballot_groups[ pointer_to_supporting_ballot_group ] = ballot_group_number ;
-                    number_of_supporting_ballot_groups = pointer_to_supporting_ballot_group ;
-                }
-
-
-// -----------------------------------------------
-//  Repeat the loop to handle the next ballot
-//  group.
-
-            }
-
-
-// -----------------------------------------------
-//  If none of the ballots -- at the specified
-//  ranking level -- support the specified winning
-//  candidate, repeat the loop to handle the next
-//  winning candidate.
-
-            if ( decimal_count_of_supporting_ballots <= 0.0 )
-            {
-//                log_out << "[no support for winning candidate " << candidate_seat_winner << " at ranking level " << ranking_level << "]" << std::endl ;
-                continue ;
-            }
-
-
-// -----------------------------------------------
-//  Begin a loop that handles each group of
-//  supporting ballots.
-
-            if ( number_of_supporting_ballot_groups > 0 )
-            {
-                for ( pointer_to_supporting_ballot_group = 1 ; pointer_to_supporting_ballot_group <= number_of_supporting_ballot_groups ; pointer_to_supporting_ballot_group ++ )
-                {
-                    supporting_ballot_group = global_list_of_supporting_ballot_groups[ pointer_to_supporting_ballot_group ] ;
-
-
-// -----------------------------------------------
-//  Reduce the influence of the supporting ballot
-//  group.  This reduction leaves less influence
-//  toward electing further winners.  This
-//  reduction is the same as the amount of support
-//  that was just calculated.
-
-                    global_decimal_remaining_influence_for_ballot_group[ supporting_ballot_group ] -= global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] ;
-                    log_out << "[group " << supporting_ballot_group << ", reduced by " << convert_float_to_text( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] ) << ", reduced to " << convert_float_to_text( global_decimal_remaining_influence_for_ballot_group[ supporting_ballot_group ] )  << "]" << std::endl ;
-
-
-// -----------------------------------------------
-//  For each of the supporting ballot groups, add
-//  the supporting influence amount to the total
-//  proportional satisfaction number.
-
-                    sequence_position = global_sequence_position_for_candidate_and_ballot_group[ candidate_seat_winner ][ supporting_ballot_group ] ;
-
-                    decimal_proportional_satisfaction_number_for_current_case += ( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] * float( global_count_of_candidates_ranked_below_sequence_position[ sequence_position ] ) ) ;
-
-
-// -----------------------------------------------
-//  Repeat the branch and loop that handles the
-//  next supporting ballot group.
-
-                }
-            }
-
-
-// -----------------------------------------------
-//  Repeat the loop to handle the next seat
-//  winner.
-
-        }
-
-
-// -----------------------------------------------
-//  Repeat the loop to handle the next ranking
-//  level.
-
-    }
-
-
-// -----------------------------------------------
-//  Show any remaining influence.
-
-    for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
-    {
-        if ( global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] > 0.0 )
-        {
-            log_out << "[remaining influence in group " << ballot_group_number << " is " << convert_float_to_text( global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] )  << " votes]" << std::endl ;
-        }
-    }
-
-
-// -----------------------------------------------
-//  Save the calculated result.
-
-    global_decimal_proportional_satisfaction_number_for_case_type[ global_case_type ] +=decimal_proportional_satisfaction_number_for_current_case ;
-    log_out << "[satisfaction count is " << convert_float_to_text( decimal_proportional_satisfaction_number_for_current_case ) << "]" << std::endl ;
-
-
-// -----------------------------------------------
-//  Log the percent version of the satisfaction
-//  count.
-
-    percent_version_for_logging = int( 100.0 * decimal_proportional_satisfaction_number_for_current_case / float( global_ballot_count_times_candidate_count_minus_one ) ) ;
-    log_out << "[satisfaction percent " << percent_version_for_logging << "]" << std::endl ;
-
-
-// -----------------------------------------------
-//  Count the number of successful cases for the
-//  current case type.
-
-    global_count_of_satisfaction_cases_for_case_type[ global_case_type ] ++ ;
-
-
-// -----------------------------------------------
-//  End of function calculate_satisfaction
-
-    return ;
-
-}
-
-
-// -----------------------------------------------
-// -----------------------------------------------
-//
 //     log_case_type_info
 //
 //  Log the settings for one case type.
@@ -1433,13 +1503,26 @@ void log_case_type_info( ) {
 // -----------------------------------------------
 //  Write the case type settings to the log file.
 
-    log_out << "type " << global_case_type << ", " << global_number_of_seats_to_fill_for_case_type[ global_case_type ] << " seats, " ;
+    if ( global_number_of_seats_to_fill_for_case_type[ global_case_type ] == 1 )
+    {
+        log_out << "1 seat, " ;
+    } else
+    {
+        log_out << global_number_of_seats_to_fill_for_case_type[ global_case_type ] << " seats, " ;
+    }
+
     if ( global_case_type == global_case_type_votefair_popularity )
     {
         log_out << "VoteFair popularity" ;
     } else if ( global_case_type == global_case_type_votefair_representation )
     {
         log_out << "VoteFair representation" ;
+    } else if ( global_case_type == global_case_type_plurality )
+    {
+        log_out << "Plurality" ;
+    } else if ( global_case_type == global_case_type_random )
+    {
+        log_out << "Random" ;
     } else
     {
         if ( global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ global_case_type ] == global_yes )
@@ -1456,10 +1539,10 @@ void log_case_type_info( ) {
         {
             log_out << ", droop" ;
         }
-    }
-    if ( global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type ] == global_yes )
-    {
-        log_out << ", shared rankings not counted" ;
+        if ( global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type ] == global_yes )
+        {
+            log_out << ", shared rankings not counted" ;
+        }
     }
 
 
@@ -1502,6 +1585,10 @@ void do_all_tests( ) {
     int pointer_to_list_voteinfo ;
     int results_category_number ;
     int yes_or_no_wrote_category_name ;
+    int ranking_level ;
+    int yes_or_no_switch_to_droop_quota ;
+    int yes_or_no_eliminate_pairwise_losing_candidate ;
+    int yes_or_no_request_ignore_shared_rankings ;
 
     float proportional_satisfaction_percent ;
 
@@ -1518,10 +1605,10 @@ void do_all_tests( ) {
 //  Log the case types.
 
     pointer_to_case_type ++ ;
-    for ( pointer_to_case_type = 1 ; pointer_to_case_type <= global_number_of_case_types_to_test ; pointer_to_case_type ++ )
+    for ( pointer_to_case_type = 1 ; pointer_to_case_type <= ( global_number_of_case_types_to_test + 2 ) ; pointer_to_case_type ++ )
     {
         global_case_type = global_list_of_case_types_to_test[ pointer_to_case_type ] ;
-        log_out << "Case " ;
+        log_out << "Case type " << global_case_type << ": " ;
         log_case_type_info( ) ;
         log_out << std::endl ;
     }
@@ -1579,10 +1666,6 @@ void do_all_tests( ) {
 
         if ( global_case_type == 1 )
         {
-            for ( case_type = 1 ; case_type <= global_number_of_case_types_to_test ; case_type ++ )
-            {
-                global_number_of_seat_winners_matching_for_case_type[ case_type ] = 0 ;
-            }
             global_candidate_who_won_votefair_seat_number[ 1 ] = 0 ;
             global_candidate_who_won_votefair_seat_number[ 2 ] = 0 ;
             generate_ballots( ) ;
@@ -1609,7 +1692,7 @@ void do_all_tests( ) {
 // -----------------------------------------------
 //  Log the case number and case type.
 
-        log_out << std::endl << "[case " << global_case_id << "][" ;
+        log_out << std::endl << "[case type " << global_case_id << "][" ;
         log_case_type_info( ) ;
         log_out << "]" << std::endl ;
 
@@ -1842,13 +1925,13 @@ void do_all_tests( ) {
             candidate_number = 0 ;
             for ( seat_number = 1 ; seat_number <= global_number_of_seats_to_fill_for_case_type[ global_case_type ] ; seat_number ++ )
             {
-                if ( global_candidate_who_won_seat_number[ seat_number ] == global_candidate_first_choice_on_majority_of_ballots )
+                if ( global_candidate_who_won_seat_number[ seat_number ] == global_majority_winner )
                 {
-                    candidate_number = global_candidate_first_choice_on_majority_of_ballots ;
+                    candidate_number = global_majority_winner ;
                     break ;
                 }
             }
-            if ( candidate_number != global_candidate_first_choice_on_majority_of_ballots )
+            if ( candidate_number == 0 )
             {
                 log_out << "[failure to elect majority winner!]" ;
             }
@@ -1890,118 +1973,101 @@ void do_all_tests( ) {
 
 
 // -----------------------------------------------
-//  Begin to write the results.
+//  Write the test conditions.
 
     log_out << std::endl << std::endl << std::endl ;
 
     log_out << "TEST CONDITIONS:" << std::endl ;
     log_out << global_full_candidate_count << " candidates" << std::endl ;
     log_out << global_total_ballot_count << " ballots" << std::endl ;
+    log_out << global_count_ballot_generation_done << " ballot scenarios" << std::endl ;
     log_out << global_count_of_cases_ignored << " cases were ignored because not all the seats were filled" << std::endl << std::endl ;
 
 
 // -----------------------------------------------
-//  Calculate and write the results.
+//  Write the list of case types and their ID
+//  numbers in a way that can be used with Dashrep
+//  code that analyzes the result data.
 
-    for ( pointer_to_case_type = 1 ; pointer_to_case_type <= global_number_of_case_types_to_test ; pointer_to_case_type ++ )
+    for ( pointer_to_case_type = 1 ; pointer_to_case_type <= ( global_number_of_case_types_to_test + 2 ) ; pointer_to_case_type ++ )
     {
         global_case_type = global_list_of_case_types_to_test[ pointer_to_case_type ] ;
-        if ( global_count_of_satisfaction_cases_for_case_type[ global_case_type ] < 1 )
-        {
-            continue ;
-        }
-        log_out << "Case type: " ;
+        log_out << "category-name-for-category-id-" << global_case_type << ":" << std::endl ;
         log_case_type_info( ) ;
-        log_out << std::endl ;
-        log_out << global_count_of_satisfaction_cases_for_case_type[ global_case_type ] << " cases" << std::endl ;
-        proportional_satisfaction_percent = int( 0.5 + ( 100.0 * global_decimal_proportional_satisfaction_number_for_case_type[ global_case_type ] ) / ( float( global_count_of_satisfaction_cases_for_case_type[ global_case_type ] ) * global_ballot_count_times_candidate_count_minus_one ) ) ;
-        seats_to_fill = global_number_of_seats_to_fill_for_case_type[ global_case_type ] ;
-        global_proportional_satisfaction_percent_for_case_type_and_seat_count[ global_case_type ][ seats_to_fill ] = proportional_satisfaction_percent ;
-        log_out << "Proportional satisfaction percent for case type " << global_case_type << " is " << proportional_satisfaction_percent << std::endl ;
-        log_out << std::endl ;
+        log_out << std::endl << "----" << std::endl ;
     }
+    log_out << std::endl ;
 
 
 // -----------------------------------------------
-//  Write the results as spreadsheet data.
+//  Write the case type ID numbers as a list that
+//  is sorted by number of seats and other
+//  characteristics.
 
-    log_out << std::endl << std::endl ;
-    log_out << "Spreadsheet version:" << std::endl ;
-    log_out << "Category,1,2,3,4,5" << std::endl ;
-
-    for ( results_category_number = 1 ; results_category_number <= global_number_of_result_categories ; results_category_number ++ )
+    log_out << "list-of-category-ids:" << std::endl ;
+    for ( yes_or_no_switch_to_droop_quota = global_no ; yes_or_no_switch_to_droop_quota <= global_yes ; yes_or_no_switch_to_droop_quota ++ )
     {
-        yes_or_no_wrote_category_name = global_no ;
-        for ( pointer_to_case_type = 1 ; pointer_to_case_type <= global_number_of_case_types_to_test ; pointer_to_case_type ++ )
+        for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
         {
-            case_type = global_list_of_case_types_to_test[ pointer_to_case_type ] ;
-            if ( ( global_results_category_number_for_case_type[ case_type ] == results_category_number ) && ( yes_or_no_wrote_category_name == global_no ) )
+            for ( yes_or_no_eliminate_pairwise_losing_candidate = global_no ; yes_or_no_eliminate_pairwise_losing_candidate <= global_yes ; yes_or_no_eliminate_pairwise_losing_candidate ++ )
             {
-                yes_or_no_wrote_category_name = global_yes ;
-                if ( case_type == global_case_type_votefair_popularity )
+                for ( yes_or_no_request_ignore_shared_rankings = global_no ; yes_or_no_request_ignore_shared_rankings <= global_yes ; yes_or_no_request_ignore_shared_rankings ++ )
                 {
-                    log_out << "VoteFair popularity" ;
-                } else if ( case_type == global_case_type_votefair_representation )
-                {
-                    log_out << "VoteFair representation" ;
-                } else
-                {
-                    if ( global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ case_type ] == global_yes )
+                    for ( global_case_type = 1 ; global_case_type <= ( global_number_of_case_types_to_test + 2 )  ; global_case_type ++ )
                     {
-                        log_out << "RCIPE" ;
-                    } else
-                    {
-                        log_out << "STV/IRV" ;
-                    }
-                    if ( global_yes_or_no_switch_to_droop_quota_for_case_type[ case_type ] == global_no )
-                    {
-                        log_out << "<comma> hare" ;
-                    } else
-                    {
-                        log_out << "<comma> droop" ;
-                    }
-                    if ( global_yes_or_no_request_ignore_shared_rankings_for_case_type[ case_type ] == global_yes )
-                    {
-                        log_out << "<comma> shared rankings not counted" ;
-                    }
-                }
-                log_out << "," ;
-            }
-            for ( seats_to_fill = 1 ; seats_to_fill <= 5 ; seats_to_fill ++ )
-            {
-                if ( ( global_results_category_number_for_case_type[ case_type ] == results_category_number ) && ( global_number_of_seats_to_fill_for_case_type[ case_type ] == seats_to_fill ) )
-                {
-                    if ( global_proportional_satisfaction_percent_for_case_type_and_seat_count[ case_type ][ seats_to_fill ] > 0 )
-                    {
-                        log_out << global_proportional_satisfaction_percent_for_case_type_and_seat_count[ case_type ][ seats_to_fill ] ;
-                    }
-                    if ( seats_to_fill < 5 )
-                    {
-                        log_out << "," ;
-                    }
-                }
-                if ( global_results_category_number_for_case_type[ case_type ] == results_category_number )
-                {
-                    if ( ( case_type == global_case_type_votefair_popularity ) && ( seats_to_fill > 1 ) && ( seats_to_fill < 5 ) )
-                    {
-                            log_out << "," ;
-                    }
-                    if ( case_type == global_case_type_votefair_representation )
-                    {
-                        if ( seats_to_fill == 1 )
+                        if ( ( global_yes_or_no_switch_to_droop_quota_for_case_type[ global_case_type ] == yes_or_no_switch_to_droop_quota ) && ( global_number_of_seats_to_fill_for_case_type[ global_case_type ] == seats_to_fill ) && ( global_yes_or_no_eliminate_pairwise_losing_candidate_for_case_type[ global_case_type ] == yes_or_no_eliminate_pairwise_losing_candidate ) && ( global_yes_or_no_request_ignore_shared_rankings_for_case_type[ global_case_type ] == yes_or_no_request_ignore_shared_rankings ) )
                         {
-                            log_out << global_proportional_satisfaction_percent_for_case_type_and_seat_count[ global_case_type_votefair_popularity ][ 1 ] ;
-                            log_out << "," ;
-                        } else if ( seats_to_fill < 5 )
-                        {
-                            log_out << "," ;
+                            log_out << global_case_type << std::endl ;
                         }
                     }
                 }
             }
         }
-        log_out << std::endl ;
     }
+    log_out << "----" << std::endl << std::endl ;
+
+
+// -----------------------------------------------
+//  Write the ballot repeat counts.
+
+    for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
+    {
+        log_out << "ballot group " << ballot_group_number << " has repeat count of " << global_repeat_count_for_ballot_group[ ballot_group_number ] << std::endl ;
+    }
+    log_out << std::endl ;
+
+
+// -----------------------------------------------
+//  Write the preference level count pattern.
+
+//  todo: allow different marking patterns
+
+    for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
+    {
+        log_out << "ranking level " << ranking_level << " is shared among " << global_number_of_candidates_at_ranking_level[ ranking_level ] << " candidates" << std::endl ;
+    }
+    log_out << std::endl ;
+
+
+// -----------------------------------------------
+//  Write the count of how many cases were
+//  successfully calculated for each case type.
+
+    for ( pointer_to_case_type = 1 ; pointer_to_case_type <= ( global_number_of_case_types_to_test + 2 ) ; pointer_to_case_type ++ )
+    {
+        global_case_type = global_list_of_case_types_to_test[ pointer_to_case_type ] ;
+        log_out << "case type " << global_case_type << " calculated " << global_count_of_successful_cases_for_case_type[ global_case_type ] << " proportional satisfaction rates" << std::endl ;
+    }
+    log_out << std::endl ;
+
+
+// -----------------------------------------------
+//  Write the name of the file that contains the
+//  results in a format that can be imported into
+//  a spreadsheet or other software that
+//  calculates the standard deviations and ranges.
+
+    log_out << std::endl << "The results are in the spreadsheet-compatible file named " << "output_spreadsheet_data_satisfaction_rates.txt" << std::endl ;
 
 
 // -----------------------------------------------
@@ -2027,6 +2093,12 @@ int main( ) {
 //  Open the output log file.
 
     log_out.open ( "temp_log_from_measure_rcipe_stv_satisfaction_rate.txt" , std::ios::out ) ;
+
+
+// -----------------------------------------------
+//  Open the output spreadsheet file.
+
+    spreadsheet_out.open ( "output_spreadsheet_data_satisfaction_rates.txt" , std::ios::out ) ;
 
 
 // -----------------------------------------------
