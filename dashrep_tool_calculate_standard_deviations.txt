@@ -1,0 +1,217 @@
+source-code-copyright-notice:
+Copyright 2022 by Richard Fobes at www.Dashrep.com ALL RIGHTS RESERVED
+----
+start-here:
+ambee clear-phrase dashrep-path-prefix-for-file-reading amenn
+ambee clear-phrase dashrep-path-prefix-for-file-writing amenn
+ambee delete-file ambee output-filename amenn amenn
+ambee linewise-read-from-file-and-use-handler ambee input-filename amenn handle-one-line amenn
+ambee use-handler-with-each-word-in-phrase handle-one-category-id list-of-category-ids amenn
+----
+input-filename:
+output_spreadsheet_data_satisfaction_rates.txt
+----
+output-filename:
+output_calculated_range_standard_deviation.txt
+----
+handle-one-category-id:
+ambee copy-text word-to-use-in-handler category-id amenn
+ambee copy-text list-of-data-values-for-category-id fenambee category-id amenn list-of-data-values amenn
+ambee put-into-phrase list-size ambee get-count-of-words list-of-data-values amenn amenn
+
+ambee if-yes-begin ambee yes-or-no-same-two-words greater ambee numeric-equal-greater-less-compare ambee list-size amenn 1 amenn amenn amenn
+ambee handle-calculations-for-one-category amenn
+ambee if-end amenn
+----
+handle-calculations-for-one-category:
+ambee copy-text category-name-for-category-id fenambee category-id amenn category-name amenn
+ambee clear-phrase list-of-difference-squared-values amenn
+ambee put-into-phrase data-sum ambee numeric-add ambee list-of-data-values amenn amenn amenn
+ambee put-into-phrase average-value ambee numeric-divide-by ambee data-sum amenn ambee list-size amenn amenn amenn
+ambee use-handler-with-each-word-in-phrase handle-one-difference-calculation list-of-data-values amenn
+ambee put-into-phrase sum-of-difference-squared-values ambee numeric-add ambee list-of-difference-squared-values amenn amenn amenn
+ambee put-into-phrase sum-divided-by-sample-count-minus-one ambee numeric-divide-by ambee sum-of-difference-squared-values amenn ambee numeric-minus ambee list-size amenn 1 amenn amenn amenn
+ambee put-into-phrase sample-standard-deviation ambee numeric-square-root ambee sum-divided-by-sample-count-minus-one amenn amenn amenn
+ambee put-into-phrase double-standard-deviation ambee numeric-add ambee sample-standard-deviation amenn ambee sample-standard-deviation amenn amenn amenn
+ambee put-into-phrase average-plus-twice-standard-deviation ambee numeric-add ambee average-value amenn ambee double-standard-deviation amenn amenn amenn
+ambee put-into-phrase average-minus-twice-standard-deviation ambee numeric-minus ambee average-value amenn ambee double-standard-deviation amenn amenn amenn
+ambee put-into-phrase integer-average-plus-twice-standard-deviation ambee numeric-integer ambee average-plus-twice-standard-deviation amenn amenn amenn
+ambee put-into-phrase integer-average-minus-twice-standard-deviation ambee numeric-integer ambee average-minus-twice-standard-deviation amenn amenn amenn
+ambee put-into-phrase integer-average-plus-twice-standard-deviation ambee numeric-minimum 100 ambee integer-average-plus-twice-standard-deviation amenn amenn amenn
+ambee put-into-phrase integer-average-minus-twice-standard-deviation ambee numeric-maximum 0 ambee integer-average-minus-twice-standard-deviation amenn amenn amenn
+ambee put-into-phrase integer-average-value ambee numeric-integer ambee average-value amenn amenn amenn
+
+ambee copy-text category-name output-line amenn
+ambee append-text character-left-paren output-line amenn
+ambee append-text-no-space category-id output-line amenn
+ambee append-text-no-space character-right-paren output-line amenn
+ambee append-text integer-average-minus-twice-standard-deviation output-line amenn
+ambee append-text integer-average-value output-line amenn
+ambee append-text integer-average-plus-twice-standard-deviation output-line amenn
+ambee copy-from-phrase-append-to-file output-line ambee output-filename amenn amenn
+----
+character-left-paren:
+(#
+----
+character-right-paren:
+)
+----
+handle-one-difference-calculation:
+ambee copy-text word-to-use-in-handler data-value amenn
+ambee put-into-phrase difference-value ambee numeric-minus ambee average-value amenn ambee data-value amenn amenn amenn
+ambee put-into-phrase difference-squared ambee numeric-multiply ambee difference-value amenn ambee difference-value amenn amenn amenn
+ambee append-text difference-squared list-of-difference-squared-values amenn
+----
+handle-one-line:
+ambee copy-text linewise-input-line-from-file input-line amenn
+ambee copy-and-replace input-line input-line character-comma character-space amenn
+ambee if-yes-begin ambee yes-or-no-same-two-words 2 ambee get-count-of-words input-line amenn amenn amenn
+ambee handle-one-line-with-two-words amenn
+ambee if-end amenn
+----
+character-comma:
+,
+----
+handle-one-line-with-two-words:
+ambee copy-word-at-position input-line category-id 1 amenn
+ambee copy-word-at-position input-line data-value 2 amenn
+ambee append-text data-value list-of-data-values-for-category-id fenambee category-id amenn amenn
+----
+category-name-for-category-id-1:
+2 seats, VoteFair representation
+----
+category-name-for-category-id-2:
+1 seat, VoteFair popularity
+----
+category-name-for-category-id-3:
+1 seat, STV/IRV, hare
+----
+category-name-for-category-id-4:
+2 seats, STV/IRV, hare
+----
+category-name-for-category-id-5:
+3 seats, STV/IRV, hare
+----
+category-name-for-category-id-6:
+4 seats, STV/IRV, hare
+----
+category-name-for-category-id-7:
+5 seats, STV/IRV, hare
+----
+category-name-for-category-id-8:
+1 seat, RCIPE, hare
+----
+category-name-for-category-id-9:
+2 seats, RCIPE, hare
+----
+category-name-for-category-id-10:
+3 seats, RCIPE, hare
+----
+category-name-for-category-id-11:
+4 seats, RCIPE, hare
+----
+category-name-for-category-id-12:
+5 seats, RCIPE, hare
+----
+category-name-for-category-id-13:
+1 seat, STV/IRV, hare, shared rankings not counted
+----
+category-name-for-category-id-14:
+2 seats, STV/IRV, hare, shared rankings not counted
+----
+category-name-for-category-id-15:
+3 seats, STV/IRV, hare, shared rankings not counted
+----
+category-name-for-category-id-16:
+4 seats, STV/IRV, hare, shared rankings not counted
+----
+category-name-for-category-id-17:
+5 seats, STV/IRV, hare, shared rankings not counted
+----
+category-name-for-category-id-18:
+1 seat, STV/IRV, droop
+----
+category-name-for-category-id-19:
+2 seats, STV/IRV, droop
+----
+category-name-for-category-id-20:
+3 seats, STV/IRV, droop
+----
+category-name-for-category-id-21:
+4 seats, STV/IRV, droop
+----
+category-name-for-category-id-22:
+5 seats, STV/IRV, droop
+----
+category-name-for-category-id-23:
+1 seat, RCIPE, droop
+----
+category-name-for-category-id-24:
+2 seats, RCIPE, droop
+----
+category-name-for-category-id-25:
+3 seats, RCIPE, droop
+----
+category-name-for-category-id-26:
+4 seats, RCIPE, droop
+----
+category-name-for-category-id-27:
+5 seats, RCIPE, droop
+----
+category-name-for-category-id-28:
+1 seat, STV/IRV, droop, shared rankings not counted
+----
+category-name-for-category-id-29:
+2 seats, STV/IRV, droop, shared rankings not counted
+----
+category-name-for-category-id-30:
+3 seats, STV/IRV, droop, shared rankings not counted
+----
+category-name-for-category-id-31:
+4 seats, STV/IRV, droop, shared rankings not counted
+----
+category-name-for-category-id-32:
+5 seats, STV/IRV, droop, shared rankings not counted
+----
+category-name-for-category-id-33:
+1 seat, Plurality
+----
+category-name-for-category-id-34:
+1 seat, Random
+----
+list-of-category-ids:
+2
+3
+13
+33
+34
+8
+1
+4
+14
+9
+5
+15
+10
+6
+16
+11
+7
+17
+12
+18
+28
+23
+19
+29
+24
+20
+30
+25
+21
+31
+26
+22
+32
+27
+----
