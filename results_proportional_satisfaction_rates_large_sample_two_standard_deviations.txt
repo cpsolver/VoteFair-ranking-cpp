@@ -1,0 +1,24 @@
+1 seat, VoteFair popularity (#2) 27 48 69
+1 seat, Plurality (#33) 27 47 66
+1 seat, Random (#34) 5 29 53
+2 seats, VoteFair representation (#1) 53 71 89
+1 seat, STV/IRV, droop (#18) 26 47 68
+1 seat, STV/IRV, droop, shared rankings not counted (#28) 25 46 66
+1 seat, RCIPE, droop (#23) 26 47 68
+2 seats, STV/IRV, droop (#19) 53 71 88
+2 seats, STV/IRV, droop, shared rankings not counted (#29) 53 70 87
+2 seats, RCIPE, droop (#24) 54 71 88
+3 seats, STV/IRV, droop (#20) 70 83 96
+3 seats, STV/IRV, droop, shared rankings not counted (#30) 68 82 96
+3 seats, RCIPE, droop (#25) 70 83 96
+4 seats, STV/IRV, droop (#21) 81 91 100
+4 seats, STV/IRV, droop, shared rankings not counted (#31) 77 88 100
+4 seats, RCIPE, droop (#26) 81 91 100
+5 seats, STV/IRV, droop (#22) 89 95 100
+5 seats, STV/IRV, droop, shared rankings not counted (#32) 82 92 100
+5 seats, RCIPE, droop (#27) 89 95 100
+
+TEST CONDITIONS:
+11 candidates
+17 ballots
+17868 ballot scenarios
