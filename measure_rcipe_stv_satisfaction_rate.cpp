@@ -128,6 +128,7 @@ int global_full_candidate_count ;
 int global_count_of_cases_ignored ;
 int global_maximum_ballot_group ;
 int global_maximum_ranking_level ;
+int global_counter_for_ballot_pattern_shared_rankings ;
 int global_test_count ;
 int global_count_of_tests_that_match ;
 int global_candidate_winner ;
@@ -165,10 +166,6 @@ int global_count_first_choice_usage_of_candidate[ 21 ] ;
 
 const int global_maximum_number_of_ranking_levels = 60 ;
 int global_candidate_number_at_picking_position[ 61 ] ;
-int global_number_of_candidates_at_ranking_level[ 61 ] ;
-int global_yes_or_no_insert_tie_at_sequence_position[ 61 ] ;
-int global_ranking_level_for_sequence_position[ 61 ] ;
-int global_count_of_candidates_ranked_below_sequence_position[ 61 ] ;
 
 const int global_maximum_number_of_ballot_groups = 200 ;
 int global_repeat_count_for_ballot_group[ 201 ] ;
@@ -310,8 +307,8 @@ void do_initialization( )
 //  when the case type is the first case type,
 //  which corresponds to case type 1.
 
-    global_case_count_limit = 10000 ;
-    global_case_count_limit = 120 ;
+    global_case_count_limit = 500000 ;
+//    global_case_count_limit = 200 ;
 
 
 // -----------------------------------------------
@@ -436,7 +433,6 @@ void do_initialization( )
 //  the same (or equivalent) ballot-marking
 //  pattern.
 
-//    global_maximum_ballot_group = 5 ;
     global_maximum_ballot_group = 8 ;
 
     global_repeat_count_for_ballot_group[ 1 ] = 4 ;
@@ -460,89 +456,15 @@ void do_initialization( )
 
 
 // -----------------------------------------------
-//  Specify the number of ranking levels, and how
-//  many candidates are ranked at each of these
-//  preference levels.
-//  Reminder:  Ranking level 1 is the highest
-//  ranking level.
+//  Specify the number of candidates.
+
+    global_full_candidate_count = 11 ;
+
+
+// -----------------------------------------------
+//  Specify the number of ranking levels.
 
     global_maximum_ranking_level = 6 ;
-
-//  todo: allow different marking patterns
-
-    global_number_of_candidates_at_ranking_level[ 1 ] = 1 ;
-    global_number_of_candidates_at_ranking_level[ 2 ] = 2 ;
-    global_number_of_candidates_at_ranking_level[ 3 ] = 3 ;
-    global_number_of_candidates_at_ranking_level[ 4 ] = 2 ;
-    global_number_of_candidates_at_ranking_level[ 5 ] = 2 ;
-    global_number_of_candidates_at_ranking_level[ 6 ] = 1 ;
-
-
-// -----------------------------------------------
-//  Count the number of candidates based on the
-//  number of ranking levels and the number of
-//  candidates at each ranking level.
-
-//  todo: allow different marking patterns
-
-    global_full_candidate_count = 0 ;
-    for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
-    {
-        global_full_candidate_count += global_number_of_candidates_at_ranking_level[ ranking_level ] ;
-    }
-//    log_out << "[candidate count " << global_full_candidate_count << "]" << std::endl ;
-
-
-// -----------------------------------------------
-//  Calculate which sequence positions need a tie
-//  indicator.  The tie indicators are inserted
-//  into the ballot data to indicate an additional
-//  candidate being ranked at the same preference
-//  level as the previous candidate.
-
-//  todo: allow different marking patterns
-
-    sequence_position = 1 ;
-    for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
-    {
-        global_yes_or_no_insert_tie_at_sequence_position[ sequence_position ] = global_no ;
-        global_ranking_level_for_sequence_position[ sequence_position ] = ranking_level ;
-        if ( global_number_of_candidates_at_ranking_level[ ranking_level ] > 1 )
-        {
-            for ( sub_ranking_level = 2 ; sub_ranking_level <= global_number_of_candidates_at_ranking_level[ ranking_level ] ; sub_ranking_level ++ )
-            {
-                global_ranking_level_for_sequence_position[ sequence_position ] = ranking_level ;
-                sequence_position ++ ;
-                global_yes_or_no_insert_tie_at_sequence_position[ sequence_position ] = global_yes ;
-            }
-        }
-        global_ranking_level_for_sequence_position[ sequence_position ] = ranking_level ;
-        sequence_position ++ ;
-    }
-    for ( sequence_position = 1 ; sequence_position <= global_full_candidate_count ; sequence_position ++ )
-    {
-        if ( global_yes_or_no_insert_tie_at_sequence_position[ sequence_position ] == global_yes )
-        {
-//            log_out << "[tie insert flag at sequence position " << sequence_position << "]" << std::endl ;
-        }
-//        log_out << "[sequence position " << sequence_position << " is at ranking level " << global_ranking_level_for_sequence_position[ sequence_position ] << "]" << std::endl ;
-    }
-
-
-// -----------------------------------------------
-//  For each sequence position, calculate how many
-//  candidates are ranked lower than the candidate
-//  at the specified sequence position.
-
-    for ( sequence_position = 1 ; sequence_position <= global_full_candidate_count ; sequence_position ++ )
-    {
-        global_count_of_candidates_ranked_below_sequence_position[ sequence_position ] = 0 ;
-        for ( ranking_level = ( global_ranking_level_for_sequence_position[ sequence_position ] + 1 ) ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
-        {
-            global_count_of_candidates_ranked_below_sequence_position[ sequence_position ] += global_number_of_candidates_at_ranking_level[ ranking_level ] ;
-        }
-//        log_out << "[sequence position " << sequence_position << " has " << global_count_of_candidates_ranked_below_sequence_position[ sequence_position ] << " candidates ranked lower]" << std::endl ;
-    }
 
 
 // -----------------------------------------------
@@ -574,6 +496,7 @@ void do_initialization( )
 
     global_test_count = 0 ;
     global_count_of_cases_ignored = 0 ;
+    global_counter_for_ballot_pattern_shared_rankings = 1 ;
 
 
 // -----------------------------------------------
@@ -729,6 +652,8 @@ void calculate_satisfaction( ) {
     int seat_number ;
     int candidate_seat_winner ;
     int proportional_satisfaction_percent_for_current_case ;
+    int count_of_candidates_ranked_below_seat_winner ;
+    int number_of_candidates_at_current_ranking_level ;
 
     float decimal_supporting_vote_count_weighted ;
     float decimal_count_of_supporting_ballots ;
@@ -834,15 +759,28 @@ void calculate_satisfaction( ) {
 
 
 // -----------------------------------------------
+//  Count how many candidates are ranked at the
+//  current ranking level.
+//  Reminder: The highest preference level is one.
+
+                number_of_candidates_at_current_ranking_level = 0 ;
+                for ( candidate_number = 1 ; candidate_number <= global_full_candidate_count ; candidate_number ++ )
+                {
+                    if ( global_ranking_for_candidate_and_ballot_group[ candidate_number ][ ballot_group_number ] == ranking_level )
+                    {
+                        number_of_candidates_at_current_ranking_level ++ ;
+                    }
+                }
+
+
+// -----------------------------------------------
 //  Within this ballot group, calculate how many
 //  votes support this seat-winning candidate,
 //  allowing for the possibility that these
 //  ballots have more than one candidate ranked at
 //  the same ranking level (of interest).
 
-//  todo: allow different marking patterns
-
-                decimal_supporting_vote_count_weighted = global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] / float( global_number_of_candidates_at_ranking_level[ ranking_level ] ) ;
+                decimal_supporting_vote_count_weighted = global_decimal_remaining_influence_for_ballot_group[ ballot_group_number ] / float( number_of_candidates_at_current_ranking_level ) ;
 
                 global_decimal_reduced_influence_for_ballot_group[ ballot_group_number ] = decimal_supporting_vote_count_weighted ;
 
@@ -909,15 +847,28 @@ void calculate_satisfaction( ) {
 
 
 // -----------------------------------------------
+//  Count how many candidates are ranked below the
+//  current seat winner.
+//  Reminder: The highest preference level is one.
+
+                    count_of_candidates_ranked_below_seat_winner = 0 ;
+                    for ( candidate_number = 1 ; candidate_number <= global_full_candidate_count ; candidate_number ++ )
+                    {
+                        if ( global_ranking_for_candidate_and_ballot_group[ candidate_number ][ supporting_ballot_group ] > global_ranking_for_candidate_and_ballot_group[ candidate_seat_winner ][ supporting_ballot_group ] )
+                        {
+                            count_of_candidates_ranked_below_seat_winner ++ ;
+                        }
+                    }
+
+
+// -----------------------------------------------
 //  For each of the supporting ballot groups, add
 //  the supporting influence amount to the total
 //  proportional satisfaction number.
 
                     sequence_position = global_sequence_position_for_candidate_and_ballot_group[ candidate_seat_winner ][ supporting_ballot_group ] ;
 
-//  todo: allow different marking patterns
-
-                    decimal_proportional_satisfaction_number_for_current_case += ( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] * float( global_count_of_candidates_ranked_below_sequence_position[ sequence_position ] ) ) ;
+                    decimal_proportional_satisfaction_number_for_current_case += ( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] * float( count_of_candidates_ranked_below_seat_winner ) ) ;
 
 
 // -----------------------------------------------
@@ -957,11 +908,11 @@ void calculate_satisfaction( ) {
 // -----------------------------------------------
 //  Calculate, and log, the satisfaction rate.
 
-    log_out << "[satisfaction count is " << convert_float_to_text( decimal_proportional_satisfaction_number_for_current_case ) << "]" << std::endl ;
+//    log_out << "[satisfaction count is " << convert_float_to_text( decimal_proportional_satisfaction_number_for_current_case ) << "]" << std::endl ;
 
     proportional_satisfaction_percent_for_current_case = int( 100.0 * decimal_proportional_satisfaction_number_for_current_case / float( global_ballot_count_times_candidate_count_minus_one ) ) ;
 
-    log_out << "[satisfaction percent for case type " << global_case_type << " is " << proportional_satisfaction_percent_for_current_case << "]" << std::endl ;
+    log_out << std::endl << "[satisfaction percent for case type " << global_case_type << " is " << proportional_satisfaction_percent_for_current_case << "]" << std::endl ;
 
 
 // -----------------------------------------------
@@ -1009,6 +960,7 @@ void generate_ballots( ) {
     int ballot_group_repeat_count ;
     int candidate_number ;
     int candidate_at_current_sequence_position ;
+    int candidate_at_first_sequence_position ;
     int sequence_position ;
     int picking_position ;
     int count_of_candidates_not_yet_ranked ;
@@ -1016,6 +968,7 @@ void generate_ballots( ) {
     int pointer_number ;
     int highest_plurality_count ;
     int saved_case_type ;
+    int yes_or_no_insert_tie_here ;
 
 
 // -----------------------------------------------
@@ -1030,7 +983,7 @@ void generate_ballots( ) {
 
 
 // -----------------------------------------------
-//  Count the number of times new ballots were
+//  Count the number of times new ballots are
 //  generated.
 
     global_count_ballot_generation_done ++ ;
@@ -1072,6 +1025,21 @@ void generate_ballots( ) {
 
 
 // -----------------------------------------------
+//  Choose to sometimes -- currently set as one
+//  out of three ballot groups -- rank the
+//  second-chosen candidate to be ranked at the
+//  "first choice" level, which means that
+//  sometimes two candidates are ranked at the top
+//  preference level.
+
+        global_counter_for_ballot_pattern_shared_rankings ++ ;
+        if ( global_counter_for_ballot_pattern_shared_rankings > 3 )
+        {
+            global_counter_for_ballot_pattern_shared_rankings = 1 ;
+        }
+
+
+// -----------------------------------------------
 //  Put the candidate numbers into a "picking"
 //  list so they can be chosen at random without
 //  repeating any candidate number.
@@ -1105,17 +1073,6 @@ void generate_ballots( ) {
 
 
 // -----------------------------------------------
-//  If this is the first choice candidate, count
-//  how many ballots on which it is the first
-//  choice.
-
-            if ( sequence_position == 1 )
-            {
-                global_count_first_choice_usage_of_candidate[ candidate_at_current_sequence_position ] += ballot_group_repeat_count ;
-            }
-
-
-// -----------------------------------------------
 //  Keep track of candidate number usage to allow
 //  verifying randomness.
 
@@ -1136,15 +1093,58 @@ void generate_ballots( ) {
 
 
 // -----------------------------------------------
-//  Insert a tie if this candidate shares the
-//  same ranking level as the previous candidate.
+//  Insert a tie if this candidate should share
+//  the same ranking level as the previous
+//  candidate.  This characteristic is specified
+//  to occur randomly, yet not too often at the
+//  "first choice" ranking level.
 
-//  todo: allow different marking patterns
+//  todo: test new code here
 
-            if ( global_yes_or_no_insert_tie_at_sequence_position[ sequence_position ] == global_yes )
+            if ( sequence_position == 1 )
+            {
+                yes_or_no_insert_tie_here = global_no ;
+            } else if ( sequence_position == 2 )
+            {
+                if ( global_counter_for_ballot_pattern_shared_rankings != 3 )
+                {
+                    yes_or_no_insert_tie_here = global_no ;
+                } else
+                {
+                    yes_or_no_insert_tie_here = global_yes ;
+                }
+            } else if ( ( ranking_level == global_maximum_number_of_ranking_levels ) && ( sequence_position < global_maximum_number_of_candidates ) )
+            {
+                yes_or_no_insert_tie_here = global_yes ;
+            } else
+            {
+                if ( yes_or_no_insert_tie_here == global_yes )
+                {
+                    yes_or_no_insert_tie_here = global_no ;
+                } else
+                {
+                    yes_or_no_insert_tie_here = global_yes ;
+                }
+            }
+            if ( yes_or_no_insert_tie_here == global_yes )
             {
                 global_pointer_to_list_voteinfo_output_ballot ++ ;
                 global_list_voteinfo_output_ballot[ global_pointer_to_list_voteinfo_output_ballot ] = global_voteinfo_code_for_tie ;
+            }
+
+
+// -----------------------------------------------
+//  If only one candidate is marked at the "first
+//  choice" ranking level, count how many ballots
+//  on which it is the first choice.
+
+            if ( sequence_position == 1 )
+            {
+                candidate_at_first_sequence_position = candidate_at_current_sequence_position ;
+            } else if ( ( sequence_position == 2 ) && ( yes_or_no_insert_tie_here == global_no ) )
+            {
+                global_count_first_choice_usage_of_candidate[ candidate_at_first_sequence_position ] += ballot_group_repeat_count ;
+//                log_out << std::endl << "[at ballot group " << ballot_group_number << " candidate " << candidate_at_first_sequence_position << " now has plurality count " << global_count_first_choice_usage_of_candidate[ candidate_at_first_sequence_position ] << "]" << std::endl ;
             }
 
 
@@ -1165,7 +1165,7 @@ void generate_ballots( ) {
 //  when calculating the satisfaction percent.
 
             global_ranking_for_candidate_and_ballot_group[ candidate_at_current_sequence_position ][ ballot_group_number ] = ranking_level ;
-            if ( global_yes_or_no_insert_tie_at_sequence_position[ sequence_position ] == global_no )
+            if ( yes_or_no_insert_tie_here == global_no )
             {
                 ranking_level ++ ;
             }
@@ -1194,9 +1194,9 @@ void generate_ballots( ) {
 
 
 // -----------------------------------------------
-//  Identify which candidate is ranked first on
-//  the most ballots.  This is the plurality
-//  "winner".
+//  Identify the plurality winner, which is the
+//  candidate who is ranked first on the most
+//  ballots.
 
     global_plurality_winner = 0 ;
     highest_plurality_count = 0 ;
@@ -1211,22 +1211,12 @@ void generate_ballots( ) {
             global_plurality_winner = 0 ;
         }
     }
-
-
-// -----------------------------------------------
-//  If there is a plurality winner, calculate and
-//  write the proportional satisfaction rate.
-
     if ( global_plurality_winner > 0 )
     {
-        log_out << "[candidate " << global_plurality_winner << " is plurality winner]" << std::endl << "[calculating proportional satisfaction rate for plurality winner]" << std::endl ;
-        saved_case_type = global_case_type ;
-        global_case_type = global_case_type_plurality ;
-        calculate_satisfaction( ) ;
-        global_case_type = saved_case_type ;
+        log_out << std::endl << "[candidate " << global_plurality_winner << " is plurality winner with count " << highest_plurality_count << "]" << std::endl ;
     } else
     {
-        log_out << "[there is a tie for plurality winner]" ;
+        log_out << std::endl << "[there is no plurality winner]" << std::endl ;
     }
 
 
@@ -1240,8 +1230,26 @@ void generate_ballots( ) {
         if ( highest_plurality_count >= 1 + int( float( global_total_ballot_count ) / 2.0 ) )
         {
             global_majority_winner = global_plurality_winner ;
-            log_out << "[candidate " << global_majority_winner << " is first-choice majority]" ;
+            log_out << "[candidate " << global_majority_winner << " is first-choice majority winner]" << std::endl ;
+        } else
+        {
+            log_out << "[there is no first-choice majority winner]" << std::endl ;
         }
+    }
+
+
+// -----------------------------------------------
+//  If there is a plurality winner, calculate and
+//  write the proportional satisfaction rate for
+//  that candidate getting elected.
+
+    if ( global_plurality_winner > 0 )
+    {
+        log_out << "[calculating proportional satisfaction rate for plurality winner]" << std::endl ;
+        saved_case_type = global_case_type ;
+        global_case_type = global_case_type_plurality ;
+        calculate_satisfaction( ) ;
+        global_case_type = saved_case_type ;
     }
 
 
@@ -1250,7 +1258,7 @@ void generate_ballots( ) {
 //  satisfaction rate for the "random" method,
 //  which always elects candidate 1.
 
-    log_out << "[candidate 1 is random winner]" << std::endl << "[calculating proportional satisfaction rate for random winner]" << std::endl ;
+    log_out << std::endl << "[candidate 1 is random winner]" << std::endl << "[calculating proportional satisfaction rate for random winner]" << std::endl ;
     saved_case_type = global_case_type ;
     global_case_type = global_case_type_random ;
     calculate_satisfaction( ) ;
@@ -1287,6 +1295,7 @@ void handle_calculated_results( )
     int count_of_result_codes ;
     int seat_number ;
     int do_nothing ;
+
     std::string input_line ;
     std::string input_text_word ;
 
@@ -1637,6 +1646,17 @@ void do_all_tests( ) {
             pointer_to_case_type = 1 ;
         }
         global_case_type = global_list_of_case_types_to_test[ pointer_to_case_type ] ;
+
+
+// -----------------------------------------------
+//  Currently, skip doing the cases that involve
+//  the Hare quota.
+
+        if ( ( global_case_type != global_case_type_random ) && ( global_case_type != global_case_type_plurality ) &&  ( global_case_type != global_case_type_votefair_popularity ) && ( global_case_type != global_case_type_votefair_representation ) && ( global_yes_or_no_switch_to_droop_quota_for_case_type[ global_case_type ] == global_no ) )
+        {
+            log_out << "[Skipping Hare quota case type " << global_case_type << "]" << std::endl ;
+            continue ;
+        }
 
 
 // -----------------------------------------------
@@ -2033,18 +2053,6 @@ void do_all_tests( ) {
     for ( ballot_group_number = 1 ; ballot_group_number <= global_maximum_ballot_group ; ballot_group_number ++ )
     {
         log_out << "ballot group " << ballot_group_number << " has repeat count of " << global_repeat_count_for_ballot_group[ ballot_group_number ] << std::endl ;
-    }
-    log_out << std::endl ;
-
-
-// -----------------------------------------------
-//  Write the preference level count pattern.
-
-//  todo: allow different marking patterns
-
-    for ( ranking_level = 1 ; ranking_level <= global_maximum_ranking_level ; ranking_level ++ )
-    {
-        log_out << "ranking level " << ranking_level << " is shared among " << global_number_of_candidates_at_ranking_level[ ranking_level ] << " candidates" << std::endl ;
     }
     log_out << std::endl ;
 
