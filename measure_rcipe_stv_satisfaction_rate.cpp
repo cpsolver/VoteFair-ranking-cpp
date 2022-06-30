@@ -4,21 +4,20 @@
 //  for the rcipe_stv.cpp code and then measures
 //  the fairness of the results.
 //
-//  One of the measurements is how often the
-//  rcipe_stv.cpp software yields results that are
-//  different from the results of calcuating
-//  VoteFair representation winners -- which use
-//  an advanced counting method that ensures
-//  fully proportional representation for
-//  filling two equivalent seats, and does not
-//  reward tactical voting.
-//
-//  Eventually this software will calculate
+//  In particular, this software calculates
 //  "satisfaction" scores that measure how well
 //  the elected candidates match the ideal
-//  desires of the voters.  The expected name of
-//  those measurements is Proportional Pairwise
-//  Support Percent (PPSP)
+//  desires of the voters.  This measurement is
+//  called the Proportional Satisfaction Rate.
+//
+//  This software also measures how often the
+//  rcipe_stv.cpp software yields results that are
+//  different from the results of calcuating
+//  VoteFair representation winners.  The VoteFair
+//  calculations use advanced counting methods
+//  that ensures fully proportional representation
+//  for filling two equivalent seats, and does so
+//  without rewarding tactical voting.
 //
 //
 // -----------------------------------------------
