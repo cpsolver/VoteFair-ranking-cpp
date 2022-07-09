@@ -136,7 +136,7 @@ int global_majority_winner ;
 int global_candidate_omitted ;
 int global_yes_or_no_show_details_in_log_file ;
 int global_count_of_seats_filled ;
-int global_ballot_count_times_candidate_count_minus_one ;
+int global_ballot_count_times_candidate_count_minus_one_raised_to_power ;
 int global_pointer_to_list_voteinfo_output_begin ;
 int global_pointer_to_list_voteinfo_output_ballot ;
 int global_pointer_to_list_voteinfo_output_end ;
@@ -307,6 +307,8 @@ void do_initialization( )
 //  which corresponds to case type 1.
 
     global_case_count_limit = 500000 ;
+    global_case_count_limit = 10000 ;
+    global_case_count_limit = 2000 ;
 //    global_case_count_limit = 200 ;
 
 
@@ -468,9 +470,10 @@ void do_initialization( )
 
 // -----------------------------------------------
 //  Calculate the number of ballots times the
-//  candidate count minus one.
+//  quantity candidate count minus one raised to
+//  the third power.
 
-    global_ballot_count_times_candidate_count_minus_one = global_total_ballot_count * ( global_full_candidate_count - 1 ) ;
+    global_ballot_count_times_candidate_count_minus_one_raised_to_power = global_total_ballot_count * ( pow( ( global_full_candidate_count - 1 ) , 3 ) ) ;
 
 
 // -----------------------------------------------
@@ -620,10 +623,17 @@ std::string convert_float_to_text( float supplied_float )
 //
 //  The degree of satisfaction for a voter is
 //  measured by the number of candidates who are
-//  ranked below the seat winner.  If all the
-//  other candidates are ranked below the seat
-//  winner, that ballot has full -- 100 percent
-//  -- satisfaction.
+//  ranked below the seat winner, and then using
+//  the square of that number.
+//
+//  If a ballot ranks all the other candidates
+//  below the seat winner, that ballot has full --
+//  100 percent -- satisfaction.
+//
+//  Squaring the count gives extra influence to
+//  the highest-ranked candidate, and less
+//  satisfaction influence to the lower-ranked
+//  candidates.
 //
 //  A ballot is regarded as supporting a seat
 //  winner to the degree it highly ranks that
@@ -864,10 +874,15 @@ void calculate_satisfaction( ) {
 //  For each of the supporting ballot groups, add
 //  the supporting influence amount to the total
 //  proportional satisfaction number.
+//
+//  Use the cube of the count so that the
+//  spacing between the higher ranking levels have
+//  more weight than the spacing between the lower
+//  ranking levels.
 
-                    sequence_position = global_sequence_position_for_candidate_and_ballot_group[ candidate_seat_winner ][ supporting_ballot_group ] ;
+//                    sequence_position = global_sequence_position_for_candidate_and_ballot_group[ candidate_seat_winner ][ supporting_ballot_group ] ;
 
-                    decimal_proportional_satisfaction_number_for_current_case += ( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] * float( count_of_candidates_ranked_below_seat_winner ) ) ;
+                    decimal_proportional_satisfaction_number_for_current_case += ( global_decimal_reduced_influence_for_ballot_group[ supporting_ballot_group ] * float( pow( count_of_candidates_ranked_below_seat_winner , 3 ) ) ) ;
 
 
 // -----------------------------------------------
@@ -909,7 +924,7 @@ void calculate_satisfaction( ) {
 
 //    log_out << "[satisfaction count is " << convert_float_to_text( decimal_proportional_satisfaction_number_for_current_case ) << "]" << std::endl ;
 
-    proportional_satisfaction_percent_for_current_case = int( 100.0 * decimal_proportional_satisfaction_number_for_current_case / float( global_ballot_count_times_candidate_count_minus_one ) ) ;
+    proportional_satisfaction_percent_for_current_case = int( 100.0 * decimal_proportional_satisfaction_number_for_current_case / float( global_ballot_count_times_candidate_count_minus_one_raised_to_power ) ) ;
 
     log_out << std::endl << "[satisfaction percent for case type " << global_case_type << " is " << proportional_satisfaction_percent_for_current_case << "]" << std::endl ;
 
